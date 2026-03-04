@@ -1,34 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { fetchTenantBySlug, type Tenant } from "@/api/queries";
-import { getCurrentSubdomain } from "@/app/utils/domain";
+import { useTenant } from "@/app/contexts/TenantContext";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const [tenant, setTenant] = useState<Tenant | null>(null);
-
-  // Detect if we're on a tenant subdomain and fetch tenant data
-  useEffect(() => {
-    const subdomain = getCurrentSubdomain();
-
-    if (subdomain && subdomain !== "www" && subdomain !== "admin") {
-      console.log("Fetching tenant for subdomain:", subdomain);
-      fetchTenantBySlug(subdomain)
-        .then((data) => {
-          console.log("Tenant data:", data);
-          if (data) setTenant(data);
-        })
-        .catch((err) => {
-          console.error("Error fetching tenant:", err);
-        });
-    } else {
-      setTenant(null);
-    }
-  }, [pathname]);
+  const { tenant } = useTenant();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

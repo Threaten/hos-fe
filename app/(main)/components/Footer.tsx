@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { fetchTenants, fetchTenantBySlug, type Tenant } from "@/api/queries";
-import { getTenantUrl, getCurrentSubdomain } from "@/app/utils/domain";
+import { fetchTenants, type Tenant } from "@/api/queries";
+import { getTenantUrl } from "@/app/utils/domain";
+import { useTenant } from "@/app/contexts/TenantContext";
 
 const Footer: React.FC = () => {
   const [allExpanded, setAllExpanded] = useState<boolean>(false);
   const [tenants, setTenants] = useState<Tenant[]>([]);
-  const [currentTenant, setCurrentTenant] = useState<Tenant | null>(null);
+  const { tenant: currentTenant } = useTenant();
 
   useEffect(() => {
     // Fetch tenants
@@ -17,17 +18,7 @@ const Footer: React.FC = () => {
     };
 
     loadTenants();
-
-    // Detect if we're on a tenant subdomain and fetch tenant data
-    const subdomain = getCurrentSubdomain();
-
-    if (subdomain && subdomain !== "www" && subdomain !== "admin") {
-      fetchTenantBySlug(subdomain)
-        .then((data) => {
-          if (data) setCurrentTenant(data);
-        })
-        .catch((err) => {
-          console.error("Error fetching tenant:", err);
+  }, []);
         });
     }
   }, []);

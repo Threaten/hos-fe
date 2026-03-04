@@ -600,6 +600,9 @@ export const createContactMessage = async (
 
 /**
  * Export API URL for cases where it's needed (like image URLs)
+ * In production, always use the production URL to avoid localhost blocking
  */
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_API_URL || "https://admin.hehehihi.com"
+    : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
