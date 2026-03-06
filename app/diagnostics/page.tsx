@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { API_URL, GRAPHQL_ENDPOINT } from "@/api/queries";
 
 export default function DiagnosticsPage() {
   const [diagnostics, setDiagnostics] = useState({
@@ -16,10 +17,9 @@ export default function DiagnosticsPage() {
   });
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || API_URL;
     const graphqlEndpoint =
-      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-      "http://localhost:3000/api/graphql";
+      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || GRAPHQL_ENDPOINT;
 
     setDiagnostics((prev) => ({
       ...prev,

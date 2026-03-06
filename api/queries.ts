@@ -7,13 +7,22 @@ import {
 } from "@apollo/client";
 
 /**
+ * API URL Configuration
+ * Uses environment variables with sensible defaults
+ */
+export const API_URL =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_API_URL || "https://admin.hehehihi.com"
+    : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+export const GRAPHQL_ENDPOINT = `${API_URL}/api/graphql`;
+
+/**
  * Apollo Client Setup
  */
 
 export const httpLink = new HttpLink({
-  uri:
-    process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-    "http://localhost:3000/api/graphql",
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || GRAPHQL_ENDPOINT,
   fetch: function (uri, options) {
     // Log the API endpoint being used (only in development)
     if (
@@ -421,8 +430,7 @@ export const fetchTenantBySlug = async (slug: string) => {
     console.log("🔍 Fetching tenant by slug:", slug);
     console.log(
       "📡 GraphQL Endpoint:",
-      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-        "http://localhost:3000/api/graphql",
+      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || GRAPHQL_ENDPOINT,
     );
 
     const { data } = await client.query<TenantResponse>({
@@ -597,9 +605,3 @@ export const createContactMessage = async (
 };
 
 /* END OF MUTATIONS */
-
-/**
- * Export API URL for cases where it's needed (like image URLs)
- */
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";

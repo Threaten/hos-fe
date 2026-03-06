@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Breadcrumbs from "./components/Breadcrumbs";
 import Footer from "./components/Footer";
 import PageTransition from "./components/PageTransition";
+import { TenantProvider } from "../contexts/TenantContext";
 
 const arimo = Arimo({
   variable: "--font-arimo",
@@ -31,12 +32,12 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <TenantProvider>
       <Topbar />
       <Navbar />
       <Breadcrumbs />
       <PageTransition>{children}</PageTransition>
       <Footer />
-    </>
+    </TenantProvider>
   );
 }

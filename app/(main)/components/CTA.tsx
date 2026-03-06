@@ -1,26 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
-import { fetchTenantBySlug, type Tenant } from "@/api/queries";
-import { getCurrentSubdomain } from "@/app/utils/domain";
+import { useTenant } from "@/app/contexts/TenantContext";
 
 const CTA = () => {
-  const [tenant, setTenant] = useState<Tenant | null>(null);
-
-  useEffect(() => {
-    const subdomain = getCurrentSubdomain();
-
-    if (subdomain && subdomain !== "www" && subdomain !== "admin") {
-      fetchTenantBySlug(subdomain)
-        .then((data) => {
-          if (data) setTenant(data);
-        })
-        .catch((err) => {
-          console.error("Error fetching tenant:", err);
-        });
-    }
-  }, []);
+  const { tenant } = useTenant();
 
   const tenantName = tenant ? tenant.name.toLowerCase() : "elementa";
 

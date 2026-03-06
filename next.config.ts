@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "admin.hehehihi.com",
-        pathname: "/media/**",
+        pathname: "/**",
       },
     ],
   },
