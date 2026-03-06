@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function Error({
+export default function TenantError({
   error,
   reset,
 }: {
@@ -10,8 +10,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error for debugging
-    console.error("Global error caught:", error);
+    console.error("Tenant route error caught:", error);
 
     // Skip 404 errors - let not-found.tsx handle them
     if (
@@ -41,7 +40,6 @@ export default function Error({
     window.location.href = targetUrl;
   }, [error]);
 
-  // Show a minimal loading state while redirecting
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
       <div className="text-center">

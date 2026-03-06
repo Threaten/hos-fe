@@ -2,18 +2,16 @@
 
 import { useEffect } from "react";
 
-export default function Error({
+export default function GlobalError({
   error,
-  reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error for debugging
-    console.error("Global error caught:", error);
+    console.error("Global error boundary caught:", error);
 
-    // Skip 404 errors - let not-found.tsx handle them
+    // Skip 404 errors
     if (
       error.message?.includes("404") ||
       error.message?.includes("NEXT_NOT_FOUND")
@@ -41,12 +39,25 @@ export default function Error({
     window.location.href = targetUrl;
   }, [error]);
 
-  // Show a minimal loading state while redirecting
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
-      <div className="text-center">
-        <p className="text-gray-400">Redirecting...</p>
-      </div>
-    </div>
+    <html>
+      <body
+        style={{
+          margin: 0,
+          padding: 0,
+          backgroundColor: "#000",
+          color: "#666",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          fontFamily: "system-ui, -apple-system, sans-serif",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <p>Redirecting...</p>
+        </div>
+      </body>
+    </html>
   );
 }

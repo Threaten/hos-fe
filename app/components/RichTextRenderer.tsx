@@ -9,14 +9,12 @@ type Props = {
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>;
 
+import { API_URL } from "@/api/queries";
+
 export default function RichTextRenderer(props: Props) {
   const { className, data, ...rest } = props;
 
-  const adminBase = (
-    process.env.NEXT_PUBLIC_API_URL ||
-    process.env.ADMIN_API_ENDPOINT ||
-    "http://localhost:3000"
-  ).replace(/\/$/, "");
+  const adminBase = API_URL.replace(/\/$/, "");
 
   // Generic deep transform that preserves structure; we don't strictly type the Payload editor JSON shape here.
   function transform<T>(value: T): T {

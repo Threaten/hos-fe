@@ -1,12 +1,15 @@
 # Frontend Production Deployment Guide
+
 # Issue: Images showing localhost:3000 in production
 
 ## Root Cause
+
 `.env.local` contains localhost URLs and takes precedence over `.env.production`
 
 ## Solution
 
 ### Option 1: Platform Deployment (Vercel, Netlify, etc.)
+
 Set these environment variables in your platform's dashboard:
 
 ```bash
@@ -15,6 +18,7 @@ NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://admin.hehehihi.com/api/graphql
 ```
 
 ### Option 2: VPS Direct Build
+
 Before building for production:
 
 ```bash
@@ -33,6 +37,7 @@ mv .env.local.backup .env.local
 ```
 
 ### Option 3: Manual Environment Override
+
 Build with explicit environment variables:
 
 ```bash
@@ -62,12 +67,14 @@ grep -r "localhost:3000" .next/ || echo "✅ No localhost references found"
 ## Test After Deployment
 
 Visit your deployed site and open browser console. You should see:
+
 - Image URLs like: `https://admin.hehehihi.com/api/media/...`
 - NOT: `http://localhost:3000/api/media/...`
 
 ## Troubleshooting
 
 If images still don't load:
+
 1. Clear Next.js cache: `rm -rf .next`
 2. Rebuild: `npm run build`
 3. Check browser Network tab for actual API calls

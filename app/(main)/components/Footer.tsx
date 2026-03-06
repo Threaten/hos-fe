@@ -19,9 +19,6 @@ const Footer: React.FC = () => {
 
     loadTenants();
   }, []);
-        });
-    }
-  }, []);
 
   const toggleAll = () => setAllExpanded((v) => !v);
 

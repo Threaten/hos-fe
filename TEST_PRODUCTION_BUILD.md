@@ -1,6 +1,7 @@
 # Test Production Build Locally
 
 ## Quick Test
+
 ```bash
 cd fe
 
@@ -30,6 +31,7 @@ This ensures that even if `.env.local` exists, production builds will use the co
 ## Why Only NewMenuModal and Lightbox Failed
 
 These components use native `<img>` tags instead of Next.js `Image` component:
+
 - **NewMenuModal**: Line 103, 163 - uses `<img src={${API_URL}...}>`
 - **ImageLightbox**: Line 153 - uses `<img src={imageSrc}>`
 
@@ -38,14 +40,13 @@ Native `<img>` tags don't go through Next.js image optimization, but the browser
 ## Verify After Deploy
 
 Open browser console on deployed site and check:
+
 ```javascript
 // Should log: https://admin.hehehihi.com
 console.log(window.location.hostname);
 
 // Check image sources in NewMenuModal/Gallery
-document.querySelectorAll('img').forEach(img => 
-  console.log(img.src)
-);
+document.querySelectorAll("img").forEach((img) => console.log(img.src));
 // Should show: https://admin.hehehihi.com/api/media/...
 // NOT: http://localhost:3000/api/media/...
 ```
