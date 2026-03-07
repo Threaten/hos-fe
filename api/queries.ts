@@ -5,6 +5,7 @@ import {
   HttpLink,
   ApolloLink,
 } from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
 
 /**
  * API URL Configuration
@@ -37,10 +38,52 @@ export const httpLink = new HttpLink({
       next: {
         revalidate: 60,
       },
-    }).catch((error) => {
-      console.error("Network fetch error:", error);
-      console.error("Failed endpoint:", uri);
-      // Redirect to error page on network failure
+    })
+      .then(async (response) => {
+        // Debug: Log response details
+        console.log("📥 Response Status:", response.status, response.statusText);
+        console.log("📥 Response Headers:", Object.fromEntries(response.headers.entries()));
+        
+        // Clone response to read body for debugging
+        const clonedResponse = response.clone();
+        
+        // Check for error status codes
+        if (!response.ok) {
+          const errorText = await clonedResponse.text();
+          console.error("❌ ERROR DETAILS:");
+          console.error({
+            status: response.status,
+            statusText: response.statusText,
+            url: response.url,
+            headers: Object.fromEntries(response.headers.entries()),
+            body: errorText,
+          });
+          
+          // Try to parse as JSON for better error display
+          try {
+            const errorJson = JSON.parse(errorText);
+            console.error("📄 Parsed Error:", JSON.stringify(errorJson, null, 2));
+          } catch (e) {
+            console.error("📄 Raw Error Body:", errorText);
+          }
+        }
+        
+        return response;
+      })
+      .catch((error) => {
+        console.error("❌ NETWORK FETCH ERROR:");
+        console.error({
+          message: error.message,
+          name: error.name,
+          stack: error.stack,
+          endpoint: uri,
+          options: {
+            method: options?.method,
+            headers: options?.headers,
+          },
+        });
+        console.error("Failed endpoint:", uri);
+        // Redirect to error page on network failure
       if (typeof window !== "undefined") {
         const pathname = window.location.pathname;
 
@@ -76,8 +119,38 @@ export const httpLink = new HttpLink({
   },
 });
 
+// Error link to catch GraphQL errors
+const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
+  if (graphQLErrors) {
+    console.error("❌ GRAPHQL ERRORS:");
+    graphQLErrors.forEach(({ message, locations, path, extensions }) => {
+      console.error({
+        message,
+        locations,
+        path,
+        extensions,
+        operation: operation.operationName,
+        variables: operation.variables,
+      });
+    });
+  }
+
+  if (networkError) {
+    console.error("❌ NETWORK ERROR:");
+    console.error({
+      message: networkError.message,
+      name: networkError.name,
+      stack: (networkError as any).stack,
+      statusCode: (networkError as any).statusCode,
+      result: (networkError as any).result,
+      operation: operation.operationName,
+      variables: operation.variables,
+    });
+  }
+});
+
 export const client = new ApolloClient({
-  link: httpLink,
+  link: ApolloLink.from([errorLink, httpLink]),
   cache: new InMemoryCache({}),
   defaultOptions: {
     query: {
@@ -409,13 +482,25 @@ const CREATE_CONTACT_MESSAGE = gql`
  */
 export const fetchTenants = async (limit = 100) => {
   try {
+    console.log("🔍 Fetching tenants with limit:", limit);
     const { data } = await client.query<TenantsResponse>({
       query: GET_TENANTS,
       variables: { limit },
     });
+    console.log("✅ Tenants received:", data?.Tenants?.docs?.length || 0);
     return data?.Tenants?.docs || [];
   } catch (error) {
-    console.error("Error fetching tenants:", error);
+    console.error("❌ ERROR fetching tenants:");
+    console.error({
+      error,
+      limit,
+      endpoint: GRAPHQL_ENDPOINT,
+      errorDetails: error instanceof Error ? {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      } : error,
+    });
     return [];
   }
 };
@@ -457,12 +542,23 @@ export const fetchTenantBySlug = async (slug: string) => {
  */
 export const fetchHomeInformation = async () => {
   try {
+    console.log("🔍 Fetching home information");
     const { data } = await client.query<HomeInformationResponse>({
       query: GET_HOME_INFORMATION,
     });
+    console.log("✅ Home information received:", data?.HomeInformation ? "Success" : "No data");
     return data?.HomeInformation;
   } catch (error) {
-    console.error("Error fetching home information:", error);
+    console.error("❌ ERROR fetching home information:");
+    console.error({
+      error,
+      endpoint: GRAPHQL_ENDPOINT,
+      errorDetails: error instanceof Error ? {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      } : error,
+    });
     return null;
   }
 };
@@ -507,13 +603,25 @@ export const fetchGallery = async (branchId?: string) => {
  */
 export const getCustomerByPhone = async (phone: string) => {
   try {
+    console.log("🔍 Fetching customer by phone:", phone);
     const { data } = await client.query<CustomerResponse>({
       query: GET_CUSTOMER,
       variables: { customerPhone: phone },
     });
+    console.log("✅ Customer found:", data?.Customers?.docs?.[0] ? "Yes" : "No");
     return data?.Customers?.docs?.[0] || null;
   } catch (error) {
-    console.error("Error fetching customer:", error);
+    console.error("❌ ERROR fetching customer:");
+    console.error({
+      error,
+      phone,
+      endpoint: GRAPHQL_ENDPOINT,
+      errorDetails: error instanceof Error ? {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      } : error,
+    });
     return null;
   }
 };
@@ -526,6 +634,7 @@ export const getCustomerByPhone = async (phone: string) => {
  */
 export const createCustomer = async (name: string, phone: string) => {
   try {
+    console.log("🔍 Creating customer:", { name, phone });
     const { data } = await client.mutate({
       mutation: CREATE_CUSTOMER,
       variables: {
@@ -533,9 +642,21 @@ export const createCustomer = async (name: string, phone: string) => {
         customerPhone: phone,
       },
     });
+    console.log("✅ Customer created:", (data as any)?.createCustomer);
     return (data as any)?.createCustomer;
   } catch (error) {
-    console.error("Error creating customer:", error);
+    console.error("❌ ERROR creating customer:");
+    console.error({
+      error,
+      name,
+      phone,
+      endpoint: GRAPHQL_ENDPOINT,
+      errorDetails: error instanceof Error ? {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      } : error,
+    });
     throw error;
   }
 };
@@ -557,6 +678,13 @@ export const createReservation = async (
   branchId: string,
 ) => {
   try {
+    console.log("🔍 Creating reservation:", {
+      customerId,
+      reservationDateTime,
+      numberOfGuests,
+      specialRequests,
+      branchId,
+    });
     const { data } = await client.mutate({
       mutation: CREATE_RESERVATION,
       variables: {
@@ -568,9 +696,24 @@ export const createReservation = async (
         status: "Pending",
       },
     });
+    console.log("✅ Reservation created:", data);
     return data as any;
   } catch (error) {
-    console.error("Error creating reservation:", error);
+    console.error("❌ ERROR creating reservation:");
+    console.error({
+      error,
+      customerId,
+      reservationDateTime,
+      numberOfGuests,
+      specialRequests,
+      branchId,
+      endpoint: GRAPHQL_ENDPOINT,
+      errorDetails: error instanceof Error ? {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      } : error,
+    });
     throw error;
   }
 };
@@ -588,6 +731,11 @@ export const createContactMessage = async (
   branchId: string,
 ) => {
   try {
+    console.log("🔍 Creating contact message:", {
+      customerId,
+      message,
+      branchId,
+    });
     const { data } = await client.mutate({
       mutation: CREATE_CONTACT_MESSAGE,
       variables: {
@@ -597,9 +745,22 @@ export const createContactMessage = async (
         status: "Pending",
       },
     });
+    console.log("✅ Contact message created:", data);
     return data as any;
   } catch (error) {
-    console.error("Error creating contact message:", error);
+    console.error("❌ ERROR creating contact message:");
+    console.error({
+      error,
+      customerId,
+      message,
+      branchId,
+      endpoint: GRAPHQL_ENDPOINT,
+      errorDetails: error instanceof Error ? {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      } : error,
+    });
     throw error;
   }
 };

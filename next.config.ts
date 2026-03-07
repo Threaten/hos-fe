@@ -6,7 +6,12 @@ const nextConfig: NextConfig = {
   // Enable support for subdomains in development
   experimental: {
     serverActions: {
-      allowedOrigins: ["localhost:3001", "*.localhost:3001"],
+      allowedOrigins: [
+        "localhost:3001",
+        "*.localhost:3001",
+        "admin.hehehihi.com",
+        "https://admin.hehehihi.com",
+      ],
     },
   },
 
