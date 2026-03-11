@@ -6,6 +6,7 @@ import {
   ApolloLink,
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
+import { CombinedGraphQLErrors } from "@apollo/client/errors";
 
 /**
  * API URL Configuration
@@ -120,10 +121,10 @@ export const httpLink = new HttpLink({
 });
 
 // Error link to catch GraphQL errors
-const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
-  if (graphQLErrors) {
+const errorLink = onError(({ error, operation }) => {
+  if (CombinedGraphQLErrors.is(error)) {
     console.error("❌ GRAPHQL ERRORS:");
-    graphQLErrors.forEach(({ message, locations, path, extensions }) => {
+    error.errors.forEach(({ message, locations, path, extensions }) => {
       console.error({
         message,
         locations,
@@ -133,16 +134,12 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
         variables: operation.variables,
       });
     });
-  }
-
-  if (networkError) {
+  } else {
     console.error("❌ NETWORK ERROR:");
     console.error({
-      message: networkError.message,
-      name: networkError.name,
-      stack: (networkError as any).stack,
-      statusCode: (networkError as any).statusCode,
-      result: (networkError as any).result,
+      message: error.message,
+      name: error.name,
+      stack: (error as any).stack,
       operation: operation.operationName,
       variables: operation.variables,
     });
