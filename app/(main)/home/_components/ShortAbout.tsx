@@ -7,12 +7,47 @@ interface ShortAboutProps {
   tenant?: Tenant | null;
 }
 
+// Fisher-Yates shuffle algorithm
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+const fallbackImages = [
+  "/media/IMG_0054.JPG",
+  "/media/Artboard 11 copy 2@2x.PNG",
+  "/media/IMG_0055.JPG",
+  "/media/Artboard 11 copy 3@2x.PNG",
+  "/media/IMG_0051.JPG",
+  "/media/Artboard 11 copy 4@2x.PNG",
+  "/media/IMG_0053.JPG",
+];
+
 const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
   const title =
     tenant?.shortAboutTitle || "CRAFTING CULINARY EXCELLENCE WITH PASSION";
   const text =
     tenant?.shortAboutText ||
     "At Elementa, we believe dining is an art form. Each dish is thoughtfully prepared with the finest ingredients, blending traditional techniques with innovative flavors. Our intimate atmosphere and dedicated service create unforgettable moments that celebrate the essence of fine cuisine. Every visit tells a story of taste, elegance, and culinary mastery.";
+
+  // Get images to use and randomize them
+  let randomizedImages = fallbackImages;
+  
+  if (tenant?.shortAboutCollages && tenant.shortAboutCollages.length === 7) {
+    const images = tenant.shortAboutCollages
+      .filter((item) => item.image?.url)
+      .map((item) => item.image!.url);
+    
+    if (images.length === 7) {
+      randomizedImages = shuffleArray(images);
+    }
+  } else {
+    randomizedImages = shuffleArray(fallbackImages);
+  }
 
   return (
     <section className="w-full min-h-screen bg-background relative overflow-hidden py-16 px-8">
@@ -21,7 +56,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Top Left - Mushroom Lamp */}
       <div className="absolute top-8 left-8 w-48 h-48 lg:w-60 lg:h-60 animate-float">
         <Image
-          src="/media/IMG_0054.JPG"
+          src={randomizedImages[0]}
           alt="Gourmet appetizer"
           width={240}
           height={240}
@@ -32,7 +67,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Top Center - Floor Lamp */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-80 h-48 lg:w-96 lg:h-56">
         <Image
-          src="/media/Artboard 11 copy 2@2x.PNG"
+          src={randomizedImages[1]}
           alt="Grilled steak"
           width={384}
           height={224}
@@ -43,7 +78,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Top Right - Table Lamp */}
       <div className="absolute top-8 right-8 w-48 h-48 lg:w-60 lg:h-60 animate-float delay-300">
         <Image
-          src="/media/IMG_0055.JPG"
+          src={randomizedImages[2]}
           alt="Fresh pasta"
           width={240}
           height={240}
@@ -54,7 +89,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Middle Left - Decorative Object */}
       <div className="absolute top-1/2 left-4 transform -translate-y-1/2 w-56 h-64 lg:w-72 lg:h-80">
         <Image
-          src="/media/Artboard 11 copy 3@2x.PNG"
+          src={randomizedImages[3]}
           alt="Fresh salad"
           width={288}
           height={320}
@@ -65,7 +100,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Bottom Right - Rattan Lamp */}
       <div className="absolute bottom-8 right-8 w-48 h-64 lg:w-60 lg:h-80">
         <Image
-          src="/media/IMG_0051.JPG"
+          src={randomizedImages[4]}
           alt="Chocolate dessert"
           width={240}
           height={320}
@@ -76,7 +111,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Bottom Left - Modern Chair */}
       <div className="absolute bottom-4 left-8 w-64 h-56 lg:w-80 lg:h-64">
         <Image
-          src="/media/Artboard 11 copy 4@2x.PNG"
+          src={randomizedImages[5]}
           alt="Grilled salmon"
           width={320}
           height={256}
@@ -87,7 +122,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Bottom Center - Decorative Mirror */}
       <div className="absolute bottom-8 left-1/2 transform translate-x-8 w-48 h-48 lg:w-60 lg:h-60">
         <Image
-          src="/media/IMG_0053.JPG"
+          src={randomizedImages[6]}
           alt="Artisan pizza"
           width={240}
           height={240}

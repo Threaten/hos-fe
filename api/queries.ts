@@ -184,6 +184,13 @@ export interface Tenant {
   };
   shortAboutTitle?: string;
   shortAboutText?: string;
+  shortAboutCollages?: Array<{
+    image?: {
+      url: string;
+      filename: string;
+    };
+    id?: string;
+  }>;
   aboutus?: any;
   facebook?: string;
   instagram?: string;
@@ -285,6 +292,13 @@ const GET_TENANTS = gql`
         }
         shortAboutTitle
         shortAboutText
+        shortAboutCollages {
+          image {
+            url
+            filename
+          }
+          id
+        }
         aboutus
         facebook
         instagram
@@ -331,6 +345,13 @@ const GET_TENANT = gql`
         }
         shortAboutTitle
         shortAboutText
+        shortAboutCollages {
+          image {
+            url
+            filename
+          }
+          id
+        }
         aboutus
         facebook
         instagram
