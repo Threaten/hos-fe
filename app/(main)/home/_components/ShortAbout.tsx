@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Tenant } from "@/api/queries";
+import { Tenant, API_URL } from "@/api/queries";
 
 interface ShortAboutProps {
   tenant?: Tenant | null;
@@ -36,12 +36,12 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
 
   // Get images to use and randomize them
   let randomizedImages = fallbackImages;
-  
+
   if (tenant?.shortAboutCollages && tenant.shortAboutCollages.length === 7) {
     const images = tenant.shortAboutCollages
       .filter((item) => item.image?.url)
       .map((item) => item.image!.url);
-    
+
     if (images.length === 7) {
       randomizedImages = shuffleArray(images);
     }
@@ -56,7 +56,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Top Left - Mushroom Lamp */}
       <div className="absolute top-8 left-8 w-48 h-48 lg:w-60 lg:h-60 animate-float">
         <Image
-          src={randomizedImages[0]}
+          src={`${API_URL}${randomizedImages[0]}`}
           alt="Gourmet appetizer"
           width={240}
           height={240}
@@ -67,7 +67,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Top Center - Floor Lamp */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-80 h-48 lg:w-96 lg:h-56">
         <Image
-          src={randomizedImages[1]}
+          src={`${API_URL}${randomizedImages[1]}`}
           alt="Grilled steak"
           width={384}
           height={224}
@@ -78,7 +78,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Top Right - Table Lamp */}
       <div className="absolute top-8 right-8 w-48 h-48 lg:w-60 lg:h-60 animate-float delay-300">
         <Image
-          src={randomizedImages[2]}
+          src={`${API_URL}${randomizedImages[2]}`}
           alt="Fresh pasta"
           width={240}
           height={240}
@@ -89,7 +89,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Middle Left - Decorative Object */}
       <div className="absolute top-1/2 left-4 transform -translate-y-1/2 w-56 h-64 lg:w-72 lg:h-80">
         <Image
-          src={randomizedImages[3]}
+          src={`${API_URL}${randomizedImages[3]}`}
           alt="Fresh salad"
           width={288}
           height={320}
@@ -100,7 +100,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Bottom Right - Rattan Lamp */}
       <div className="absolute bottom-8 right-8 w-48 h-64 lg:w-60 lg:h-80">
         <Image
-          src={randomizedImages[4]}
+          src={`${API_URL}${randomizedImages[4]}`}
           alt="Chocolate dessert"
           width={240}
           height={320}
@@ -122,7 +122,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Bottom Center - Decorative Mirror */}
       <div className="absolute bottom-8 left-1/2 transform translate-x-8 w-48 h-48 lg:w-60 lg:h-60">
         <Image
-          src={randomizedImages[6]}
+          src={`${API_URL}${randomizedImages[6]}`}
           alt="Artisan pizza"
           width={240}
           height={240}
