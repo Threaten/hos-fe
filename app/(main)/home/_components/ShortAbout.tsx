@@ -111,7 +111,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       {/* Bottom Left - Modern Chair */}
       <div className="absolute bottom-4 left-8 w-64 h-56 lg:w-80 lg:h-64">
         <Image
-          src={randomizedImages[5]}
+          src={`${API_URL}${randomizedImages[5]}`}
           alt="Grilled salmon"
           width={320}
           height={256}
