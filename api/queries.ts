@@ -42,12 +42,19 @@ export const httpLink = new HttpLink({
     })
       .then(async (response) => {
         // Debug: Log response details
-        console.log("📥 Response Status:", response.status, response.statusText);
-        console.log("📥 Response Headers:", Object.fromEntries(response.headers.entries()));
-        
+        console.log(
+          "📥 Response Status:",
+          response.status,
+          response.statusText,
+        );
+        console.log(
+          "📥 Response Headers:",
+          Object.fromEntries(response.headers.entries()),
+        );
+
         // Clone response to read body for debugging
         const clonedResponse = response.clone();
-        
+
         // Check for error status codes
         if (!response.ok) {
           const errorText = await clonedResponse.text();
@@ -59,16 +66,19 @@ export const httpLink = new HttpLink({
             headers: Object.fromEntries(response.headers.entries()),
             body: errorText,
           });
-          
+
           // Try to parse as JSON for better error display
           try {
             const errorJson = JSON.parse(errorText);
-            console.error("📄 Parsed Error:", JSON.stringify(errorJson, null, 2));
+            console.error(
+              "📄 Parsed Error:",
+              JSON.stringify(errorJson, null, 2),
+            );
           } catch (e) {
             console.error("📄 Raw Error Body:", errorText);
           }
         }
-        
+
         return response;
       })
       .catch((error) => {
@@ -85,38 +95,38 @@ export const httpLink = new HttpLink({
         });
         console.error("Failed endpoint:", uri);
         // Redirect to error page on network failure
-      if (typeof window !== "undefined") {
-        const pathname = window.location.pathname;
+        if (typeof window !== "undefined") {
+          const pathname = window.location.pathname;
 
-        // Prevent redirect loop - don't redirect if already on error page
-        if (pathname.includes("somethingwentwrong")) {
-          throw error;
+          // Prevent redirect loop - don't redirect if already on error page
+          if (pathname.includes("somethingwentwrong")) {
+            throw error;
+          }
+
+          // Redirect to main domain's error page
+          const hostname = window.location.hostname;
+          const port = window.location.port;
+          const protocol = window.location.protocol;
+
+          // Extract base domain - keep at least 2 parts (domain.tld)
+          const parts = hostname.split(".");
+          let baseDomain;
+
+          if (hostname.includes("localhost")) {
+            // Keep localhost as-is
+            baseDomain = hostname;
+          } else if (parts.length > 2) {
+            // Has subdomain - remove it (e.g., red-bistro.hehehihi.com → hehehihi.com)
+            baseDomain = parts.slice(-2).join(".");
+          } else {
+            // Already base domain (e.g., hehehihi.com)
+            baseDomain = hostname;
+          }
+
+          window.location.href = `${protocol}//${baseDomain}${port ? `:${port}` : ""}/somethingwentwrong`;
         }
-
-        // Redirect to main domain's error page
-        const hostname = window.location.hostname;
-        const port = window.location.port;
-        const protocol = window.location.protocol;
-
-        // Extract base domain - keep at least 2 parts (domain.tld)
-        const parts = hostname.split(".");
-        let baseDomain;
-
-        if (hostname.includes("localhost")) {
-          // Keep localhost as-is
-          baseDomain = hostname;
-        } else if (parts.length > 2) {
-          // Has subdomain - remove it (e.g., red-bistro.hehehihi.com → hehehihi.com)
-          baseDomain = parts.slice(-2).join(".");
-        } else {
-          // Already base domain (e.g., hehehihi.com)
-          baseDomain = hostname;
-        }
-
-        window.location.href = `${protocol}//${baseDomain}${port ? `:${port}` : ""}/somethingwentwrong`;
-      }
-      throw error;
-    });
+        throw error;
+      });
   },
 });
 
@@ -191,6 +201,10 @@ export interface Tenant {
     };
     id?: string;
   }>;
+  aboutusHero?: {
+    url: string;
+    filename: string;
+  };
   aboutus?: any;
   facebook?: string;
   instagram?: string;
@@ -351,6 +365,10 @@ const GET_TENANT = gql`
             filename
           }
           id
+        }
+        aboutusHero {
+          url
+          filename
         }
         aboutus
         facebook
@@ -513,11 +531,14 @@ export const fetchTenants = async (limit = 100) => {
       error,
       limit,
       endpoint: GRAPHQL_ENDPOINT,
-      errorDetails: error instanceof Error ? {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      } : error,
+      errorDetails:
+        error instanceof Error
+          ? {
+              message: error.message,
+              name: error.name,
+              stack: error.stack,
+            }
+          : error,
     });
     return [];
   }
@@ -564,18 +585,24 @@ export const fetchHomeInformation = async () => {
     const { data } = await client.query<HomeInformationResponse>({
       query: GET_HOME_INFORMATION,
     });
-    console.log("✅ Home information received:", data?.HomeInformation ? "Success" : "No data");
+    console.log(
+      "✅ Home information received:",
+      data?.HomeInformation ? "Success" : "No data",
+    );
     return data?.HomeInformation;
   } catch (error) {
     console.error("❌ ERROR fetching home information:");
     console.error({
       error,
       endpoint: GRAPHQL_ENDPOINT,
-      errorDetails: error instanceof Error ? {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      } : error,
+      errorDetails:
+        error instanceof Error
+          ? {
+              message: error.message,
+              name: error.name,
+              stack: error.stack,
+            }
+          : error,
     });
     return null;
   }
@@ -626,7 +653,10 @@ export const getCustomerByPhone = async (phone: string) => {
       query: GET_CUSTOMER,
       variables: { customerPhone: phone },
     });
-    console.log("✅ Customer found:", data?.Customers?.docs?.[0] ? "Yes" : "No");
+    console.log(
+      "✅ Customer found:",
+      data?.Customers?.docs?.[0] ? "Yes" : "No",
+    );
     return data?.Customers?.docs?.[0] || null;
   } catch (error) {
     console.error("❌ ERROR fetching customer:");
@@ -634,11 +664,14 @@ export const getCustomerByPhone = async (phone: string) => {
       error,
       phone,
       endpoint: GRAPHQL_ENDPOINT,
-      errorDetails: error instanceof Error ? {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      } : error,
+      errorDetails:
+        error instanceof Error
+          ? {
+              message: error.message,
+              name: error.name,
+              stack: error.stack,
+            }
+          : error,
     });
     return null;
   }
@@ -669,11 +702,14 @@ export const createCustomer = async (name: string, phone: string) => {
       name,
       phone,
       endpoint: GRAPHQL_ENDPOINT,
-      errorDetails: error instanceof Error ? {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      } : error,
+      errorDetails:
+        error instanceof Error
+          ? {
+              message: error.message,
+              name: error.name,
+              stack: error.stack,
+            }
+          : error,
     });
     throw error;
   }
@@ -726,11 +762,14 @@ export const createReservation = async (
       specialRequests,
       branchId,
       endpoint: GRAPHQL_ENDPOINT,
-      errorDetails: error instanceof Error ? {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      } : error,
+      errorDetails:
+        error instanceof Error
+          ? {
+              message: error.message,
+              name: error.name,
+              stack: error.stack,
+            }
+          : error,
     });
     throw error;
   }
@@ -773,11 +812,14 @@ export const createContactMessage = async (
       message,
       branchId,
       endpoint: GRAPHQL_ENDPOINT,
-      errorDetails: error instanceof Error ? {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      } : error,
+      errorDetails:
+        error instanceof Error
+          ? {
+              message: error.message,
+              name: error.name,
+              stack: error.stack,
+            }
+          : error,
     });
     throw error;
   }

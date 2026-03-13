@@ -5,6 +5,7 @@ import Image from "next/image";
 import CTA from "../components/CTA";
 import RichTextRenderer from "../../components/RichTextRenderer";
 import { useTenant } from "@/app/contexts/TenantContext";
+import { Tenant, API_URL } from "@/api/queries";
 
 export default function AboutPage() {
   const { tenant } = useTenant();
@@ -20,7 +21,11 @@ export default function AboutPage() {
       >
         <div className="absolute inset-0">
           <Image
-            src="/media/Artboard 11@2x.PNG"
+            src={
+              tenant?.aboutusHero?.url
+                ? `${API_URL}${tenant.aboutusHero.url}`
+                : "/media/IMG_0050.JPG"
+            }
             alt="Restaurant interior"
             fill
             className="object-cover"
