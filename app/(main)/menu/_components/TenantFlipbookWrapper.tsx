@@ -20,5 +20,5 @@ export default function TenantFlipbookWrapper({
   menuUrl,
   tenantName,
 }: TenantFlipbookWrapperProps) {
-  return <TenantFlipbook menuUrl={menuUrl} tenantName={tenantName} />;
+  return <TenantFlipbook menuUrl={`${menuUrl}`} tenantName={tenantName} />;
 }

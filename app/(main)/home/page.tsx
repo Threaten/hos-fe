@@ -72,11 +72,7 @@ export default function Home() {
 
   // Transform gallery items to match Gallery component's expected format
   const transformedImages = galleryImages.map((item) => ({
-    src: item.image?.filename
-      ? `${API_URL}/media/${item.image.filename}`
-      : item.image?.url
-        ? `${API_URL}${item.image.url}`
-        : "",
+    src: item.image?.url ? `${API_URL}${item.image.url}` : "",
     alt: item.caption || item.image?.alt || "Gallery image",
     branch: item.branch?.name || "",
     caption: item.caption || "",

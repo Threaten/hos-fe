@@ -105,7 +105,7 @@ export default function TenantPage() {
   // Transform gallery items to match Gallery component's expected format
   const transformedImages = galleryImages.map((item) => ({
     src: item.image?.filename
-      ? `${API_URL}/media/${item.image.filename}`
+      ? `${API_URL}/api/media/file/${item.image.filename}`
       : item.image?.url
         ? `${API_URL}${item.image.url}`
         : "",
@@ -176,7 +176,7 @@ export default function TenantPage() {
       }
       // Use the filename directly instead of the url field
       const menuUrl = tenant.menu.filename
-        ? `${API_URL}/media/${tenant.menu.filename}`
+        ? `${API_URL}/api/media/file/${tenant.menu.filename}`
         : `${API_URL}${tenant.menu.url}`;
 
       return (
@@ -190,28 +190,10 @@ export default function TenantPage() {
       return <GalleryPage />;
 
     case "contact":
-      return <ContactForm currentTenant={tenant.slug} />;
+      return <ContactForm currentTenant={tenant.domain} />;
 
     case "reservation":
-      return <ReservationForm currentTenant={tenant.slug} />;
-
-    case "somethingwentwrong":
-      return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-            Something went wrong
-          </h1>
-          <p className="text-gray-400 text-lg mb-8 text-center max-w-md">
-            We encountered an unexpected error. Please try again later.
-          </p>
-          <button
-            onClick={() => (window.location.href = `/${tenant.slug}`)}
-            className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 border border-gray-700"
-          >
-            Back to Home
-          </button>
-        </div>
-      );
+      return <ReservationForm currentTenant={tenant.domain} />;
 
     default:
       notFound();

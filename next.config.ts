@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
   },
 
   images: {
-    domains: ["images.unsplash.com"],
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: "http",
@@ -26,10 +26,17 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "**.unsplash.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "admin.hehehihi.com",
         pathname: "/**",
       },
     ],
+    // Allow Next.js image optimization to fetch from localhost (private IP) in development
+    unoptimized: process.env.NODE_ENV === "development",
   },
 };
 

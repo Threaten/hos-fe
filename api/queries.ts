@@ -94,37 +94,6 @@ export const httpLink = new HttpLink({
           },
         });
         console.error("Failed endpoint:", uri);
-        // Redirect to error page on network failure
-        if (typeof window !== "undefined") {
-          const pathname = window.location.pathname;
-
-          // Prevent redirect loop - don't redirect if already on error page
-          if (pathname.includes("somethingwentwrong")) {
-            throw error;
-          }
-
-          // Redirect to main domain's error page
-          const hostname = window.location.hostname;
-          const port = window.location.port;
-          const protocol = window.location.protocol;
-
-          // Extract base domain - keep at least 2 parts (domain.tld)
-          const parts = hostname.split(".");
-          let baseDomain;
-
-          if (hostname.includes("localhost")) {
-            // Keep localhost as-is
-            baseDomain = hostname;
-          } else if (parts.length > 2) {
-            // Has subdomain - remove it (e.g., red-bistro.hehehihi.com → hehehihi.com)
-            baseDomain = parts.slice(-2).join(".");
-          } else {
-            // Already base domain (e.g., hehehihi.com)
-            baseDomain = hostname;
-          }
-
-          window.location.href = `${protocol}//${baseDomain}${port ? `:${port}` : ""}/somethingwentwrong`;
-        }
         throw error;
       });
   },
@@ -173,25 +142,17 @@ export const client = new ApolloClient({
 export interface Tenant {
   id: string;
   name: string;
-  slug: string;
   domain: string;
-  menu?: {
-    url: string;
-    filename: string;
-  };
-  logo?: {
-    url: string;
-  };
-  address?: string;
-  phone?: string;
-  email?: string;
+  heroImagesList?: Array<{
+    image?: {
+      url: string;
+      filename: string;
+    };
+    id?: string;
+  }>;
   heroTitle?: string;
   heroSubtitle?: string;
   heroDescription?: string;
-  heroImage?: {
-    url: string;
-    filename: string;
-  };
   shortAboutTitle?: string;
   shortAboutText?: string;
   shortAboutCollages?: Array<{
@@ -206,10 +167,10 @@ export interface Tenant {
     filename: string;
   };
   aboutus?: any;
-  facebook?: string;
-  instagram?: string;
-  tiktok?: string;
-  youtube?: string;
+  menu?: {
+    url: string;
+    filename: string;
+  };
   newMenu?: Array<{
     src?: {
       url: string;
@@ -217,6 +178,16 @@ export interface Tenant {
     };
     id?: string;
   }>;
+  logo?: {
+    url: string;
+  };
+  address?: string;
+  phone?: string;
+  email?: string;
+  facebook?: string;
+  instagram?: string;
+  tiktok?: string;
+  youtube?: string;
 }
 
 export interface HomeInformation {
@@ -236,7 +207,6 @@ export interface GalleryItem {
   branch?: {
     id: string;
     name: string;
-    slug: string;
   };
 }
 
@@ -285,25 +255,17 @@ const GET_TENANTS = gql`
       docs {
         id
         name
-        slug
         domain
-        menu {
-          url
-          filename
+        heroImagesList {
+          image {
+            url
+            filename
+          }
+          id
         }
-        logo {
-          url
-        }
-        address
-        phone
-        email
         heroTitle
         heroSubtitle
         heroDescription
-        heroImage {
-          url
-          filename
-        }
         shortAboutTitle
         shortAboutText
         shortAboutCollages {
@@ -314,10 +276,10 @@ const GET_TENANTS = gql`
           id
         }
         aboutus
-        facebook
-        instagram
-        tiktok
-        youtube
+        menu {
+          url
+          filename
+        }
         newMenu {
           src {
             url
@@ -325,6 +287,16 @@ const GET_TENANTS = gql`
           }
           id
         }
+        logo {
+          url
+        }
+        address
+        phone
+        email
+        facebook
+        instagram
+        tiktok
+        youtube
       }
       totalDocs
       limit
@@ -333,30 +305,22 @@ const GET_TENANTS = gql`
 `;
 
 const GET_TENANT = gql`
-  query getTenant($slug: String) {
-    Tenants(where: { slug: { equals: $slug } }) {
+  query getTenant($domain: String) {
+    Tenants(where: { domain: { equals: $domain } }) {
       docs {
         id
         name
-        slug
         domain
-        menu {
-          url
-          filename
+        heroImagesList {
+          image {
+            url
+            filename
+          }
+          id
         }
-        logo {
-          url
-        }
-        address
-        phone
-        email
         heroTitle
         heroSubtitle
         heroDescription
-        heroImage {
-          url
-          filename
-        }
         shortAboutTitle
         shortAboutText
         shortAboutCollages {
@@ -371,10 +335,10 @@ const GET_TENANT = gql`
           filename
         }
         aboutus
-        facebook
-        instagram
-        tiktok
-        youtube
+        menu {
+          url
+          filename
+        }
         newMenu {
           src {
             url
@@ -382,6 +346,16 @@ const GET_TENANT = gql`
           }
           id
         }
+        logo {
+          url
+        }
+        address
+        phone
+        email
+        facebook
+        instagram
+        tiktok
+        youtube
       }
     }
   }
@@ -414,7 +388,6 @@ const GET_GALLERY = gql`
         branch {
           id
           name
-          slug
         }
       }
       totalDocs
@@ -559,7 +532,7 @@ export const fetchTenantBySlug = async (slug: string) => {
 
     const { data } = await client.query<TenantResponse>({
       query: GET_TENANT,
-      variables: { slug },
+      variables: { domain: slug },
     });
 
     console.log(

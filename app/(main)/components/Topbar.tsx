@@ -76,7 +76,7 @@ export default function Topbar() {
                   <div
                     key={tenant.id}
                     onClick={() => {
-                      window.location.href = getTenantUrl(tenant.slug);
+                      window.location.href = getTenantUrl(tenant.domain);
                     }}
                     className="border border-gray-200 rounded-lg p-4 hover:border-gray-400 hover:bg-gray-50 transition-all cursor-pointer"
                   >
@@ -128,7 +128,7 @@ export default function Topbar() {
                 <div
                   key={tenant.id}
                   onClick={() => {
-                    window.location.href = getTenantUrl(tenant.slug);
+                    window.location.href = getTenantUrl(tenant.domain);
                   }}
                   className={`block hover:bg-gray-100 transition-colors rounded p-2 cursor-pointer ${
                     index < tenants.length - 1

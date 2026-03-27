@@ -234,6 +234,9 @@ export default function Welcome() {
         <div className="w-full max-w-md">
           {/* Center content */}
           <div className="text-center space-y-8">
+            {/* Title */}
+            <h1 className="italic text-4xl tracking-tight text-black">house of senses</h1>
+
             {/* Dropdown */}
             <div className="flex justify-center">
               <div ref={dropdownRef} className="relative w-full max-w-xs">
@@ -272,7 +275,7 @@ export default function Welcome() {
                           setIsDropdownOpen(false);
                           // Redirect to tenant subdomain
 
-                          window.location.href = getTenantUrl(branch.slug);
+                          window.location.href = getTenantUrl(branch.domain);
                         }}
                         className={`w-full px-6 py-3 text-left italic text-black hover:bg-gray-100 transition-colors flex items-center gap-3 ${
                           index !== branches.length - 1

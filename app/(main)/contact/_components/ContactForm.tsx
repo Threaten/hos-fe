@@ -65,7 +65,9 @@ const ContactForm = ({
 
             // Auto-select branch based on currentTenant (subdomain) or initialBranch
             if (currentTenant) {
-              const tenant = data.find((t: Tenant) => t.slug === currentTenant);
+              const tenant = data.find(
+                (t: Tenant) => t.domain === currentTenant,
+              );
               if (tenant) {
                 setSelectedBranch(tenant.name);
               }

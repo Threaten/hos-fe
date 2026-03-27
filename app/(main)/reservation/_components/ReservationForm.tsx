@@ -70,17 +70,17 @@ const ReservationForm = ({
             console.log("ReservationForm - currentTenant:", currentTenant);
             console.log(
               "ReservationForm - available tenants:",
-              data.map((t) => ({ slug: t.slug, name: t.name })),
+              data.map((t) => ({ domain: t.domain, name: t.name })),
             );
 
             // Auto-select branch based on currentTenant (subdomain) or initialBranch
             if (currentTenant) {
               // Try exact match first, then case-insensitive match
-              let tenant = data.find((t: Tenant) => t.slug === currentTenant);
+              let tenant = data.find((t: Tenant) => t.domain === currentTenant);
               if (!tenant) {
                 tenant = data.find(
                   (t: Tenant) =>
-                    t.slug?.toLowerCase() === currentTenant.toLowerCase(),
+                    t.domain?.toLowerCase() === currentTenant.toLowerCase(),
                 );
               }
               console.log("ReservationForm - matched tenant:", tenant);

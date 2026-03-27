@@ -218,6 +218,15 @@ h6,
   }
 }
 
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 .button-ripple {
   position: relative;
   overflow: hidden;

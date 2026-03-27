@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import ImageLightbox from "../../components/ImageLightbox";
 
 interface GalleryImage {
@@ -57,12 +56,11 @@ const Gallery = ({ images = [] }: GalleryProps) => {
               onClick={() => handleImageClick(index)}
               className="relative h-[300px] md:h-[400px] overflow-hidden group rounded-lg cursor-pointer"
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={image.src}
-                alt={image.alt}
-                fill
-                unoptimized
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                alt={image.src}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
               {/* Branch Tag - Always Visible */}
