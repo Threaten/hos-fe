@@ -9,8 +9,8 @@ All errors (except 404s) redirect to `/somethingwentwrong` on the main domain.
 - **Error on `red-bistro.localhost:3001/menu`**  
   → Redirects to `localhost:3001/somethingwentwrong`
 
-- **Error on `blue-bistro.hehehihi.com/gallery`**  
-  → Redirects to `hehehihi.com/somethingwentwrong`
+- **Error on `blue-bistro.houseofsenses.vn/gallery`**
+  → Redirects to `houseofsenses.vn/somethingwentwrong`
 
 - **404 errors**  
   → Show the 404 page (not redirected)

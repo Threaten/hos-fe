@@ -52,7 +52,7 @@ export default function Navbar() {
                 aria-label={tenant ? `${tenant.name} Home` : "Elementa Home"}
               >
                 <h1 className="text-xl lg:text-2xl font-semibold tracking-wider">
-                  {tenant ? tenant.name.toLowerCase() : "elementa"}
+                  {tenant ? tenant.name.toLowerCase() : "houseofsenses.vn"}
                 </h1>
               </Link>
             </div>

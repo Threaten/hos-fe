@@ -183,13 +183,13 @@ const Footer: React.FC = () => {
         style={{ backgroundColor: "rgb(97,89,55)" }}
       >
         <h1 className="text-[4rem] sm:text-[5rem] md:text-[6rem] lg:text-[8rem] xl:text-[10rem] font-bold bg-linear-to-b from-gray-100 to-gray-300 bg-clip-text text-transparent tracking-tight leading-tight text-center break-words overflow-visible">
-          {currentTenant ? currentTenant.name.toLowerCase() : "elementa"}
+          {currentTenant ? currentTenant.name.toLowerCase() : "houseofsenses.vn"}
         </h1>
       </div>
 
       {/* Bottom Section - Copyright and Attribution */}
       <div className="w-full border-t h-12 mt-6 mb-6 text-xs text-[rgba(172,163,133,0.89)] text-bold border-[rgb(124,118,89)] border-b text-center items-center justify-center flex">
-        Copyright © 2024 hehehihi. All rights reserved.
+        Copyright © 2024 houseofsenses.vn. All rights reserved.
       </div>
     </footer>
   );

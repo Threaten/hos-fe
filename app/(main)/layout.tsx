@@ -22,8 +22,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ELEMENTA",
-  description: "Experience exceptional fine dining at ELEMENTA",
+  title: "houseofsenses.vn",
+  description: "Experience exceptional fine dining at houseofsenses.vn",
 };
 
 export default function MainLayout({

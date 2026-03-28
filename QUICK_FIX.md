@@ -2,7 +2,7 @@
 
 ## Problem
 
-Your frontend shows default data (like "ELEMENTA") instead of your actual backend data when deployed.
+Your frontend shows default data (like "houseofsenses.vn") instead of your actual backend data when deployed.
 
 ## Root Cause
 
@@ -188,8 +188,8 @@ NEXT_PUBLIC_GRAPHQL_ENDPOINT=http://localhost:3000/api/graphql
 ### Production (Deployment Platform)
 
 ```bash
-NEXT_PUBLIC_API_URL=https://elementa-backend.railway.app
-NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://elementa-backend.railway.app/api/graphql
+NEXT_PUBLIC_API_URL=https://admin.houseofsenses.vn
+NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://admin.houseofsenses.vn/api/graphql
 ```
 
 ---

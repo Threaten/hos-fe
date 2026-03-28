@@ -10,7 +10,7 @@ import { Tenant, API_URL } from "@/api/queries";
 export default function AboutPage() {
   const { tenant } = useTenant();
 
-  const tenantName = tenant ? tenant.name.toLowerCase() : "elementa";
+  const tenantName = tenant ? tenant.name.toLowerCase() : "houseofsenses.vn";
 
   return (
     <div className="min-h-screen bg-background">

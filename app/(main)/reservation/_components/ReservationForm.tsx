@@ -377,7 +377,7 @@ const ReservationForm = ({
                 return (
                   <>
                     <p className="font-medium">
-                      {tenant?.name.toLowerCase() || "elementa"}
+                      {tenant?.name.toLowerCase() || "houseofsenses.vn"}
                     </p>
                     <a
                       href={`tel:${tenant?.phone}`}

@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
       allowedOrigins: [
         "localhost:3001",
         "*.localhost:3001",
-        "admin.hehehihi.com",
-        "https://admin.hehehihi.com",
+        "admin.houseofsenses.vn",
+        "https://admin.houseofsenses.vn",
       ],
     },
   },
@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "admin.hehehihi.com",
+        hostname: "admin.houseofsenses.vn",
         pathname: "/**",
       },
     ],

@@ -14,8 +14,8 @@ import { CombinedGraphQLErrors } from "@apollo/client/errors";
  */
 export const API_URL =
   process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_API_URL || "https://admin.hehehihi.com"
-    : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    ? process.env.NEXT_PUBLIC_API_URL || "https://admin.houseofsenses.vn"
+    : process.env.NEXT_PUBLIC_API_URL || "http://admin.houseofsenses.vn";
 
 export const GRAPHQL_ENDPOINT = `${API_URL}/api/graphql`;
 

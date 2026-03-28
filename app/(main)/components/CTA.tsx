@@ -7,7 +7,7 @@ import { useTenant } from "@/app/contexts/TenantContext";
 const CTA = () => {
   const { tenant } = useTenant();
 
-  const tenantName = tenant ? tenant.name.toLowerCase() : "elementa";
+  const tenantName = tenant ? tenant.name.toLowerCase() : "houseofsenses.vn";
 
   return (
     <section

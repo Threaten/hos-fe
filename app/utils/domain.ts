@@ -8,14 +8,14 @@
  *
  * Examples:
  * - localhost:3001 → localhost:3001
- * - red-bistro.hehehihi.com → hehehihi.com
- * - hehehihi.com → hehehihi.com
+ * - red-bistro.houseofsenses.vn → houseofsenses.vn
+ * - houseofsenses.vn → houseofsenses.vn
  *
  * @returns The base domain string
  */
 export function getBaseDomain(): string {
   if (typeof window === "undefined") {
-    return "hehehihi.com"; // Default for SSR
+    return "houseofsenses.vn"; // Default for SSR
   }
 
   const hostname = window.location.hostname;
@@ -39,11 +39,11 @@ export function getBaseDomain(): string {
  * Preserves protocol (http/https) and handles both dev and production
  *
  * @param slug - The tenant slug (e.g., "red-bistro")
- * @returns Complete URL (e.g., "http://red-bistro.hehehihi.com")
+ * @returns Complete URL (e.g., "http://red-bistro.houseofsenses.vn")
  */
 export function getTenantUrl(slug: string): string {
   if (typeof window === "undefined") {
-    return `https://${slug}.hehehihi.com`; // Default for SSR
+    return `https://${slug}.houseofsenses.vn`; // Default for SSR
   }
 
   const protocol = window.location.protocol;
@@ -56,8 +56,8 @@ export function getTenantUrl(slug: string): string {
  * Get the current subdomain (tenant slug) from the hostname
  *
  * Examples:
- * - red-bistro.hehehihi.com → "red-bistro"
- * - hehehihi.com → null
+ * - red-bistro.houseofsenses.vn → "red-bistro"
+ * - houseofsenses.vn → null
  * - localhost:3001 → null
  *
  * @returns The subdomain string or null if no subdomain

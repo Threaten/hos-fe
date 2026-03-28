@@ -6,8 +6,8 @@ export function middleware(request: NextRequest) {
 
   // Check if it's a subdomain
   // e.g., gold.localhost:3001 has a subdomain "gold"
-  // e.g., red-bistro.hehehihi.com has a subdomain "red-bistro"
-  // but localhost:3001 or hehehihi.com do not
+  // e.g., red-bistro.houseofsenses.vn has a subdomain "red-bistro"
+  // but localhost:3001 or houseofsenses.vn do not
   const parts = hostname.split(".");
 
   // Skip if it's the admin subdomain (backend)
@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
   if (hostname.includes("localhost") && parts.length > 1) {
     subdomain = parts[0];
   }
-  // Production: tenant.hehehihi.com (more than 2 parts means subdomain exists)
+  // Production: tenant.houseofsenses.vn (more than 2 parts means subdomain exists)
   else if (parts.length > 2) {
     subdomain = parts[0];
   }
