@@ -194,6 +194,9 @@ export interface HomeInformation {
   CatchPhrase1: string;
   CatchPhrase2: string;
   quote_s_: Array<{ quote: string; id: string }>;
+  BackgroundImage_forMobile_?: {
+    url: string;
+  } | null;
 }
 
 export interface GalleryItem {
@@ -369,6 +372,9 @@ const GET_HOME_INFORMATION = gql`
       quote_s_ {
         quote
         id
+      }
+      BackgroundImage_forMobile_ {
+        url
       }
     }
   }

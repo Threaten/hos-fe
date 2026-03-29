@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import SkeletonImage from "@/app/components/SkeletonImage";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { API_URL } from "@/api/queries";
 
@@ -99,7 +100,7 @@ export default function NewMenuModal({
           {/* Image Container */}
           <div className="relative w-full h-[50vh] md:h-[60vh] bg-gray-100 flex items-center justify-center">
             {images[currentIndex]?.src?.url && (
-              <Image
+              <SkeletonImage
                 src={`${API_URL}${images[currentIndex].src.url}`}
                 alt={`Menu page ${currentIndex + 1}`}
                 fill
@@ -130,14 +131,6 @@ export default function NewMenuModal({
             </>
           )}
 
-          {/* Progress Indicator */}
-          {images.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/60 px-4 py-2 rounded-full">
-              <span className="text-white text-sm font-medium">
-                {currentIndex + 1} / {images.length}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Thumbnail Navigation */}
@@ -155,7 +148,7 @@ export default function NewMenuModal({
                   }`}
                 >
                   {image.src?.url && (
-                    <Image
+                    <SkeletonImage
                       src={`${API_URL}${image.src.url}`}
                       alt={`Thumbnail ${index + 1}`}
                       fill
@@ -167,6 +160,15 @@ export default function NewMenuModal({
                 </button>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Progress Indicator */}
+        {images.length > 1 && (
+          <div className="flex justify-center py-2 bg-gray-50">
+            <span className="text-gray-700 text-sm font-medium">
+              {currentIndex + 1} / {images.length}
+            </span>
           </div>
         )}
 

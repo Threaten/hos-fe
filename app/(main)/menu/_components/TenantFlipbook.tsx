@@ -188,7 +188,9 @@ export default function TenantFlipbook({
             </button>
 
             <span className="text-gray-900 font-medium">
-              Page {currentPage + 1} of {numPages}
+              {isMobile
+                ? `Page ${currentPage + 1} of ${numPages}`
+                : `Page ${currentPage + 1}-${currentPage + 2} of ${numPages}`}
             </span>
 
             <button

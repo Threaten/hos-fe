@@ -80,6 +80,17 @@ export default function Home() {
 
   return (
     <div className="">
+      {/* Preload hero images into <head> so they fetch even while the modal is visible */}
+      {tenant?.heroImagesList?.filter((item) => item.image?.url).map((item, idx) => (
+        <link
+          key={`hero-preload-${idx}`}
+          rel="preload"
+          as="image"
+          href={`${API_URL}${item.image!.url}`}
+          // @ts-expect-error fetchpriority is a valid attribute
+          fetchpriority="high"
+        />
+      ))}
       <Hero tenant={tenant} />
       <ShortAbout tenant={tenant} />
       <h4 className="w-full border-t-2 border-b-2 font-extrabold text-3xl h-16 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex animate-slide-in-up">

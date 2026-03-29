@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import SkeletonImage from "@/app/components/SkeletonImage";
 import CTA from "../components/CTA";
 import RichTextRenderer from "../../components/RichTextRenderer";
 import { useTenant } from "@/app/contexts/TenantContext";
@@ -20,7 +20,7 @@ export default function AboutPage() {
         style={{ height: "calc(100vh - 80px)" }}
       >
         <div className="absolute inset-0">
-          <Image
+          <SkeletonImage
             src={
               tenant?.aboutusHero?.url
                 ? `${API_URL}${tenant.aboutusHero.url}`
@@ -72,7 +72,7 @@ export default function AboutPage() {
                 </p>
               </div>
               <div className="relative h-[500px]">
-                <Image
+                <SkeletonImage
                   src="/media/IMG_0050.JPG"
                   alt="Chef preparing food"
                   fill

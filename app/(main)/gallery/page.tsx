@@ -10,6 +10,7 @@ const Gallery = () => {
   const [loading, setLoading] = useState(true);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loadedSet, setLoadedSet] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const loadGallery = async () => {
@@ -59,11 +60,15 @@ const Gallery = () => {
                 onClick={() => handleImageClick(index)}
                 className="relative aspect-square overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group"
               >
+                {!loadedSet.has(item.id) && (
+                  <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />
+                )}
                 {item.image && (
                   <img
                     src={`${API_URL}${item.image.url}`}
                     alt={item.caption || item.image.alt || "Gallery image"}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    onLoad={() => setLoadedSet((prev) => new Set(prev).add(item.id))}
                   />
                 )}
                 {/* Branch Tag - Always Visible */}

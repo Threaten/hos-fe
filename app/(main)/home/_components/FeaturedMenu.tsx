@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import SkeletonImage from "@/app/components/SkeletonImage";
 
 interface FeaturedItem {
   id: number;
@@ -63,7 +64,7 @@ const FeaturedMenu: React.FC = () => {
             >
               {/* Image Container */}
               <div className="relative w-full h-64 overflow-hidden bg-white p-4 shadow-md group-hover:shadow-xl transition-shadow duration-300">
-                <Image
+                <SkeletonImage
                   src={item.image}
                   alt={item.name}
                   fill

@@ -17,7 +17,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "houseofsenses.vn",
-  description: "Experience exceptional fine dining at houseofsenses.vn",
+  description: "Experience exceptional dining at houseofsenses.vn",
 };
 
 export default function RootLayout({

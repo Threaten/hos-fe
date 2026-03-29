@@ -17,6 +17,7 @@ interface GalleryProps {
 const Gallery = ({ images = [] }: GalleryProps) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loadedSet, setLoadedSet] = useState<Set<number>>(new Set());
 
   if (images.length === 0) {
     return null;
@@ -56,11 +57,15 @@ const Gallery = ({ images = [] }: GalleryProps) => {
               onClick={() => handleImageClick(index)}
               className="relative h-[300px] md:h-[400px] overflow-hidden group rounded-lg cursor-pointer"
             >
+              {!loadedSet.has(index) && (
+                <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />
+              )}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={image.src}
                 alt={image.src}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                onLoad={() => setLoadedSet((prev) => new Set(prev).add(index))}
               />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
               {/* Branch Tag - Always Visible */}

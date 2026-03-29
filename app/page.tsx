@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import SkeletonImage from "@/app/components/SkeletonImage";
 import {
   fetchTenants,
   fetchHomeInformation,
@@ -154,8 +155,10 @@ export default function Welcome() {
     <div className="min-h-screen bg-[#E8E4D9] flex flex-col relative">
       {/* Mobile background image */}
       <div className="lg:hidden absolute inset-0 z-0">
-        <Image
-          src="/media/Asset 6.png"
+        <SkeletonImage
+          src={homeInfo?.BackgroundImage_forMobile_?.url
+            ? `${API_URL}${homeInfo.BackgroundImage_forMobile_.url}`
+            : "/media/Asset 6.png"}
           alt="Background"
           fill
           className="object-cover opacity-20"
@@ -208,7 +211,7 @@ export default function Welcome() {
 
       {/* Upper right image */}
       <div className="hidden lg:block absolute top-16 right-8 w-[350px] h-[350px]">
-        <Image
+        <SkeletonImage
           src="/media/Asset 7.png"
           alt="Decoration"
           fill
@@ -217,7 +220,7 @@ export default function Welcome() {
       </div>
 
       {/* Upper left text - Catch Phrase 1 */}
-      <div className="absolute top-16 lg:left-8 left-0 lg:translate-x-0 text-gray-800 text-sm w-auto lg:text-left text-center px-4 lg:px-0">
+      <div className="absolute top-16 lg:left-8 left-0 right-0 lg:right-auto lg:translate-x-0 text-gray-800 text-sm w-auto lg:text-left text-center px-4 lg:px-0">
         <div className="text-2xl md:text-3xl font-bold italic leading-tight">
           {homeInfo?.CatchPhrase1?.split(",").map((part, i, arr) => (
             <React.Fragment key={i}>
@@ -307,7 +310,7 @@ export default function Welcome() {
 
       {/* Bottom left image */}
       <div className="hidden lg:block absolute bottom-16 left-8 w-[350px] h-[350px]">
-        <Image
+        <SkeletonImage
           src="/media/Asset 5.png"
           alt="Decoration"
           fill

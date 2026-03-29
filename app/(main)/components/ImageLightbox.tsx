@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import Image from "next/image";
+import SkeletonImage from "@/app/components/SkeletonImage";
 
 interface ImageLightboxProps {
   isOpen: boolean;
@@ -146,7 +147,7 @@ const ImageLightbox = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative w-full h-[85vh] flex items-center justify-center">
-          <Image
+          <SkeletonImage
             src={imageSrc}
             alt={imageAlt}
             fill

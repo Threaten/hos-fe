@@ -3,6 +3,7 @@
 "use client";
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
+import SkeletonImage from "@/app/components/SkeletonImage";
 import HTMLFlipBook from "react-pageflip";
 
 const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
@@ -201,7 +202,7 @@ const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
                 key={index}
                 className="page bg-white flex items-center justify-center relative"
               >
-                <Image
+                <SkeletonImage
                   src={page}
                   alt={`Page ${index + 1}`}
                   fill

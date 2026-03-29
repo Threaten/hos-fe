@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Tenant, API_URL } from "@/api/queries";
 
@@ -17,11 +18,27 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
     tenant?.heroImagesList?.filter((item) => item.image?.url) ?? [];
   const marqueeImages = [...images, ...images];
 
+  const [loadedMap, setLoadedMap] = useState<Record<number, boolean>>({});
+
   return (
     <section
       className="w-full flex flex-col overflow-hidden bg-background"
       style={{ height: "calc(100vh - 116px)" }}
     >
+      {/* Hidden preload: force-fetch all unique images before they scroll into view */}
+      {images.map((item, idx) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={`preload-${idx}`}
+          src={`${API_URL}${item.image!.url}`}
+          alt=""
+          loading="eager"
+          fetchPriority="high"
+          aria-hidden="true"
+          className="sr-only"
+        />
+      ))}
+
       {/* Image Marquee Strip */}
       <div className="flex-1 overflow-hidden min-h-0">
         {marqueeImages.length > 0 ? (
@@ -29,13 +46,16 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
             {marqueeImages.map((item, idx) => (
               <div
                 key={idx}
-                className="relative h-full w-64 md:w-80 flex-shrink-0"
+                className={`relative h-full w-64 md:w-80 flex-shrink-0 ${!loadedMap[idx] ? "bg-gray-200 animate-pulse" : ""}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`${API_URL}${item.image!.url}`}
                   alt={item.image?.filename || ""}
+                  loading="eager"
+                  fetchPriority="high"
                   className="h-full w-full object-cover"
+                  onLoad={() => setLoadedMap((prev) => ({ ...prev, [idx]: true }))}
                 />
               </div>
             ))}
@@ -46,7 +66,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
       </div>
 
       {/* Text Content */}
-      <div className="flex-shrink-0 flex items-end justify-between gap-6 px-8 py-6">
+      <div className="flex-shrink-0 flex flex-col md:flex-row md:items-end md:justify-between gap-4 px-8 py-6">
         <div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-wide leading-none">
             {title}
@@ -58,7 +78,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
             {description}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 shrink-0 items-end">
+        <div className="flex flex-row md:flex-col gap-3 shrink-0 md:items-end">
           <Link
             href="/menu"
             className="px-6 py-2.5 border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors text-sm tracking-widest whitespace-nowrap"

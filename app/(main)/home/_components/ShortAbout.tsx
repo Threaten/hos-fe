@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Tenant, API_URL } from "@/api/queries";
 
@@ -21,6 +22,10 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
   const getImageSrc = (idx: number) =>
     images[idx] ? `${API_URL}${images[idx]}` : null;
 
+  const [loadedSet, setLoadedSet] = useState<Set<number>>(new Set());
+  const markLoaded = (idx: number) =>
+    setLoadedSet((prev) => new Set(prev).add(idx));
+
   return (
     <section className="w-full bg-background py-16 px-8 md:px-12">
       <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr] gap-6 items-start max-w-7xl mx-auto">
@@ -29,20 +34,18 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
           <div className="relative w-full aspect-[3/4]">
             {getImageSrc(0) ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={getImageSrc(0)!}
-                alt=""
-                className="w-full h-full object-cover absolute inset-0"
-              />
+              <>
+                {!loadedSet.has(0) && <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />}
+                <img
+                  src={getImageSrc(0)!}
+                  alt=""
+                  className="w-full h-full object-cover absolute inset-0"
+                  onLoad={() => markLoaded(0)}
+                />
+              </>
             ) : (
               <div className="w-full h-full bg-gray-200" />
             )}
-          </div>
-          <div className="flex justify-between items-start text-xs tracking-widest text-gray-500 uppercase pt-1">
-            <span className="leading-relaxed max-w-[80%]">
-              {tenant?.name || ""}
-            </span>
-            <span>01</span>
           </div>
         </div>
 
@@ -71,18 +74,18 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
                 <div className="relative w-full aspect-[4/3]">
                   {getImageSrc(idx) ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={getImageSrc(idx)!}
-                      alt=""
-                      className="w-full h-full object-cover absolute inset-0"
-                    />
+                    <>
+                      {!loadedSet.has(idx) && <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />}
+                      <img
+                        src={getImageSrc(idx)!}
+                        alt=""
+                        className="w-full h-full object-cover absolute inset-0"
+                        onLoad={() => markLoaded(idx)}
+                      />
+                    </>
                   ) : (
                     <div className="w-full h-full bg-gray-200" />
                   )}
-                </div>
-                <div className="flex justify-between items-start text-xs tracking-widest text-gray-500 uppercase pt-1">
-                  <span>{idx === 1 ? "AMBIANCE" : "CUISINE"}</span>
-                  <span>0{idx + 1}</span>
                 </div>
               </div>
             ))}
@@ -94,21 +97,20 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
           <div className="relative w-full aspect-[3/4]">
             {getImageSrc(3) ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={getImageSrc(3)!}
-                alt=""
-                className="w-full h-full object-cover absolute inset-0"
-              />
+              <>
+                {!loadedSet.has(3) && <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />}
+                <img
+                  src={getImageSrc(3)!}
+                  alt=""
+                  className="w-full h-full object-cover absolute inset-0"
+                  onLoad={() => markLoaded(3)}
+                />
+              </>
             ) : (
               <div className="w-full h-full bg-gray-200" />
             )}
           </div>
-          <div className="flex justify-between items-start text-xs tracking-widest text-gray-500 uppercase pt-1">
-            <span className="leading-relaxed max-w-[80%]">
-              {tenant?.address || ""}
-            </span>
-            <span>04</span>
-          </div>
+          
         </div>
       </div>
     </section>
