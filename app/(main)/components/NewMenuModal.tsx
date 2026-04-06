@@ -79,10 +79,10 @@ export default function NewMenuModal({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-gray-50">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">New Menu</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Latest News</h2>
             {tenantName && (
               <p className="text-sm text-gray-600 mt-1">
-                Check out our latest menu at {tenantName.toLowerCase()}
+                Check out our latest news at {tenantName.toLowerCase()}
               </p>
             )}
           </div>
@@ -102,7 +102,7 @@ export default function NewMenuModal({
             {images[currentIndex]?.src?.url && (
               <SkeletonImage
                 src={`${API_URL}${images[currentIndex].src.url}`}
-                alt={`Menu page ${currentIndex + 1}`}
+                alt={` Page ${currentIndex + 1}`}
                 fill
                 quality={90}
                 sizes="(max-width: 768px) 100vw, 80vw"

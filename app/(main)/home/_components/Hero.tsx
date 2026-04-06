@@ -66,15 +66,15 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
       </div>
 
       {/* Text Content */}
-      <div className="flex-shrink-0 flex flex-col md:flex-row md:items-end md:justify-between gap-4 px-8 py-6">
-        <div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-wide leading-none">
+      <div className="flex-shrink-0 flex flex-col md:flex-row md:items-end md:justify-between gap-4 px-8 py-6 min-h-0">
+        <div className="min-w-0 overflow-hidden">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-wide leading-none line-clamp-2">
             {title}
           </h1>
-          <p className="text-base md:text-lg mt-3 font-light tracking-wide text-gray-600">
+          <p className="text-base md:text-lg mt-3 font-light tracking-wide text-gray-600 line-clamp-2">
             {subtitle}
           </p>
-          <p className="text-sm mt-2 text-gray-500 max-w-md leading-relaxed">
+          <p className="text-sm mt-2 text-gray-500 max-w-md leading-relaxed line-clamp-3">
             {description}
           </p>
         </div>

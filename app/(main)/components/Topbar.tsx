@@ -51,7 +51,7 @@ export default function Topbar() {
             aria-expanded={openCard === "branches"}
           >
             <span className="text-gray-700 whitespace-nowrap">
-              Our Sisters:
+              Another Homes:
             </span>
             <span className="text-gray-900 font-semibold whitespace-nowrap">
               {tenants.map((t) => t.name.toLowerCase()).join(" | ")}
@@ -107,7 +107,7 @@ export default function Topbar() {
             className="w-full flex items-center justify-between text-xs tracking-widest font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded px-2 py-1"
             aria-expanded={mobileMenuOpen}
           >
-            <span className="text-gray-700">Our Branches</span>
+            <span className="text-gray-700">Another Homes:</span>
             <span
               className={`transition-transform duration-300 ${
                 mobileMenuOpen ? "rotate-180" : ""

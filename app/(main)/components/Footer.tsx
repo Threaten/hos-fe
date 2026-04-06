@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
             className="w-full flex justify-between items-center text-sm font-bold tracking-wider mb-4 mt-4 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[rgb(97,89,55)] rounded py-2 text-[rgba(172,163,133,0.95)]"
             aria-expanded={allExpanded}
           >
-            <span className="px-2 py-1">Check Out Our Sisters</span>
+            <span className="px-2 py-1">Check Out Another Homes:</span>
             <span
               className={`transition-transform duration-300 ${
                 allExpanded ? "rotate-180" : ""
@@ -56,13 +56,18 @@ const Footer: React.FC = () => {
                   key={tenant.id}
                   className="text-white h-full border-b md:border-b-0 md:border-r last:border-r-0 border-[rgb(124,118,89)]"
                 >
-                  <h3 className="text-sm font-bold tracking-wider mb-4 mt-6 px-2">
+                  <h3 className="text-sm font-bold tracking-wider mb-4 mt-6 px-2 flex items-center gap-2">
                     <a
                       href={tenantUrl}
                       className="py-1 rounded text-[rgba(172,163,133,0.95)] hover:text-white transition-colors duration-300 cursor-pointer underline decoration-1 hover:decoration-2 underline-offset-4"
                     >
                       {tenant.name.toLowerCase()}
                     </a>
+                    {currentTenant?.id === tenant.id && (
+                      <span className="text-xs font-light tracking-widest text-white/60 normal-case">
+                        ← You&apos;re here
+                      </span>
+                    )}
                   </h3>
 
                   <div className="px-2">
