@@ -182,7 +182,7 @@ const Footer: React.FC = () => {
 
       {/* Bottom Section - Copyright and Attribution */}
       <div className="w-full border-t border-b h-12 mt-6 mb-6 text-xs font-bold text-[rgba(172,163,133,0.89)] border-[rgb(124,118,89)] text-center items-center justify-center flex">
-        Copyright © 2024 houseofsenses.vn. All rights reserved.
+        Copyright © {new Date().getFullYear()} houseofsenses.vn. All rights reserved.
       </div>
     </footer>
   );
