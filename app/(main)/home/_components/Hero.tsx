@@ -1,7 +1,8 @@
-"use client";
-import React, { useState } from "react";
+import React from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Tenant, API_URL } from "@/api/queries";
+import type { Tenant } from "@/api/queries";
+import { API_URL } from "@/app/utils/constants";
 
 interface HeroProps {
   tenant?: Tenant | null;
@@ -18,27 +19,11 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
     tenant?.heroImagesList?.filter((item) => item.image?.url) ?? [];
   const marqueeImages = [...images, ...images];
 
-  const [loadedMap, setLoadedMap] = useState<Record<number, boolean>>({});
-
   return (
     <section
       className="w-full flex flex-col overflow-hidden bg-background"
       style={{ height: "calc(100vh - 116px)" }}
     >
-      {/* Hidden preload: force-fetch all unique images before they scroll into view */}
-      {images.map((item, idx) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={`preload-${idx}`}
-          src={`${API_URL}${item.image!.url}`}
-          alt=""
-          loading="eager"
-          fetchPriority="high"
-          aria-hidden="true"
-          className="sr-only"
-        />
-      ))}
-
       {/* Image Marquee Strip */}
       <div className="flex-1 overflow-hidden min-h-0">
         {marqueeImages.length > 0 ? (
@@ -46,16 +31,17 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
             {marqueeImages.map((item, idx) => (
               <div
                 key={idx}
-                className={`relative h-full w-64 md:w-80 flex-shrink-0 ${!loadedMap[idx] ? "bg-gray-200 animate-pulse" : ""}`}
+                className="relative h-full w-64 md:w-80 flex-shrink-0"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={`${API_URL}${item.image!.url}`}
                   alt={item.image?.filename || ""}
-                  loading="eager"
-                  fetchPriority="high"
-                  className="h-full w-full object-cover"
-                  onLoad={() => setLoadedMap((prev) => ({ ...prev, [idx]: true }))}
+                  fill
+                  className="object-cover"
+                  // Only mark the first visible set as priority; duplicates can lazy-load
+                  priority={idx < images.length && idx < 3}
+                  loading={idx < images.length && idx < 3 ? undefined : "lazy"}
+                  sizes="(max-width: 768px) 256px, 320px"
                 />
               </div>
             ))}

@@ -260,7 +260,7 @@ const ContactForm = ({
       ) : (
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Left Side - Info */}
-          <div className="space-y-12">
+          <div className="space-y-12 sm:pt-8">
             {/* Title Section */}
             <div>
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">
@@ -450,11 +450,10 @@ const ContactForm = ({
           </div>
 
           {/* Right Side - Form */}
-          <div className="border border-gray-200 rounded-2xl p-8 lg:p-12">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+          <div className="sm:border sm:border-gray-200 sm:rounded-2xl sm:px-8 lg:px-12 sm:pb-8 lg:pb-12 sm:pt-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
               Send us a Message
             </h2>
-
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Name */}
               <div>
@@ -520,6 +519,12 @@ const ContactForm = ({
                 {errors.branch && (
                   <p className="mt-1 text-sm text-red-500">{errors.branch}</p>
                 )}
+                {formData.branch && (() => {
+                  const t = currentBranchTenant || tenants.find((t) => t.name === formData.branch);
+                  return t?.address ? (
+                    <p className="mt-2 text-sm text-gray-600">{t.address}</p>
+                  ) : null;
+                })()}
               </div>
 
               {/* Message */}

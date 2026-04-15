@@ -1,5 +1,189 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+// ─── Calendar Picker ─────────────────────────────────────────────────────────
+
+const MONTH_NAMES = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
+];
+const DAY_NAMES = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+
+function CalendarPicker({
+  value,
+  onChange,
+  hasError,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  hasError?: boolean;
+}) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const selected = value ? new Date(value + "T00:00:00") : null;
+  const [open, setOpen] = useState(false);
+  const [viewYear, setViewYear] = useState(
+    selected?.getFullYear() ?? today.getFullYear(),
+  );
+  const [viewMonth, setViewMonth] = useState(
+    selected?.getMonth() ?? today.getMonth(),
+  );
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const firstDayOfWeek = new Date(viewYear, viewMonth, 1).getDay();
+
+  const prevMonth = () => {
+    if (viewMonth === 0) { setViewMonth(11); setViewYear((y) => y - 1); }
+    else setViewMonth((m) => m - 1);
+  };
+  const nextMonth = () => {
+    if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1); }
+    else setViewMonth((m) => m + 1);
+  };
+
+  const select = (day: number) => {
+    const yyyy = viewYear;
+    const mm = String(viewMonth + 1).padStart(2, "0");
+    const dd = String(day).padStart(2, "0");
+    onChange(`${yyyy}-${mm}-${dd}`);
+    setOpen(false);
+  };
+
+  const isDisabled = (day: number) => {
+    const d = new Date(viewYear, viewMonth, day);
+    d.setHours(0, 0, 0, 0);
+    return d < today;
+  };
+  const isSelected = (day: number) =>
+    !!selected &&
+    selected.getFullYear() === viewYear &&
+    selected.getMonth() === viewMonth &&
+    selected.getDate() === day;
+  const isToday = (day: number) =>
+    today.getFullYear() === viewYear &&
+    today.getMonth() === viewMonth &&
+    today.getDate() === day;
+
+  const displayValue = selected
+    ? selected.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "";
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent text-left flex justify-between items-center ${
+          hasError ? "border-red-500" : "border-gray-200"
+        }`}
+      >
+        <span className={displayValue ? "text-gray-900" : "text-gray-400"}>
+          {displayValue || "Date"}
+        </span>
+        <svg
+          className="w-4 h-4 text-gray-500 flex-shrink-0"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl p-4 w-72">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <button
+              type="button"
+              onClick={prevMonth}
+              className="p-1 rounded hover:bg-gray-100 transition-colors"
+              aria-label="Previous month"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span className="text-sm font-semibold text-gray-900">
+              {MONTH_NAMES[viewMonth]} {viewYear}
+            </span>
+            <button
+              type="button"
+              onClick={nextMonth}
+              className="p-1 rounded hover:bg-gray-100 transition-colors"
+              aria-label="Next month"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Day headers */}
+          <div className="grid grid-cols-7 mb-2">
+            {DAY_NAMES.map((d) => (
+              <div key={d} className="text-center text-xs font-medium text-gray-400 pb-1">
+                {d}
+              </div>
+            ))}
+          </div>
+
+          {/* Days grid */}
+          <div className="grid grid-cols-7 gap-y-1">
+            {Array(firstDayOfWeek)
+              .fill(null)
+              .map((_, i) => <div key={`e-${i}`} />)}
+            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
+              const disabled = isDisabled(day);
+              const sel = isSelected(day);
+              const tod = isToday(day);
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => select(day)}
+                  className={[
+                    "w-8 h-8 mx-auto flex items-center justify-center text-sm rounded-full transition-colors",
+                    disabled ? "text-gray-300 cursor-not-allowed" : "cursor-pointer",
+                    sel ? "bg-gray-900 text-white hover:bg-gray-800" : "",
+                    tod && !sel ? "border border-gray-900 font-semibold text-gray-900" : "",
+                    !disabled && !sel && !tod ? "text-gray-700 hover:bg-gray-100" : "",
+                  ].join(" ")}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 import {
   fetchTenants,
   fetchTenantBySlug,
@@ -326,11 +510,6 @@ const ReservationForm = ({
     }
   };
 
-  const getTodayDate = () => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
-  };
-
   return (
     <div className="min-h-screen mt-12 bg-background py-16 px-4">
       {/* Toast Notification */}
@@ -348,7 +527,7 @@ const ReservationForm = ({
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
         {/* Left Side - Info */}
-        <div className="space-y-12">
+        <div className="space-y-12 sm:pt-8">
           {/* Title Section */}
           <div>
             <h2 className="text-2xl font-semibold text-gray-900 mb-6">
@@ -534,11 +713,10 @@ const ReservationForm = ({
         </div>
 
         {/* Right Side - Form */}
-        <div className="border border-gray-200 rounded-2xl p-8 lg:p-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+        <div className="sm:border sm:border-gray-200 sm:rounded-2xl sm:px-8 lg:px-12 sm:pb-8 lg:pb-12 sm:pt-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
             Reservation
           </h2>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name */}
             <div>
@@ -615,17 +793,13 @@ const ReservationForm = ({
 
             {/* Date */}
             <div>
-              <input
-                type="date"
-                id="date"
-                name="date"
+              <CalendarPicker
                 value={formData.date}
-                onChange={handleChange}
-                min={getTodayDate()}
-                className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent ${
-                  errors.date ? "border-red-500" : "border-gray-200"
-                }`}
-                placeholder="Date"
+                hasError={!!errors.date}
+                onChange={(value) => {
+                  setFormData((prev) => ({ ...prev, date: value }));
+                  setErrors((prev) => ({ ...prev, date: undefined }));
+                }}
               />
               {errors.date && (
                 <p className="mt-1 text-sm text-red-500">{errors.date}</p>
@@ -634,22 +808,82 @@ const ReservationForm = ({
 
             {/* Time */}
             <div>
-              <input
-                type="time"
-                id="time"
-                name="time"
-                value={formData.time}
-                onChange={handleChange}
-                min="16:00"
-                max="22:00"
-                className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent ${
+              <div
+                className={`flex items-center gap-2 border-b-2 py-3 transition-all focus-within:border-gray-900 ${
                   errors.time ? "border-red-500" : "border-gray-200"
                 }`}
-                placeholder="Time"
-              />
+              >
+                <select
+                  value={formData.time ? formData.time.split(":")[0] : ""}
+                  onChange={(e) => {
+                    const minute = formData.time
+                      ? formData.time.split(":")[1]
+                      : "00";
+                    setFormData((prev) => ({
+                      ...prev,
+                      time: `${e.target.value}:${minute || "00"}`,
+                    }));
+                    setErrors((prev) => ({ ...prev, time: undefined }));
+                  }}
+                  className={`flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer ${
+                    formData.time && formData.time.split(":")[0] ? "text-gray-900" : "text-gray-400"
+                  }`}
+                >
+                  <option value="" disabled>
+                    Hour
+                  </option>
+                  {[16, 17, 18, 19, 20, 21, 22].map((h) => (
+                    <option key={h} value={String(h).padStart(2, "0")}>
+                      {String(h).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-gray-400 font-semibold">:</span>
+                <select
+                  value={formData.time ? formData.time.split(":")[1] : ""}
+                  onChange={(e) => {
+                    const hour = formData.time
+                      ? formData.time.split(":")[0]
+                      : "16";
+                    setFormData((prev) => ({
+                      ...prev,
+                      time: `${hour || "16"}:${e.target.value}`,
+                    }));
+                    setErrors((prev) => ({ ...prev, time: undefined }));
+                  }}
+                  className={`flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer ${
+                    formData.time && formData.time.split(":")[1] ? "text-gray-900" : "text-gray-400"
+                  }`}
+                >
+                  <option value="" disabled>
+                    Min
+                  </option>
+                  {["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"].map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  className="w-4 h-4 text-gray-500 flex-shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
               {errors.time && (
                 <p className="mt-1 text-sm text-red-500">{errors.time}</p>
               )}
+              <p className="mt-2 text-sm text-gray-600">
+                Last order: 30 minutes before closing.
+              </p>
             </div>
 
             {/* Quantity */}

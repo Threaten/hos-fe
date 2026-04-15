@@ -16,8 +16,20 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "houseofsenses.vn",
-  description: "Experience exceptional dining at houseofsenses.vn",
+  title: {
+    default: "House of Senses",
+    template: "%s | House of Senses",
+  },
+  description:
+    "Experience exceptional fine dining at House of Senses — multiple locations across Vietnam.",
+  openGraph: {
+    siteName: "House of Senses",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({
@@ -27,6 +39,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://admin.houseofsenses.vn" />
+      </head>
       <body className={`${arimo.variable} ${ibmPlexMono.variable}`}>
         {children}
       </body>

@@ -35,16 +35,40 @@ export default function Home() {
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [showNewMenuModal, setShowNewMenuModal] = useState(false);
   const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
-  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [loadingPhase, setLoadingPhase] = useState<'loading' | 'fading' | 'done'>('loading');
   const [mounted, setMounted] = useState(false);
 
   // Mount after hydration so that createPortal targets document.body safely
   useEffect(() => { setMounted(true); }, []);
 
+  // Safety: always dismiss the overlay within 8 s regardless of network/hero state
+  useEffect(() => {
+    const t = setTimeout(() => dismissOverlay(), 8000);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleHeroReady = () => {
+    heroReadyRef.current = true;
+    if (dataReadyRef.current) dismissOverlay();
+  };
+
   const tenantLoadedRef = useRef(false);
   const galleryLoadedRef = useRef(false);
   const tenantDataRef = useRef<Tenant | null>(null);
   const galleryDataRef = useRef<GalleryItem[]>([]);
+  const dataReadyRef = useRef(false);
+  const heroReadyRef = useRef(false);
+  const dismissedRef = useRef(false);
+
+  const dismissOverlay = () => {
+    if (dismissedRef.current) return;
+    dismissedRef.current = true;
+    requestAnimationFrame(() => {
+      setLoadingPhase('fading');
+      setTimeout(() => setLoadingPhase('done'), 350);
+    });
+  };
 
   const tryFinishLoading = async () => {
     if (!tenantLoadedRef.current || !galleryLoadedRef.current) return;
@@ -71,7 +95,12 @@ export default function Home() {
       Promise.race([preloadImages(imageUrls), timeout]),
       minDelay,
     ]);
-    setIsPageLoading(false);
+    // Mark data (network) as ready
+    dataReadyRef.current = true;
+    // If the tenant has no hero images there's nothing for Hero to signal
+    const hasHeroImages = (t?.heroImagesList?.length ?? 0) > 0;
+    if (!hasHeroImages) heroReadyRef.current = true;
+    if (heroReadyRef.current) dismissOverlay();
   };
 
   // Detect if we're on a tenant subdomain and fetch tenant data
@@ -151,8 +180,8 @@ export default function Home() {
   return (
     <div className="">
       {/* Full-page loading overlay — portal to body escapes PageTransition's opacity */}
-      {mounted && isPageLoading && createPortal(
-        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[rgb(247,242,234)]">
+      {mounted && loadingPhase !== 'done' && createPortal(
+        <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[rgb(247,242,234)] transition-opacity duration-300 ${loadingPhase === 'fading' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <div className="flex flex-col items-center gap-6">
             <div className="w-12 h-12 rounded-full border-2 border-[rgb(124,118,89)]/30 border-t-[rgb(124,118,89)] animate-spin" />
             <p className="text-sm tracking-widest uppercase text-[rgb(124,118,89)] font-light">
@@ -189,7 +218,7 @@ export default function Home() {
       </div>
       <CTA />
       {/* New Menu Modal — only shown after loading is complete */}
-      {!isPageLoading && (
+      {loadingPhase === 'done' && (
         <NewMenuModal
           images={tenant?.newMenu || []}
           isOpen={showNewMenuModal}

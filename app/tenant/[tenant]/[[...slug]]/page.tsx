@@ -1,200 +1,82 @@
-"use client";
-
-import { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
-import { notFound, useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import Hero from "../../../(main)/home/_components/Hero";
 import ShortAbout from "../../../(main)/home/_components/ShortAbout";
-import FeaturedMenu from "../../../(main)/home/_components/FeaturedMenu";
-import Gallery from "../../../(main)/home/_components/Gallery";
 import CTA from "../../../(main)/components/CTA";
-import NewMenuModal from "../../../(main)/components/NewMenuModal";
+import TenantHomeInteractive from "./TenantHomeInteractive";
 import AboutPage from "../../../(main)/about/page";
 import GalleryPage from "../../../(main)/gallery/page";
 import ContactForm from "../../../(main)/contact/_components/ContactForm";
 import ReservationForm from "../../../(main)/reservation/_components/ReservationForm";
 import TenantFlipbookWrapper from "../../../(main)/menu/_components/TenantFlipbookWrapper";
 import Link from "next/link";
-import {
-  fetchTenantBySlug,
-  fetchGallery,
-  API_URL,
-  type Tenant,
-  type GalleryItem,
-} from "@/api/queries";
+import { API_URL } from "@/app/utils/constants";
+import type { Tenant, GalleryItem } from "@/api/queries";
 
-function preloadImages(urls: string[]): Promise<void> {
-  if (urls.length === 0) return Promise.resolve();
-  return Promise.all(
-    urls.map(
-      (url) =>
-        new Promise<void>((resolve) => {
-          const img = new window.Image();
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-          img.src = url;
-        }),
-    ),
-  ).then(() => undefined);
+interface PageProps {
+  params: Promise<{ tenant: string; slug?: string[] }>;
 }
 
-export default function TenantPage() {
-  const params = useParams();
-  const [tenant, setTenant] = useState<Tenant | null>(null);
-  const [tenantNotFound, setTenantNotFound] = useState(false);
-  const [showNewMenuModal, setShowNewMenuModal] = useState(false);
-  const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
-  const [isPageLoading, setIsPageLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
-  const tenantLoadedRef = useRef(false);
-  const galleryLoadedRef = useRef(false);
-  const tenantDataRef = useRef<Tenant | null>(null);
-  const galleryDataRef = useRef<GalleryItem[]>([]);
-  const loadingStartedRef = useRef(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const tenantSlug = Array.isArray(params?.tenant)
-    ? params.tenant[0]
-    : params?.tenant;
-  const slug = Array.isArray(params?.slug)
-    ? params.slug
-    : params?.slug
-      ? [params.slug]
-      : [];
-  const pathname = slug?.join("/") || "";
-
-  console.log("🔧 Tenant Page Debug:", {
-    params,
-    tenantSlug,
-    slug,
-    pathname,
-  });
-
-  const tryFinishLoading = async () => {
-    if (!tenantLoadedRef.current || !galleryLoadedRef.current) return;
-    if (loadingStartedRef.current) return;
-    loadingStartedRef.current = true;
-
-    const t = tenantDataRef.current;
-    const g = galleryDataRef.current;
-
-    const imageUrls: string[] = [
-      ...(t?.heroImagesList?.flatMap((item) =>
-        item.image?.url ? [`${API_URL}${item.image.url}`] : [],
-      ) ?? []),
-      ...(t?.shortAboutCollages?.flatMap((item) =>
-        item.image?.url ? [`${API_URL}${item.image.url}`] : [],
-      ) ?? []),
-      ...g.flatMap((item) =>
-        item.image?.url ? [`${API_URL}${item.image.url}`] : [],
-      ),
-    ];
-
-    const timeout = new Promise<void>((resolve) => setTimeout(resolve, 8000));
-    await Promise.race([preloadImages(imageUrls), timeout]);
-    setIsPageLoading(false);
-  };
-
-  useEffect(() => {
-    console.log("🔄 useEffect triggered - tenantSlug:", tenantSlug);
-    if (tenantSlug) {
-      fetchTenantBySlug(tenantSlug)
-        .then((data) => {
-          console.log("📦 Tenant data fetched:", data);
-          if (data) {
-            setTenant(data);
-            tenantDataRef.current = data;
-
-            // Show modal if tenant has new menu items
-            if (data.newMenu && data.newMenu.length > 0) {
-              const seenMenuKey = `seen-menu-${data.id}`;
-              const hasSeenMenu = localStorage.getItem(seenMenuKey);
-
-              // TEMPORARY: Always show modal for testing - remove the localStorage check
-              setShowNewMenuModal(true);
-            }
-          } else {
-            setTenantNotFound(true);
-            galleryLoadedRef.current = true; // nothing to load
-          }
-          tenantLoadedRef.current = true;
-          tryFinishLoading();
-        })
-        .catch(() => {
-          setTenantNotFound(true);
-          galleryLoadedRef.current = true;
-          tenantLoadedRef.current = true;
-          tryFinishLoading();
-        });
-    } else {
-      console.warn("⚠️ No tenantSlug provided");
-      setTenantNotFound(true);
-      galleryLoadedRef.current = true;
-      tenantLoadedRef.current = true;
-      tryFinishLoading();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tenantSlug]);
-
-  // Fetch gallery images — only after tenant is known
-  useEffect(() => {
-    if (!tenant?.id) return;
-    const loadGallery = async () => {
-      const images = await fetchGallery(tenant.id);
-      const sliced = images.slice(0, 6);
-      setGalleryImages(sliced);
-      galleryDataRef.current = sliced;
-      galleryLoadedRef.current = true;
-      tryFinishLoading();
-    };
-    loadGallery().catch(() => {
-      galleryLoadedRef.current = true;
-      tryFinishLoading();
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tenant?.id]);
-
-  const handleCloseModal = () => {
-    setShowNewMenuModal(false);
-    if (tenant?.id) {
-      localStorage.setItem(`seen-menu-${tenant.id}`, "true");
-    }
-  };
-
-  if (!isPageLoading && (tenantNotFound || !tenant)) {
-    notFound();
+async function fetchTenantServer(slug: string): Promise<Tenant | null> {
+  try {
+    const res = await fetch(
+      `${API_URL}/api/tenants?where[domain][equals]=${encodeURIComponent(slug)}&depth=2&limit=1`,
+      { next: { revalidate: 60 } },
+    );
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.docs?.[0] ?? null;
+  } catch {
+    return null;
   }
+}
 
-  // Transform gallery items to match Gallery component's expected format
-  const transformedImages = galleryImages.map((item) => ({
-    src: item.image?.filename
-      ? `${API_URL}/api/media/file/${item.image.filename}`
-      : item.image?.url
-        ? `${API_URL}${item.image.url}`
-        : "",
-    alt: item.caption || item.image?.alt || "Gallery image",
-    branch: item.branch?.name || "",
-    caption: item.caption || "",
-  }));
+async function fetchGalleryServer(tenantId: string): Promise<GalleryItem[]> {
+  try {
+    const res = await fetch(
+      `${API_URL}/api/gallery?where[branch][equals]=${encodeURIComponent(tenantId)}&depth=1&limit=6`,
+      { next: { revalidate: 60 } },
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json?.docs ?? [];
+  } catch {
+    return [];
+  }
+}
 
-  // Route to appropriate page based on slug
-  const renderContent = () => {
-    if (!tenant) return null;
-    switch (pathname) {
+export default async function TenantPage({ params }: PageProps) {
+  const { tenant: tenantSlug, slug = [] } = await params;
+  const pathname = slug.join("/");
+
+  const tenant = await fetchTenantServer(tenantSlug);
+  if (!tenant) notFound();
+
+  switch (pathname) {
     case "":
-    case "home":
+    case "home": {
+      const galleryItems = await fetchGalleryServer(tenant.id);
+      const transformedImages = galleryItems.map((item: GalleryItem) => ({
+        src: item.image?.filename
+          ? `${API_URL}/api/media/file/${item.image.filename}`
+          : item.image?.url
+            ? `${API_URL}${item.image.url}`
+            : "",
+        alt: item.caption || item.image?.alt || "Gallery image",
+        branch: item.branch?.name || "",
+        caption: item.caption || "",
+      }));
       return (
-        <div className="">
+        <div>
           <Hero tenant={tenant} />
           <ShortAbout tenant={tenant} />
           <h4 className="w-full border-t-2 border-b-2 font-extrabold text-3xl h-16 mt-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex animate-slide-in-up">
             Featured Gallery
           </h4>
-          <Gallery images={transformedImages} />
+          <TenantHomeInteractive
+            transformedImages={transformedImages}
+            newMenu={tenant.newMenu ?? []}
+            tenantName={tenant.name}
+          />
           <div className="w-full border-t-2 border-b-2 h-20 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex">
             <Link
               href="/gallery"
@@ -204,23 +86,14 @@ export default function TenantPage() {
             </Link>
           </div>
           <CTA />
-
-          {/* New Menu Modal — only after all images have loaded */}
-          {!isPageLoading && (
-            <NewMenuModal
-              images={tenant?.newMenu || []}
-              isOpen={showNewMenuModal}
-              onClose={handleCloseModal}
-              tenantName={tenant?.name}
-            />
-          )}
         </div>
       );
+    }
 
     case "about":
       return <AboutPage />;
 
-    case "menu":
+    case "menu": {
       if (!tenant.menu?.url) {
         return (
           <div className="w-full min-h-screen flex flex-col items-center justify-center px-4">
@@ -233,17 +106,16 @@ export default function TenantPage() {
           </div>
         );
       }
-      // Use the filename directly instead of the url field
       const menuUrl = tenant.menu.filename
         ? `${API_URL}/api/media/file/${tenant.menu.filename}`
         : `${API_URL}${tenant.menu.url}`;
-
       return (
         <div>
           <TenantFlipbookWrapper menuUrl={menuUrl} tenantName={tenant.name} />
           <CTA />
         </div>
       );
+    }
 
     case "gallery":
       return <GalleryPage />;
@@ -256,25 +128,5 @@ export default function TenantPage() {
 
     default:
       notFound();
-    }
-  };
-
-  return (
-    <>
-      {/* Full-page loading overlay — portal to body escapes PageTransition's opacity wrapper */}
-      {mounted && isPageLoading &&
-        createPortal(
-          <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[rgb(247,242,234)]">
-            <div className="flex flex-col items-center gap-6">
-              <div className="w-12 h-12 rounded-full border-2 border-[rgb(124,118,89)]/30 border-t-[rgb(124,118,89)] animate-spin" />
-              <p className="text-sm tracking-widest uppercase text-[rgb(124,118,89)] font-light">
-                Loading
-              </p>
-            </div>
-          </div>,
-          document.body,
-        )}
-      {renderContent()}
-    </>
-  );
+  }
 }

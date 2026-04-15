@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import ImageLightbox from "../../components/ImageLightbox";
 
 interface GalleryImage {
@@ -60,11 +61,13 @@ const Gallery = ({ images = [] }: GalleryProps) => {
               {!loadedSet.has(index) && (
                 <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />
               )}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={image.src}
-                alt={image.src}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                alt={image.alt || "Gallery image"}
+                fill
+                loading="lazy"
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 onLoad={() => setLoadedSet((prev) => new Set(prev).add(index))}
               />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />

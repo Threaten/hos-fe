@@ -1,7 +1,8 @@
-"use client";
-import React, { useState } from "react";
+import React from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Tenant, API_URL } from "@/api/queries";
+import type { Tenant } from "@/api/queries";
+import { API_URL } from "@/app/utils/constants";
 
 interface ShortAboutProps {
   tenant?: Tenant | null;
@@ -22,10 +23,6 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
   const getImageSrc = (idx: number) =>
     images[idx] ? `${API_URL}${images[idx]}` : null;
 
-  const [loadedSet, setLoadedSet] = useState<Set<number>>(new Set());
-  const markLoaded = (idx: number) =>
-    setLoadedSet((prev) => new Set(prev).add(idx));
-
   return (
     <section className="w-full bg-background py-16 px-8 md:px-12">
       <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr] gap-6 items-start max-w-7xl mx-auto">
@@ -33,16 +30,14 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
         <div className="flex flex-col gap-2">
           <div className="relative w-full aspect-[3/4]">
             {getImageSrc(0) ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <>
-                {!loadedSet.has(0) && <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />}
-                <img
-                  src={getImageSrc(0)!}
-                  alt=""
-                  className="w-full h-full object-cover absolute inset-0"
-                  onLoad={() => markLoaded(0)}
-                />
-              </>
+              <Image
+                src={getImageSrc(0)!}
+                alt=""
+                fill
+                loading="lazy"
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 25vw"
+              />
             ) : (
               <div className="w-full h-full bg-gray-200" />
             )}
@@ -73,16 +68,14 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
               <div key={idx} className="flex flex-col gap-2">
                 <div className="relative w-full aspect-[4/3]">
                   {getImageSrc(idx) ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <>
-                      {!loadedSet.has(idx) && <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />}
-                      <img
-                        src={getImageSrc(idx)!}
-                        alt=""
-                        className="w-full h-full object-cover absolute inset-0"
-                        onLoad={() => markLoaded(idx)}
-                      />
-                    </>
+                    <Image
+                      src={getImageSrc(idx)!}
+                      alt=""
+                      fill
+                      loading="lazy"
+                      className="object-cover"
+                      sizes="(max-width: 768px) 50vw, 20vw"
+                    />
                   ) : (
                     <div className="w-full h-full bg-gray-200" />
                   )}
@@ -96,21 +89,18 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
         <div className="flex flex-col gap-2">
           <div className="relative w-full aspect-[3/4]">
             {getImageSrc(3) ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <>
-                {!loadedSet.has(3) && <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />}
-                <img
-                  src={getImageSrc(3)!}
-                  alt=""
-                  className="w-full h-full object-cover absolute inset-0"
-                  onLoad={() => markLoaded(3)}
-                />
-              </>
+              <Image
+                src={getImageSrc(3)!}
+                alt=""
+                fill
+                loading="lazy"
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 25vw"
+              />
             ) : (
               <div className="w-full h-full bg-gray-200" />
             )}
           </div>
-          
         </div>
       </div>
     </section>

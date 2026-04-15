@@ -17,7 +17,7 @@ export default function Navbar() {
   return (
     <>
       {/* Main Navbar */}
-      <nav className="sticky top-12 flex justify-center items-center h-14 left-0 right-0 z-40 transition-all duration-300 bg-background/95 backdrop-blur-sm text-gray-900 border-b border-[rgb(124,118,89)]/20">
+      <nav aria-label="Site navigation" className="sticky top-12 flex justify-center items-center h-14 left-0 right-0 z-40 transition-all duration-300 bg-background/95 backdrop-blur-sm text-gray-900 border-b border-[rgb(124,118,89)]/20">
         <div className="w-full px-10 py-4">
           <div className="flex items-center justify-between">
             {/* Hamburger Menu Button - Left */}
@@ -45,15 +45,15 @@ export default function Navbar() {
             </button>
 
             {/* Logo - Center */}
-            <div className="absolute left-1/2 transform -translate-x-1/2">
+            <div className="absolute left-1/2 -translate-x-1/2">
               <Link
                 href="/"
                 className="block text-sm font-semibold text-gray-900 hover:text-gray-600 transition-all duration-300 hover:scale-105 tracking-wide focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded"
                 aria-label={tenant ? `${tenant.name} Home` : "Elementa Home"}
               >
-                <h1 className="text-xl lg:text-2xl font-semibold tracking-wider">
+                <span className="text-xl lg:text-2xl font-semibold tracking-wider block">
                   {tenant ? tenant.name.toLowerCase() : "houseofsenses.vn"}
-                </h1>
+                </span>
               </Link>
             </div>
 
@@ -81,7 +81,7 @@ export default function Navbar() {
           {/* Close Button */}
 
           {/* Menu Links */}
-          <nav className="space-y-6 pr-14">
+          <nav aria-label="Main navigation menu" className="space-y-6 pr-14">
             <Link
               href="/"
               className={`block text-base font-semibold transition-all duration-300 tracking-wide hover:translate-x-2 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded px-2 py-1 ${

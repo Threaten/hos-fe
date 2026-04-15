@@ -7,9 +7,12 @@ import Footer from "../../(main)/components/Footer";
 import PageTransition from "../../(main)/components/PageTransition";
 import { TenantProvider } from "../../contexts/TenantContext";
 
+// Page-level metadata is generated dynamically by [[...slug]]/layout.tsx.
+// This fallback applies only if no child segment provides metadata.
 export const metadata: Metadata = {
-  title: "houseofsenses.vn",
-  description: "Experience exceptional fine dining at houseofsenses.vn",
+  title: "House of Senses",
+  description:
+    "Experience exceptional fine dining at House of Senses — multiple locations across Vietnam.",
 };
 
 export default function TenantLayout({
