@@ -31,8 +31,7 @@ export default function Welcome() {
         ]);
         setBranches(tenantsData);
         setHomeInfo(homeData || null);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch {
       } finally {
         setLoading(false);
       }

@@ -251,12 +251,6 @@ const ReservationForm = ({
           if (data.length > 0) {
             setTenants(data);
 
-            console.log("ReservationForm - currentTenant:", currentTenant);
-            console.log(
-              "ReservationForm - available tenants:",
-              data.map((t) => ({ domain: t.domain, name: t.name })),
-            );
-
             // Auto-select branch based on currentTenant (subdomain) or initialBranch
             if (currentTenant) {
               // Try exact match first, then case-insensitive match
@@ -267,7 +261,6 @@ const ReservationForm = ({
                     t.domain?.toLowerCase() === currentTenant.toLowerCase(),
                 );
               }
-              console.log("ReservationForm - matched tenant:", tenant);
               if (tenant) {
                 setSelectedBranch(tenant.name);
               }
@@ -281,8 +274,7 @@ const ReservationForm = ({
             }
           }
         }
-      } catch (error) {
-        console.error("Error loading tenants:", error);
+      } catch {
       }
     };
 
@@ -422,11 +414,7 @@ const ReservationForm = ({
 
       // If customer doesn't exist, create them
       if (!customer) {
-        console.log("Customer not found, creating new customer...");
         customer = await createCustomer(formData.name, formData.phone);
-        console.log("Customer created:", customer);
-      } else {
-        console.log("Existing customer found:", customer);
       }
 
       // Ensure customer exists
@@ -454,8 +442,6 @@ const ReservationForm = ({
         selectedTenant.id,
       );
 
-      console.log("Reservation submitted:", formData);
-
       // Show success toast
       setToast({
         message: "Reservation submitted successfully!",
@@ -473,8 +459,7 @@ const ReservationForm = ({
         notes: "",
       });
       setErrors({});
-    } catch (error) {
-      console.error("Reservation error:", error);
+    } catch {
       // Show error toast
       setToast({
         message: "Failed to submit reservation. Please try again.",

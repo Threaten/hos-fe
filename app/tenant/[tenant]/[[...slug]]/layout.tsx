@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { generateTenantMetadata } from '@/app/utils/seo'
+import { generateTenantMetadata, fetchTenantConfigForSEO, getTenantBaseUrl, buildTenantJsonLd } from '@/app/utils/seo'
+import { JsonLd } from '@/app/components/JsonLd'
 
 interface SlugLayoutProps {
   children: React.ReactNode
@@ -17,6 +18,16 @@ export async function generateMetadata({
   return generateTenantMetadata(tenant, currentPage ? { path: currentPage } : undefined)
 }
 
-export default function SlugLayout({ children }: SlugLayoutProps) {
-  return <>{children}</>
+export default async function SlugLayout({ children, params }: SlugLayoutProps) {
+  const { tenant: tenantSlug } = await params
+  const tenantConfig = await fetchTenantConfigForSEO(tenantSlug)
+  const baseUrl = getTenantBaseUrl(tenantConfig)
+  const jsonLd = buildTenantJsonLd(tenantConfig, baseUrl)
+
+  return (
+    <>
+      <JsonLd data={jsonLd} />
+      {children}
+    </>
+  )
 }

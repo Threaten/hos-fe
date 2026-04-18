@@ -49,7 +49,7 @@ export default function Navbar() {
               <Link
                 href="/"
                 className="block text-sm font-semibold text-gray-900 hover:text-gray-600 transition-all duration-300 hover:scale-105 tracking-wide focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded"
-                aria-label={tenant ? `${tenant.name} Home` : "Elementa Home"}
+                aria-label={tenant ? `${tenant.name} Home` : "House of Senses Home"}
               >
                 <span className="text-xl lg:text-2xl font-semibold tracking-wider block">
                   {tenant ? tenant.name.toLowerCase() : "houseofsenses.vn"}

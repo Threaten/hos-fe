@@ -50,19 +50,13 @@ export default function TenantFlipbook({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  useEffect(() => {
-    console.log("Loading PDF from:", menuUrl);
-  }, [menuUrl]);
-
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    console.log("PDF loaded successfully with", numPages, "pages");
     setNumPages(numPages);
     setIsLoading(false);
     setError(null);
   }
 
   function onDocumentLoadError(error: Error) {
-    console.error("Error loading PDF:", error);
     setError(`Failed to load menu: ${error.message}`);
     setIsLoading(false);
   }

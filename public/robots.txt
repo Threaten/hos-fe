@@ -1,9 +1,8 @@
 # Allow all crawlers
 User-agent: *
 Allow: /
+Disallow: /diagnostics
+Disallow: /tenant/
 
-# Disallow admin or private pages (if any in future)
-# Disallow: /admin/
-
-# Sitemap location
+# Sitemap locations
 Sitemap: https://houseofsenses.vn/sitemap.xml

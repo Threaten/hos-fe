@@ -14,7 +14,6 @@ const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
   const decodedBranch = useMemo(() => {
     if (!initialBranch) return "Red Bistro";
     const decoded = decodeURIComponent(initialBranch.replace(/\+/g, " "));
-    console.log("Initial Branch:", initialBranch, "Decoded:", decoded);
     return decoded === "Blue Bistro" ? "Blue Bistro" : "Red Bistro";
   }, [initialBranch]);
 

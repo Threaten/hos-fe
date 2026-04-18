@@ -129,8 +129,7 @@ export default function Home() {
             tenantLoadedRef.current = true;
             tryFinishLoading();
           })
-          .catch((err) => {
-            console.error("Error fetching tenant:", err);
+          .catch(() => {
             tenantLoadedRef.current = true;
             tryFinishLoading();
           });

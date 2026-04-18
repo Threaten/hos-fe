@@ -33,7 +33,6 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
         : params?.tenant;
 
       if (tenantSlug && typeof tenantSlug === "string") {
-        console.log("📍 Loading tenant from route param:", tenantSlug);
         const data = await fetchTenantBySlug(tenantSlug);
         setTenant(data);
         setLoading(false);
@@ -43,7 +42,6 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
       // Check if we're on a subdomain
       const subdomain = getCurrentSubdomain();
       if (subdomain && subdomain !== "www" && subdomain !== "admin") {
-        console.log("📍 Loading tenant from subdomain:", subdomain);
         const data = await fetchTenantBySlug(subdomain);
         setTenant(data);
         setLoading(false);

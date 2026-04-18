@@ -81,8 +81,7 @@ const ContactForm = ({
             }
           }
         }
-      } catch (error) {
-        console.error("Error loading tenants:", error);
+      } catch {
       } finally {
         setIsLoading(false);
       }
@@ -185,8 +184,6 @@ const ContactForm = ({
         selectedTenant.id,
       );
 
-      console.log("Contact message submitted successfully");
-
       // Show success toast
       setToast({
         message: "Message sent successfully!",
@@ -201,8 +198,7 @@ const ContactForm = ({
         message: "",
       });
       setErrors({});
-    } catch (error) {
-      console.error("Contact submission error:", error);
+    } catch {
       // Show error toast
       setToast({
         message: "Failed to send message. Please try again.",

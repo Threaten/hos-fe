@@ -19,12 +19,9 @@ const ReservationContent = () => {
       // If there's a subdomain (e.g., green-bistro.localhost)
       if (parts.length > 1 && parts[0] !== "www") {
         setTenant(parts[0]);
-        console.log("Detected tenant from hostname:", parts[0]);
       }
     }
   }, []);
-
-  console.log("Reservation page - tenant:", tenant);
 
   return <ReservationForm initialBranch={branch} currentTenant={tenant} />;
 };

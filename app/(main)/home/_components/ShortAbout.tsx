@@ -13,7 +13,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
     tenant?.shortAboutTitle || "CRAFTING CULINARY EXCELLENCE WITH PASSION";
   const text =
     tenant?.shortAboutText ||
-    "At Elementa, we believe dining is an art form. Each dish is thoughtfully prepared with the finest ingredients, blending traditional techniques with innovative flavors.";
+    "At House of Senses, we believe dining is an art form. Each dish is thoughtfully prepared with the finest ingredients, blending traditional techniques with innovative flavors.";
 
   const images =
     tenant?.shortAboutCollages
