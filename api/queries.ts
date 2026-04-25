@@ -67,6 +67,11 @@ export interface Tenant {
   heroDescription?: string;
   shortAboutTitle?: string;
   shortAboutText?: string;
+  galleryText?: string;
+  ctaTitle?: string;
+  ctaText?: string;
+  aboutTitle?: string;
+  aboutSubtitle?: string;
   shortAboutCollages?: Array<{
     image?: {
       url: string;
@@ -195,6 +200,11 @@ const GET_TENANTS = gql`
         heroDescription
         shortAboutTitle
         shortAboutText
+        galleryText
+        ctaTitle
+        ctaText
+        aboutTitle
+        aboutSubtitle
         shortAboutCollages {
           image {
             url
@@ -237,8 +247,6 @@ const GET_TENANTS = gql`
           }
         }
       }
-      totalDocs
-      limit
     }
   }
 `;
@@ -262,16 +270,17 @@ const GET_TENANT = gql`
         heroDescription
         shortAboutTitle
         shortAboutText
+        galleryText
+        ctaTitle
+        ctaText
+        aboutTitle
+        aboutSubtitle
         shortAboutCollages {
           image {
             url
             filename
           }
           id
-        }
-        aboutusHero {
-          url
-          filename
         }
         aboutus
         menu {

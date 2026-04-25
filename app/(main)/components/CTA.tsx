@@ -8,6 +8,8 @@ const CTA = () => {
   const { tenant } = useTenant();
 
   const tenantName = tenant ? tenant.name.toLowerCase() : "houseofsenses.vn";
+  const ctaTitle = tenant?.ctaTitle || `Experience ${tenantName} Today`;
+  const ctaText = tenant?.ctaText || "Join us for an unforgettable culinary journey";
 
   return (
     <section
@@ -18,10 +20,10 @@ const CTA = () => {
         {/* Main CTA */}
         <div className="text-center">
           <h2 id="cta-heading" className="text-4xl font-bold mb-6">
-            Experience {tenantName} Today
+            {ctaTitle}
           </h2>
           <p className="text-xl mb-8 text-gray-700">
-            Join us for an unforgettable culinary journey
+            {ctaText}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link

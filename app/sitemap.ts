@@ -17,12 +17,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
     if (res.ok) {
       const json = await res.json();
-      tenantUrls = (json?.docs ?? []).map((t: { domain: string }) => ({
-        url: `https://${t.domain}.houseofsenses.vn`,
-        lastModified: now,
-        changeFrequency: "weekly" as const,
-        priority: 0.9,
-      }));
+      const tenantPages = [
+        { path: "",           changeFrequency: "weekly"  as const, priority: 1.0 },
+        { path: "/about",     changeFrequency: "monthly" as const, priority: 0.8 },
+        { path: "/menu",      changeFrequency: "weekly"  as const, priority: 0.9 },
+        { path: "/gallery",   changeFrequency: "weekly"  as const, priority: 0.7 },
+        { path: "/contact",   changeFrequency: "monthly" as const, priority: 0.6 },
+        { path: "/reservation", changeFrequency: "monthly" as const, priority: 0.9 },
+      ];
+      for (const t of (json?.docs ?? []) as Array<{ domain: string }>) {
+        const base = `https://${t.domain}.houseofsenses.vn`;
+        for (const page of tenantPages) {
+          tenantUrls.push({
+            url: `${base}${page.path}`,
+            lastModified: now,
+            changeFrequency: page.changeFrequency,
+            priority: page.priority,
+          });
+        }
+      }
     }
   } catch {
     // fallback: empty tenant list

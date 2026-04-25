@@ -13,9 +13,10 @@ interface GalleryImage {
 
 interface GalleryProps {
   images?: GalleryImage[];
+  galleryText?: string;
 }
 
-const Gallery = ({ images = [] }: GalleryProps) => {
+const Gallery = ({ images = [], galleryText }: GalleryProps) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loadedSet, setLoadedSet] = useState<Set<number>>(new Set());
@@ -46,7 +47,7 @@ const Gallery = ({ images = [] }: GalleryProps) => {
         <div className="text-center mb-12">
           {/* <h2 className="text-4xl font-bold text-gray-900 mb-4">Gallery</h2> */}
           <p className="text-gray-600 text-lg">
-            A glimpse into our culinary world
+            {galleryText || 'A glimpse into our culinary world'}
           </p>
         </div>
 

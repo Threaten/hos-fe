@@ -11,6 +11,8 @@ export default function AboutPage() {
   const { tenant } = useTenant();
 
   const tenantName = tenant ? tenant.name.toLowerCase() : "houseofsenses.vn";
+  const aboutTitle = tenant?.aboutTitle || `about ${tenantName}`;
+  const aboutSubtitle = tenant?.aboutSubtitle || "A Journey of Culinary Excellence";
 
   return (
     <div className="min-h-screen bg-background">
@@ -34,10 +36,10 @@ export default function AboutPage() {
         </div>
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-wide">
-            about {tenantName}
+            {aboutTitle}
           </h1>
           <p className="text-xl md:text-2xl font-light">
-            A Journey of Culinary Excellence
+            {aboutSubtitle}
           </p>
         </div>
       </section>

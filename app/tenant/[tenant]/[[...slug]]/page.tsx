@@ -76,6 +76,7 @@ export default async function TenantPage({ params }: PageProps) {
             transformedImages={transformedImages}
             newMenu={tenant.newMenu ?? []}
             tenantName={tenant.name}
+            galleryText={tenant.galleryText}
           />
           <div className="w-full border-t-2 border-b-2 h-20 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex">
             <Link

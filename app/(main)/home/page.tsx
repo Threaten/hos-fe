@@ -206,7 +206,7 @@ export default function Home() {
       <h4 className="w-full border-t-2 border-b-2 font-extrabold text-3xl h-16 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex animate-slide-in-up">
         Featured Gallery
       </h4>
-      <Gallery images={transformedImages} />
+      <Gallery images={transformedImages} galleryText={tenant?.galleryText} />
       <div className="w-full border-t-2 border-b-2 h-20 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex">
         <Link
           href="/gallery"

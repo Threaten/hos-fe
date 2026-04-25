@@ -23,12 +23,14 @@ interface TenantHomeInteractiveProps {
   transformedImages: GalleryImage[];
   newMenu: NewMenuImage[];
   tenantName: string;
+  galleryText?: string;
 }
 
 export default function TenantHomeInteractive({
   transformedImages,
   newMenu,
   tenantName,
+  galleryText,
 }: TenantHomeInteractiveProps) {
   const [showNewMenuModal, setShowNewMenuModal] = useState(
     newMenu != null && newMenu.length > 0,
@@ -40,7 +42,7 @@ export default function TenantHomeInteractive({
 
   return (
     <>
-      <Gallery images={transformedImages} />
+      <Gallery images={transformedImages} galleryText={galleryText} />
       <NewMenuModal
         images={newMenu}
         isOpen={showNewMenuModal}

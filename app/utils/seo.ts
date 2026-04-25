@@ -68,7 +68,8 @@ export async function fetchTenantConfigForSEO(
         name: tenant.name || 'House of Senses',
         slug: tenant.domain || tenantSlug,
         domain: tenant.domain,
-        description: tenant.heroDescription || undefined,
+        // heroDescription is frontend display text, not an SEO description — use meta.description only
+        description: undefined,
         logoUrl: tenant.logo?.url ? `${API_URL}${tenant.logo.url}` : undefined,
         address: tenant.address || undefined,
         latitude: tenant.location?.latitude ?? undefined,
@@ -152,15 +153,17 @@ export async function generateTenantMetadata(
     ? `${rawTitle} | ${siteName}`
     : `${siteName} | House of Senses`
 
-  // Build description — CMS meta.description > page-specific > tenant hero > fallback
-  // Note: address is intentionally excluded from the meta description to avoid
-  // Google showing raw address/phone data in the search snippet.
+  // Build description — CMS meta.description > page-specific > fallback, then append address
   const pageDescFn = page?.path ? PAGE_DESCRIPTIONS[page.path] : undefined
-  const description =
+  const baseDescription =
     page?.description ||
     tenantConfig?.metaDescription ||
     (pageDescFn ? pageDescFn(siteName) : null) ||
     `Experience exceptional fine dining at ${siteName}.`
+  // Append address for location context, but only once and only from the dedicated address field
+  const description = tenantConfig?.address
+    ? `${baseDescription} Located at ${tenantConfig.address}.`
+    : baseDescription
 
   // Build canonical URL
   const canonicalUrl = page?.path ? `${baseUrl}/${page.path}` : baseUrl
@@ -176,7 +179,45 @@ export async function generateTenantMetadata(
     siteName,
     'fine dining Vietnam',
     'restaurant',
+    'bistro',
     'Vietnamese cuisine',
+    'contemporary cuisine',
+    'international cuisine',
+    'coffee shop Vietnam',
+    'cafe Ho Chi Minh City',
+    'wine bar Vietnam',
+    'wine dining',
+    'date night restaurant Vietnam',
+    'romantic restaurant Ho Chi Minh City',
+    'couple dining',
+    'cozy restaurant',
+    'aesthetic cafe',
+    'vibe restaurant',
+    'upscale dining',
+    'luxury dining Vietnam',
+    'cocktail bar Ho Chi Minh City',
+    'brunch Ho Chi Minh City',
+    'dinner Ho Chi Minh City',
+    'Saigon restaurant',
+    'Saigon fine dining',
+    'HCMC restaurant',
+    'best restaurant Vietnam',
+    'intimate dining',
+    'special occasion restaurant',
+    'anniversary dinner Vietnam',
+    'foodie Vietnam',
+    'House of Senses',
+    'ẩm thực Sài Gòn',
+    'nhà hàng ngon Sài Gòn',
+    'nhà hàng lãng mạn',
+    'quán cafe đẹp',
+    'Xuan Hoa Ward',
+    'Phuong Xuan Hoa',
+    'phường Xuân Hòa',
+    'Quan 3',
+    'quận 3',
+    'District 3 Ho Chi Minh City',
+    'restaurant District 3 Saigon',
     ...(page?.path ? [PAGE_LABELS[page.path] || page.path] : []),
     ...(tenantConfig?.address ? [tenantConfig.address] : []),
   ].filter(Boolean)
@@ -257,8 +298,8 @@ export function buildTenantJsonLd(
       image: 'https://houseofsenses.vn/media/IMG_0050.JPG',
     }),
     description: tenantConfig?.address
-      ? `${tenantConfig?.description || `Experience exceptional fine dining at ${name}.`} Located at ${tenantConfig.address}.`
-      : (tenantConfig?.description || `Experience exceptional fine dining at ${name}.`),
+      ? `${tenantConfig?.metaDescription || `Experience exceptional fine dining at ${name}.`} Located at ${tenantConfig.address}.`
+      : (tenantConfig?.metaDescription || `Experience exceptional fine dining at ${name}.`),
     servesCuisine: ['Vietnamese', 'Contemporary', 'International'],
     priceRange: '$$$',
     currenciesAccepted: 'VND, USD',
