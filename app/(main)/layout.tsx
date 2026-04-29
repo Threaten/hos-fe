@@ -33,8 +33,10 @@ export default function MainLayout({
 }>) {
   return (
     <TenantProvider>
-      <Topbar />
-      <Navbar />
+      <header className="sticky top-0 z-50">
+        <Topbar />
+        <Navbar />
+      </header>
       <Breadcrumbs />
       <PageTransition>{children}</PageTransition>
       <Footer />

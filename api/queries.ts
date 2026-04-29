@@ -109,6 +109,10 @@ export interface Tenant {
   instagram?: string;
   tiktok?: string;
   youtube?: string;
+  topbarNotification?: {
+    enabled?: boolean;
+    message?: string;
+  };
   meta?: {
     title?: string;
     description?: string;
@@ -238,6 +242,10 @@ const GET_TENANTS = gql`
         instagram
         tiktok
         youtube
+        topbarNotification {
+          enabled
+          message
+        }
         meta {
           title
           description
@@ -308,6 +316,10 @@ const GET_TENANT = gql`
         instagram
         tiktok
         youtube
+        topbarNotification {
+          enabled
+          message
+        }
         meta {
           title
           description

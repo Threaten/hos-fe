@@ -25,7 +25,7 @@ export default function Navbar() {
       {/* ── Main Navbar ── */}
       <nav
         aria-label="Site navigation"
-        className="sticky top-12 z-40 h-14 bg-background/95 backdrop-blur-sm border-b border-[rgb(124,118,89)]/20"
+        className="z-40 h-14 bg-background/95 backdrop-blur-sm border-b border-[rgb(124,118,89)]/20"
       >
         <div className="w-full h-full px-6 md:px-10 flex items-center justify-between">
           {/* Brand — two-line left block */}
