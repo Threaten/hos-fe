@@ -23,16 +23,22 @@ const Footer: React.FC = () => {
   const toggleAll = () => setAllExpanded((v) => !v);
 
   return (
-    <footer className="w-full min-h-[50vh] flex flex-col relative bg-[rgb(97,89,55)]">
+    <footer
+      className="w-full min-h-[50vh] flex flex-col relative"
+      style={{ backgroundColor: "rgb(97,89,55)" }}
+    >
       {/* Top Section - Navigation Links */}
-      <div className="px-8 shrink-0 border-t border-[rgb(124,118,89)] mt-8">
+      <div
+        className=" px-8 shrink-0 border-t border-[rgb(124,118,89)] mt-8"
+        style={{ backgroundColor: "rgb(97,89,55)" }}
+      >
         <div className="w-full mx-auto">
           <button
             onClick={toggleAll}
             className="w-full flex justify-between items-center text-sm font-bold tracking-wider mb-4 mt-4 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[rgb(97,89,55)] rounded py-2 text-[rgba(172,163,133,0.95)]"
             aria-expanded={allExpanded}
           >
-            <span className="px-2 py-1">Check Out Another Homes</span>
+            <span className="px-2 py-1">Check Out Another Homes:</span>
             <span
               className={`transition-transform duration-300 ${
                 allExpanded ? "rotate-180" : ""
@@ -43,7 +49,7 @@ const Footer: React.FC = () => {
           </button>
 
           <div className={`${allExpanded ? "block" : "hidden"}`}>
-            {tenants.map((tenant) => {
+            {tenants.map((tenant, index) => {
               const tenantUrl = getTenantUrl(tenant.domain);
               return (
                 <div
@@ -171,18 +177,24 @@ const Footer: React.FC = () => {
       </div>
 
       {/* Separator Line */}
-      <div className="h-px w-full shrink-0 bg-[rgb(124,118,89)]"></div>
+      <div
+        className="h-px w-full shrink-0"
+        style={{ backgroundColor: "rgb(124,118,89)" }}
+      ></div>
 
       {/* Middle Section - Large Brand Name */}
-      <div className="flex items-center justify-center flex-1 px-4 md:px-8 py-8">
-        <p className="text-[4rem] sm:text-[5rem] md:text-[6rem] lg:text-[8rem] xl:text-[10rem] font-bold bg-linear-to-b from-gray-100 to-gray-300 bg-clip-text text-transparent tracking-tight leading-tight text-center break-words overflow-visible" aria-hidden="true">
+      <div
+        className="flex items-center justify-center flex-1 px-4 md:px-8 py-8"
+        style={{ backgroundColor: "rgb(97,89,55)" }}
+      >
+        <h1 className="text-[4rem] sm:text-[5rem] md:text-[6rem] lg:text-[8rem] xl:text-[10rem] font-bold bg-linear-to-b from-gray-100 to-gray-300 bg-clip-text text-transparent tracking-tight leading-tight text-center break-words overflow-visible">
           {currentTenant ? currentTenant.name.toLowerCase() : "houseofsenses.vn"}
-        </p>
+        </h1>
       </div>
 
       {/* Bottom Section - Copyright and Attribution */}
-      <div className="w-full border-t border-b h-12 mt-6 mb-6 text-xs font-bold text-[rgba(172,163,133,0.89)] border-[rgb(124,118,89)] text-center items-center justify-center flex">
-        Copyright © {new Date().getFullYear()} houseofsenses.vn. All rights reserved.
+      <div className="w-full border-t h-12 mt-6 mb-6 text-xs text-[rgba(172,163,133,0.89)] text-bold border-[rgb(124,118,89)] border-b text-center items-center justify-center flex">
+        Copyright © 2024 houseofsenses.vn. All rights reserved.
       </div>
     </footer>
   );

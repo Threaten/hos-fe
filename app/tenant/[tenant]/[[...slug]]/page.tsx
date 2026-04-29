@@ -69,21 +69,46 @@ export default async function TenantPage({ params }: PageProps) {
         <div>
           <Hero tenant={tenant} />
           <ShortAbout tenant={tenant} />
-          <h4 className="w-full border-t-2 border-b-2 font-extrabold text-3xl h-16 mt-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex animate-slide-in-up">
-            Featured Gallery
-          </h4>
+          {/* ── Gallery section header ── */}
+          <div className="px-8 md:px-14 pt-10 pb-4">
+            <div className="flex items-center gap-4 mb-3">
+              <span
+                className="text-[10px] tracking-[0.38em] uppercase"
+                style={{ color: "var(--color-sand)", opacity: 0.6 }}
+              >
+                03
+              </span>
+              <div
+                className="h-px flex-1"
+                style={{ backgroundColor: "var(--color-sand)", opacity: 0.25 }}
+              />
+              <span
+                className="text-[10px] tracking-[0.38em] uppercase"
+                style={{ color: "var(--color-sand)", opacity: 0.6 }}
+              >
+                Gallery
+              </span>
+            </div>
+          </div>
           <TenantHomeInteractive
             transformedImages={transformedImages}
             newMenu={tenant.newMenu ?? []}
             tenantName={tenant.name}
             galleryText={tenant.galleryText}
           />
-          <div className="w-full border-t-2 border-b-2 h-20 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex">
+          {/* ── See all link ── */}
+          <div className="px-8 md:px-14 pt-4 pb-8">
             <Link
               href="/gallery"
-              className="px-12 py-3 hover:border-b-2 hover:border-[rgb(124,118,89)]/40 text-center justify-center items-center flex text-gray-900 transition-all duration-300 text-lg tracking-wider font-semibold hover:scale-105"
+              className="inline-flex items-center gap-2 text-[11px] tracking-[0.28em] uppercase font-light transition-opacity duration-300 hover:opacity-40"
+              style={{
+                color: "var(--foreground)",
+                textDecoration: "underline",
+                textUnderlineOffset: "6px",
+                textDecorationColor: "var(--color-sand)",
+              }}
             >
-              See all Gallery
+              View full gallery →
             </Link>
           </div>
           <CTA />

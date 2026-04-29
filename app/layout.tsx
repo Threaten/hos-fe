@@ -15,135 +15,9 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ["200"],
 });
 
-const BASE_URL = "https://houseofsenses.vn";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
-  title: {
-    default: "House of Senses",
-    template: "%s | House of Senses",
-  },
-  description:
-    "Experience exceptional fine dining at House of Senses — multiple restaurant locations across Vietnam. Discover our story, menu, gallery, and book a table online.",
-  keywords: [
-    "House of Senses",
-    "fine dining Vietnam",
-    "restaurant Ho Chi Minh City",
-    "Vietnamese cuisine",
-    "luxury restaurant",
-    "dinner reservation Vietnam",
-    "Red Bistro",
-    "Blue Bistro",
-    "bistro",
-    "coffee shop Vietnam",
-    "cafe Ho Chi Minh City",
-    "wine bar Vietnam",
-    "wine dining",
-    "date night restaurant Vietnam",
-    "romantic restaurant Ho Chi Minh City",
-    "couple dining Vietnam",
-    "cozy restaurant",
-    "aesthetic cafe",
-    "vibe restaurant",
-    "upscale dining",
-    "contemporary cuisine Vietnam",
-    "international cuisine Vietnam",
-    "food experience Vietnam",
-    "cocktail bar Ho Chi Minh City",
-    "brunch Ho Chi Minh City",
-    "dinner Ho Chi Minh City",
-    "Saigon restaurant",
-    "Saigon fine dining",
-    "HCMC restaurant",
-    "best restaurant Vietnam",
-    "hidden gem restaurant Vietnam",
-    "intimate dining",
-    "special occasion restaurant",
-    "anniversary dinner Vietnam",
-    "food lovers Vietnam",
-    "foodie Vietnam",
-    "ẩm thực Sài Gòn",
-    "nhà hàng ngon Sài Gòn",
-    "nhà hàng lãng mạn",
-    "quán cafe đẹp",
-    "Xuan Hoa Ward",
-    "Phuong Xuan Hoa",
-    "phường Xuân Hòa",
-    "Quan 3",
-    "quận 3",
-    "District 3 Ho Chi Minh City",
-    "restaurant District 3 Saigon",
-  ],
-  authors: [{ name: "House of Senses", url: BASE_URL }],
-  creator: "House of Senses",
-  publisher: "House of Senses",
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/media/Asset 1.png",
-  },
-  openGraph: {
-    siteName: "House of Senses",
-    locale: "vi_VN",
-    alternateLocale: "en_US",
-    type: "website",
-    url: BASE_URL,
-    title: "House of Senses — Fine Dining in Vietnam",
-    description:
-      "Experience exceptional fine dining at House of Senses — multiple restaurant locations across Vietnam.",
-    images: [
-      {
-        url: "/media/IMG_0050.JPG",
-        width: 1200,
-        height: 630,
-        alt: "House of Senses Restaurant",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@houseofsenses",
-    title: "House of Senses — Fine Dining in Vietnam",
-    description:
-      "Experience exceptional fine dining at House of Senses — multiple restaurant locations across Vietnam.",
-    images: ["/media/IMG_0050.JPG"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  alternates: {
-    canonical: BASE_URL,
-  },
-  other: {
-    "geo.region": "VN",
-    "geo.placename": "Vietnam",
-    "og:country-name": "Vietnam",
-  },
-};
-
-const orgSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "House of Senses",
-  url: BASE_URL,
-  logo: `${BASE_URL}/media/Asset 1.png`,
-  description:
-    "Experience exceptional fine dining at House of Senses — multiple restaurant locations across Vietnam.",
-  address: {
-    "@type": "PostalAddress",
-    addressCountry: "VN",
-  },
-  sameAs: [
-    "https://www.facebook.com/houseofsenses",
-    "https://www.instagram.com/houseofsenses",
-  ],
+  title: "houseofsenses.vn",
+  description: "Experience exceptional dining at houseofsenses.vn",
 };
 
 export default function RootLayout({
@@ -153,14 +27,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://admin.houseofsenses.vn" />
-        <link rel="dns-prefetch" href="https://admin.houseofsenses.vn" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
-        />
-      </head>
       <body className={`${arimo.variable} ${ibmPlexMono.variable}`}>
         {children}
       </body>

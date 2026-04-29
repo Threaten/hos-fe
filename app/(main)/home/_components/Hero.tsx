@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,74 +11,169 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ tenant }) => {
-  const title = tenant?.heroTitle || tenant?.name || "houseofsenses.vn";
-  const subtitle = tenant?.heroSubtitle || "Exceptional Dining Experience";
+  const title = tenant?.heroTitle || tenant?.name || "House of Senses";
+  const subtitle = tenant?.heroSubtitle || "Fine Dining Experience";
   const description =
     tenant?.heroDescription ||
     "Discover the perfect blend of contemporary cuisine and elegant atmosphere.";
 
   const images =
     tenant?.heroImagesList?.filter((item) => item.image?.url) ?? [];
-  const marqueeImages = [...images, ...images];
+  const count = Math.max(images.length, 1);
+
+  // Duplicate enough times so the strip always overflows the viewport
+  const copies = images.length > 0 ? Math.max(Math.ceil(10 / count) * 2, 4) : 0;
+  const marqueeImages = images.length > 0
+    ? Array.from({ length: copies }, (_, r) =>
+        images.map((item, i) => ({ ...item, _key: `${r}-${i}` }))
+      ).flat()
+    : [];
+
+  // scroll duration scales with image count so speed feels consistent
+  const scrollDuration = `${count * 7}s`;
 
   return (
-    <section
-      className="w-full flex flex-col overflow-hidden bg-background"
-      style={{ height: "calc(100vh - 116px)" }}
-    >
-      {/* Image Marquee Strip */}
-      <div className="flex-1 overflow-hidden min-h-0">
+    <section className="w-full">
+      {/* ── Auto-scrolling image marquee ── */}
+      <div
+        className="w-full overflow-hidden"
+        style={{ height: "clamp(280px, 52vh, 520px)" }}
+      >
         {marqueeImages.length > 0 ? (
-          <div className="flex h-full gap-2 w-max animate-[marquee_40s_linear_infinite]">
-            {marqueeImages.map((item, idx) => (
-              <div
-                key={idx}
-                className="relative h-full w-64 md:w-80 flex-shrink-0"
-              >
-                <Image
-                  src={`${API_URL}${item.image!.url}`}
-                  alt={item.image?.filename || ""}
-                  fill
-                  className="object-cover"
-                  // Only mark the first visible set as priority; duplicates can lazy-load
-                  priority={idx < images.length && idx < 3}
-                  loading={idx < images.length && idx < 3 ? undefined : "lazy"}
-                  sizes="(max-width: 768px) 256px, 320px"
-                />
-              </div>
-            ))}
+          <div
+            className="h-full flex animate-marquee"
+            style={{
+              width: "max-content",
+              gap: "3px",
+              animationDuration: scrollDuration,
+            }}
+          >
+            {marqueeImages.map((item, idx) => {
+              const origIdx = idx % images.length;
+              return (
+                <div
+                  key={item._key}
+                  className="relative h-full shrink-0 overflow-hidden"
+                  style={{ width: "clamp(180px, 22vw, 290px)" }}
+                >
+                  <Image
+                    src={`${API_URL}${item.image!.url}`}
+                    alt={item.image?.filename || ""}
+                    fill
+                    className="object-cover"
+                    priority={idx < 4}
+                    loading={idx < 4 ? undefined : "lazy"}
+                    sizes="22vw"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none bg-linear-to-t from-black/20 to-transparent" />
+                  <span className="absolute bottom-3 right-3 text-[10px] tracking-[0.2em] text-white/40 font-light tabular-nums select-none">
+                    {String(origIdx + 1).padStart(2, "0")}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <div className="w-full h-full bg-gray-200" />
+          <div
+            className="w-full h-full"
+            style={{ backgroundColor: "var(--color-parchment)" }}
+          />
         )}
       </div>
 
-      {/* Text Content */}
-      <div className="flex-shrink-0 flex flex-col md:flex-row md:items-end md:justify-between gap-4 px-8 py-6 min-h-0">
-        <div className="min-w-0 overflow-hidden">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-wide leading-none line-clamp-2">
-            {title}
-          </h1>
-          <p className="text-base md:text-lg mt-3 font-light tracking-wide text-gray-600 line-clamp-2">
-            {subtitle}
-          </p>
-          <p className="text-sm mt-2 text-gray-500 max-w-md leading-relaxed line-clamp-3">
+      {/* ── Marquee text ticker ── */}
+      <div
+        className="w-full overflow-hidden"
+        style={{ borderTop: "1px solid var(--color-tan)", borderBottom: "1px solid var(--color-tan)" }}
+      >
+        <div className="py-2.5 flex animate-marquee whitespace-nowrap">
+          {[0, 1].map((r) => (
+            <div key={r} className="flex shrink-0 items-center gap-7 pr-7">
+              {[
+                "Reserve a Table",
+                "Fine Dining",
+                "Explore the Menu",
+                "Crafted Cuisine",
+                "House of Senses",
+                "Experience the Moment",
+              ].map((word, i) => (
+                <React.Fragment key={i}>
+                  <span
+                    className="text-[9px] tracking-[0.38em] uppercase"
+                    style={{ color: "var(--color-sand)" }}
+                  >
+                    {word}
+                  </span>
+                  <span className="text-[7px]" style={{ color: "var(--color-tan)" }}>
+                    ◇
+                  </span>
+                </React.Fragment>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Content row: left meta + right editorial title ── */}
+      <div className="w-full px-8 md:px-14 py-10 md:py-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 md:gap-16 items-end">
+
+        {/* Left — subtitle + description + CTAs */}
+        <div className="flex flex-col gap-5 md:max-w-xs">
+          <div className="flex items-center gap-3 opacity-0 animate-reveal-up" style={{ animationDelay: "0.1s" }}>
+            <div className="h-px w-6 shrink-0" style={{ backgroundColor: "var(--color-sand)" }} />
+            <p className="text-[10px] tracking-[0.38em] uppercase" style={{ color: "var(--color-sand)" }}>
+              {subtitle}
+            </p>
+          </div>
+
+          <p
+            className="text-sm font-light leading-[1.8] opacity-0 animate-reveal-up"
+            style={{ color: "var(--color-sand)", animationDelay: "0.22s" }}
+          >
             {description}
           </p>
+
+          <div
+            className="flex flex-col gap-3 pt-2 opacity-0 animate-reveal-up"
+            style={{ animationDelay: "0.36s" }}
+          >
+            <Link
+              href="/reservation"
+              className="inline-flex items-center self-start px-7 py-3.5 text-[11px] tracking-[0.22em] uppercase font-medium transition-colors duration-300 button-ripple"
+              style={{ backgroundColor: "var(--color-earth)", color: "var(--background)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--color-earth-dark)")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--color-earth)")}
+            >
+              Reserve a Table
+            </Link>
+            <Link
+              href="/menu"
+              className="inline-flex items-center gap-1.5 self-start text-[11px] tracking-[0.22em] uppercase font-light transition-opacity duration-300 hover:opacity-40"
+              style={{
+                color: "var(--foreground)",
+                textDecoration: "underline",
+                textUnderlineOffset: "5px",
+                textDecorationColor: "var(--color-sand)",
+              }}
+            >
+              Explore Menu →
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-row md:flex-col gap-3 shrink-0 md:items-end">
-          <Link
-            href="/menu"
-            className="px-6 py-2.5 border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors text-sm tracking-widest whitespace-nowrap"
+
+        {/* Right — large display title */}
+        <div className="text-right">
+          <h1
+            className="font-bold leading-[0.88] opacity-0 animate-reveal-up"
+            style={{
+              fontSize: "clamp(3.5rem, 10vw, 11rem)",
+              letterSpacing: "-0.035em",
+              color: "var(--foreground)",
+              animationDelay: "0.06s",
+            }}
           >
-            EXPLORE MENU
-          </Link>
-          <Link
-            href="/reservation"
-            className="px-6 py-2.5 bg-gray-900 text-white hover:bg-gray-700 transition-colors text-sm tracking-widest whitespace-nowrap"
-          >
-            MAKE RESERVATION
-          </Link>
+            {title}
+          </h1>
         </div>
       </div>
     </section>

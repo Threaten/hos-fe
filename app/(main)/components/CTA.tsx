@@ -9,38 +9,92 @@ const CTA = () => {
 
   const tenantName = tenant ? tenant.name.toLowerCase() : "houseofsenses.vn";
   const ctaTitle = tenant?.ctaTitle || `Experience ${tenantName} Today`;
-  const ctaText = tenant?.ctaText || "Join us for an unforgettable culinary journey";
+  const ctaText =
+    tenant?.ctaText || "Join us for an unforgettable culinary journey";
 
   return (
     <section
-      className="px-4 bg-background text-gray-900 mt-12 mb-12"
+      className="px-8 md:px-14 bg-background mt-0 mb-10"
       aria-labelledby="cta-heading"
     >
-      <div className="max-w-6xl mx-auto">
-        {/* Main CTA */}
-        <div className="text-center">
-          <h2 id="cta-heading" className="text-4xl font-bold mb-6">
-            {ctaTitle}
-          </h2>
-          <p className="text-xl mb-8 text-gray-700">
-            {ctaText}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              href="/reservation"
-              className="px-8 py-3 bg-transparent border-2 w-60 h-14 flex items-center justify-center border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-300 text-lg tracking-wide font-medium button-ripple"
-              aria-label={`Make a reservation at ${tenantName}`}
-            >
-              RESERVE A TABLE
-            </Link>
-            <Link
-              href="/menu"
-              className="px-8 py-3 bg-transparent border-2 w-60 h-14 flex items-center justify-center border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-300 text-lg tracking-wide font-medium button-ripple"
-              aria-label={`View ${tenantName}'s menu`}
-            >
-              EXPLORE MENU
-            </Link>
-          </div>
+      {/* Full-width separator */}
+      <div
+        className="w-full mb-10"
+        style={{
+          height: "1px",
+          backgroundColor: "var(--color-sand)",
+          opacity: 0.25,
+        }}
+      />
+      <div className="max-w-2xl mx-auto text-center">
+        {/* Label */}
+        <p
+          className="text-xs tracking-[0.35em] uppercase mb-4"
+          style={{ color: "var(--color-sand)" }}
+        >
+          Make it memorable
+        </p>
+
+        <h2
+          id="cta-heading"
+          className="font-bold leading-tight mb-4"
+          style={{
+            fontSize: "clamp(2rem, 4vw, 3.5rem)",
+            letterSpacing: "-0.02em",
+            color: "var(--foreground)",
+          }}
+        >
+          {ctaTitle}
+        </h2>
+
+        {/* Thin warm rule — centered */}
+        <div
+          className="mb-5 h-px w-12 mx-auto"
+          style={{ backgroundColor: "var(--color-sand)" }}
+        />
+
+        <p
+          className="text-sm font-light leading-relaxed mb-8"
+          style={{ color: "var(--color-sand)" }}
+        >
+          {ctaText}
+        </p>
+
+        <div className="flex items-center justify-center gap-6 flex-wrap">
+          {/* Primary: filled earth brown */}
+          <Link
+            href="/reservation"
+            className="inline-flex items-center px-7 py-3.5 text-xs tracking-[0.18em] uppercase font-medium transition-colors duration-300 button-ripple"
+            style={{
+              backgroundColor: "var(--color-earth)",
+              color: "var(--background)",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor =
+                "var(--color-earth-dark)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "var(--color-earth)")
+            }
+            aria-label={`Make a reservation at ${tenantName}`}
+          >
+            Reserve a Table
+          </Link>
+
+          {/* Secondary: text link */}
+          <Link
+            href="/menu"
+            className="text-xs tracking-[0.18em] uppercase font-light transition-opacity duration-300 hover:opacity-50"
+            style={{
+              color: "var(--foreground)",
+              textDecoration: "underline",
+              textUnderlineOffset: "5px",
+              textDecorationColor: "var(--color-sand)",
+            }}
+            aria-label={`View ${tenantName}'s menu`}
+          >
+            Explore Menu →
+          </Link>
         </div>
       </div>
     </section>

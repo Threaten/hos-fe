@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import ImageLightbox from "../../components/ImageLightbox";
 
 interface GalleryImage {
@@ -21,10 +20,6 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loadedSet, setLoadedSet] = useState<Set<number>>(new Set());
 
-  if (images.length === 0) {
-    return null;
-  }
-
   const handleImageClick = (index: number) => {
     setCurrentImageIndex(index);
     setLightboxOpen(true);
@@ -40,70 +35,99 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
 
   const currentImage = images[currentImageIndex];
 
-  return (
-    <section className="w-full py-8 px-4 bg-background">
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          {/* <h2 className="text-4xl font-bold text-gray-900 mb-4">Gallery</h2> */}
-          <p className="text-gray-600 text-lg">
-            {galleryText || 'A glimpse into our culinary world'}
-          </p>
-        </div>
-
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {images.map((image, index) => (
+  if (images.length === 0) {
+    return (
+      <section className="w-full px-8 md:px-14 pb-8 bg-background">
+        <div
+          className="w-full grid grid-cols-3"
+          style={{ gap: "3px" }}
+        >
+          {[...Array(6)].map((_, i) => (
             <div
-              key={index}
-              onClick={() => handleImageClick(index)}
-              className="relative h-[300px] md:h-[400px] overflow-hidden group rounded-lg cursor-pointer"
-            >
-              {!loadedSet.has(index) && (
-                <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />
-              )}
-              <Image
-                src={image.src}
-                alt={image.alt || "Gallery image"}
-                fill
-                loading="lazy"
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                onLoad={() => setLoadedSet((prev) => new Set(prev).add(index))}
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
-              {/* Branch Tag - Always Visible */}
-              <div className="absolute top-4 left-4 z-10">
-                <span className="px-3 py-1 bg-gray-900 text-white text-xs font-semibold rounded shadow-lg lowercase">
-                  {image.branch}
-                </span>
-              </div>
-              {/* Caption - Visible on Hover */}
-              <div className="absolute inset-x-0 bottom-0 p-4 bg-gray-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <p className="text-white text-base font-medium">
-                  {image.caption}
-                </p>
-              </div>
-            </div>
+              key={i}
+              className="h-[200px] md:h-[280px]"
+              style={{ backgroundColor: "var(--color-parchment)" }}
+            />
           ))}
         </div>
+      </section>
+    );
+  }
 
-        {/* Image Lightbox */}
-        {currentImage && (
-          <ImageLightbox
-            isOpen={lightboxOpen}
-            imageSrc={currentImage.src}
-            imageAlt={currentImage.alt}
-            caption={currentImage.caption}
-            branch={currentImage.branch}
-            onClose={() => setLightboxOpen(false)}
-            onNext={handleNext}
-            onPrev={handlePrev}
-            currentIndex={currentImageIndex}
-            totalImages={images.length}
-          />
-        )}
+  return (
+    <section className="w-full px-8 md:px-14 pb-8 bg-background">
+      {/* Optional description text */}
+      {galleryText && (
+        <p
+          className="text-sm font-light leading-[1.9] mb-10"
+          style={{ color: "var(--color-sand)", maxWidth: "52ch" }}
+        >
+          {galleryText}
+        </p>
+      )}
+
+      {/* Gallery Grid — no rounded corners, tight 3px gaps */}
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+        style={{ gap: "3px" }}
+      >
+        {images.map((image, index) => (
+          <div
+            key={index}
+            onClick={() => handleImageClick(index)}
+            className="relative h-[280px] md:h-[360px] overflow-hidden group cursor-pointer"
+          >
+            {!loadedSet.has(index) && (
+              <div
+                className="absolute inset-0 z-10 animate-shimmer"
+                style={{ backgroundColor: "var(--color-tan)" }}
+              />
+            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={image.src}
+              alt={image.alt}
+              className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-[1.05]"
+              onLoad={() => setLoadedSet((prev) => new Set(prev).add(index))}
+            />
+            {/* Subtle dark overlay */}
+            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/25 transition-colors duration-500" />
+            {/* Index number — faint top-left */}
+            <span className="absolute top-3 left-3 text-[9px] tracking-[0.3em] text-white/40 tabular-nums select-none">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            {/* Caption bottom gradient — appears on hover */}
+            {image.caption && (
+              <div className="absolute inset-x-0 bottom-0 px-4 py-5 bg-linear-to-t from-black/70 to-transparent translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                <p className="text-white text-xs tracking-[0.12em] font-light">
+                  {image.caption}
+                </p>
+                {image.branch && (
+                  <p className="text-white/50 text-[9px] tracking-[0.28em] uppercase mt-1">
+                    {image.branch}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
+
+      {/* Image Lightbox */}
+      {currentImage && (
+        <ImageLightbox
+          isOpen={lightboxOpen}
+          imageSrc={currentImage.src}
+          imageAlt={currentImage.alt}
+          caption={currentImage.caption}
+          branch={currentImage.branch}
+          onClose={() => setLightboxOpen(false)}
+          onNext={handleNext}
+          onPrev={handlePrev}
+          currentIndex={currentImageIndex}
+          totalImages={images.length}
+        />
+      )}
     </section>
   );
 };

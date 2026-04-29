@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #eee9df;
+  --background: #f0ece3;
   --foreground: #171717;
+  /* Warm earth palette — derived from existing brand colors */
+  --color-earth: oklch(38% 0.048 67);
+  --color-earth-dark: oklch(32% 0.048 67);
+  --color-sand: oklch(51% 0.042 67);
+  --color-tan: oklch(67% 0.032 67);
+  --color-parchment: oklch(93% 0.012 75);
 }
 
 /* stylelint-disable-next-line at-rule-no-unknown */
@@ -36,7 +42,7 @@ h4,
 h5,
 h6,
 .font-heading {
-  font-family: var(--font-ibm-plex-mono), monospace;
+  font-family: var(--font-arimo), sans-serif;
   font-weight: 600;
 }
 
@@ -227,6 +233,28 @@ h6,
   }
 }
 
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lineGrow {
+  from {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  to {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
 .button-ripple {
   position: relative;
   overflow: hidden;
@@ -293,6 +321,18 @@ h6,
     transparent 100%
   );
   background-size: 1000px 100%;
+}
+
+.animate-reveal-up {
+  animation: revealUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-line-grow {
+  animation: lineGrow 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-marquee {
+  animation: marquee 28s linear infinite;
 }
 
 .delay-100 {

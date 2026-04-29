@@ -3,13 +3,11 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { fetchTenants, type Tenant } from "@/api/queries";
 import { getTenantUrl } from "@/app/utils/domain";
-import { useTenant } from "@/app/contexts/TenantContext";
 
 export default function Topbar() {
   const [openCard, setOpenCard] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [tenants, setTenants] = useState<Tenant[]>([]);
-  const { tenant: currentTenant } = useTenant();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -62,7 +60,6 @@ export default function Topbar() {
               className={`transition-transform duration-300 text-gray-700 ${
                 openCard === "branches" ? "rotate-180" : ""
               }`}
-              aria-hidden="true"
             >
               ▼
             </span>
@@ -72,7 +69,7 @@ export default function Topbar() {
           {openCard === "branches" && (
             <div
               ref={dropdownRef}
-              className="absolute left-1/2 -translate-x-1/2 top-full mt-0 bg-white border border-gray-200 rounded-b-lg shadow-lg min-w-[600px] z-50"
+              className="absolute left-1/2 transform -translate-x-1/2 top-full mt-0 bg-white border border-gray-200 rounded-b-lg shadow-lg min-w-[600px] z-50"
             >
               <div className="grid grid-cols-2 gap-4 p-4">
                 {tenants.map((tenant) => (
@@ -83,12 +80,9 @@ export default function Topbar() {
                     }}
                     className="border border-gray-200 rounded-lg p-4 hover:border-gray-400 hover:bg-gray-50 transition-all cursor-pointer"
                   >
-                    <h3 className="font-bold text-sm mb-1 text-gray-900 tracking-wide">
+                    <h3 className="font-bold text-sm mb-2 text-gray-900 tracking-wide">
                       {tenant.name.toLowerCase()}
                     </h3>
-                    <p className={`text-xs mb-1 ${currentTenant?.domain === tenant.domain ? "text-[rgb(124,118,89)]" : "invisible"}`}>
-                      (you are here)
-                    </p>
                     <div className="space-y-1 text-left">
                       {tenant.address && (
                         <p className="text-xs text-gray-600">
@@ -112,14 +106,12 @@ export default function Topbar() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="w-full flex items-center justify-between text-xs tracking-widest font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded px-2 py-1"
             aria-expanded={mobileMenuOpen}
-            aria-label={mobileMenuOpen ? "Close branch selector" : "Open branch selector"}
           >
             <span className="text-gray-700">Another Homes:</span>
             <span
               className={`transition-transform duration-300 ${
                 mobileMenuOpen ? "rotate-180" : ""
               }`}
-              aria-hidden="true"
             >
               ▼
             </span>
@@ -144,12 +136,9 @@ export default function Topbar() {
                       : ""
                   }`}
                 >
-                  <h3 className="font-bold text-sm mb-1 text-gray-900 uppercase tracking-wide">
+                  <h3 className="font-bold text-sm mb-2 text-gray-900 uppercase tracking-wide">
                     {tenant.name}
                   </h3>
-                  {currentTenant?.domain === tenant.domain && (
-                    <p className="text-xs text-[rgb(124,118,89)] mb-1">(you are here)</p>
-                  )}
                   <div className="space-y-1 text-left">
                     {tenant.address && (
                       <p className="text-xs text-gray-600">{tenant.address}</p>
