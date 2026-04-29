@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import ImageLightbox from "../../components/ImageLightbox";
 
 interface GalleryImage {
@@ -83,11 +84,14 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
                 style={{ backgroundColor: "var(--color-tan)" }}
               />
             )}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={image.src}
               alt={image.alt}
-              className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-[1.05]"
+              fill
+              className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-[1.05]"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              priority={index < 3}
+              loading={index < 3 ? undefined : "lazy"}
               onLoad={() => setLoadedSet((prev) => new Set(prev).add(index))}
             />
             {/* Subtle dark overlay */}
