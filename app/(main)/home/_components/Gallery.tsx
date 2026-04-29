@@ -38,7 +38,7 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
 
   if (images.length === 0) {
     return (
-      <section className="w-full px-8 md:px-14 pb-8 bg-background">
+      <section className="w-full px-8 md:px-14 pb-12 bg-background">
         <div
           className="w-full grid grid-cols-3"
           style={{ gap: "3px" }}
@@ -56,7 +56,7 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
   }
 
   return (
-    <section className="w-full px-8 md:px-14 pb-8 bg-background">
+    <section className="w-full px-8 md:px-14 pb-12 bg-background">
       {/* Optional description text */}
       {galleryText && (
         <p

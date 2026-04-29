@@ -70,8 +70,8 @@ export default async function TenantPage({ params }: PageProps) {
           <Hero tenant={tenant} />
           <ShortAbout tenant={tenant} />
           {/* ── Gallery section header ── */}
-          <div className="px-8 md:px-14 pt-10 pb-4">
-            <div className="flex items-center gap-4 mb-3">
+          <div className="px-8 md:px-14 pt-0 pb-4">
+            <div className="flex items-center gap-4 mb-3 mt-3 ">
               <span
                 className="text-[10px] tracking-[0.38em] uppercase"
                 style={{ color: "var(--color-sand)", opacity: 0.6 }}

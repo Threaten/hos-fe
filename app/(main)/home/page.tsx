@@ -207,7 +207,7 @@ export default function Home() {
         Featured Gallery
       </h4>
       <Gallery images={transformedImages} galleryText={tenant?.galleryText} />
-      <div className="w-full border-t-2 border-b-2 h-20 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex">
+      <div className="w-full border-t-2 border-b-2 h-16 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex">
         <Link
           href="/gallery"
           className="px-12 py-3 hover:border-b-2 hover:border-[rgb(124,118,89)]/40 text-center justify-center items-center flex text-gray-900 transition-all duration-300 text-lg tracking-wider font-semibold hover:scale-105"

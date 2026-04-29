@@ -60,7 +60,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full bg-background py-14 md:py-20 px-8 md:px-14 overflow-hidden"
+      className="relative w-full bg-background py-12 px-8 md:px-14 overflow-hidden"
     >
       {/* ── Ghost decorative "02" watermark ── */}
       <span
@@ -268,14 +268,14 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
 
       {/* ── Bottom marquee strip ── */}
       <div
-        className={`relative z-10 mt-20 overflow-hidden ${revealCls}`}
+        className={`relative z-10 mt-10 overflow-hidden ${revealCls}`}
         style={{ transitionDelay: "420ms" }}
       >
         <div
-          className="h-px w-full mb-8"
+          className="h-px w-full mb-4"
           style={{ backgroundColor: "var(--color-sand)", opacity: 0.2 }}
         />
-        <div className="flex animate-marquee whitespace-nowrap">
+        <div className="flex animate-marquee whitespace-nowrap items-center">
           {[0, 1].map((r) => (
             <div key={r} className="flex shrink-0 items-center gap-8 pr-8">
               {MARQUEE_WORDS.map((word, i) => (
