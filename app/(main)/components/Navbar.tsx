@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTenant } from "@/app/contexts/TenantContext";
+import { fetchHomeInformation, type HomeInformation } from "@/api/queries";
 
 const NAV_LINKS = [
   { href: "/", label: "HOME" },
@@ -15,8 +16,15 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [homeInfo, setHomeInfo] = useState<HomeInformation | null>(null);
   const pathname = usePathname();
   const { tenant } = useTenant();
+
+  useEffect(() => {
+    fetchHomeInformation().then((data) => {
+      if (data) setHomeInfo(data);
+    });
+  }, []);
 
   const toggleMenu = () => setIsMenuOpen((v) => !v);
 
@@ -38,7 +46,7 @@ export default function Navbar() {
               {tenant ? tenant.name : "House of Senses"}
             </span>
             <span className="text-[9px] tracking-[0.22em] uppercase text-gray-400 mt-px">
-              {tenant?.address ? tenant.address.split(",")[0] : "Fine Dining"}
+              {homeInfo?.name ?? (tenant?.address ? tenant.address.split(",")[0] : "Fine Dining")}
             </span>
           </Link>
 
