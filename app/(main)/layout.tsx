@@ -110,8 +110,10 @@ export default async function MainLayout({
       {siteNavSchema && siteNavSchema.map((schema, i) => (
         <JsonLd key={i} data={schema} />
       ))}
-      <Topbar />
-      <Navbar />
+      <header className="sticky top-0 z-50">
+        <Topbar />
+        <Navbar />
+      </header>
       <Breadcrumbs />
       <PageTransition>{children}</PageTransition>
       <Footer />

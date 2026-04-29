@@ -17,7 +17,7 @@ export default function Navbar() {
   return (
     <>
       {/* Main Navbar */}
-      <nav aria-label="Site navigation" className="sticky top-12 flex justify-center items-center h-14 left-0 right-0 z-40 transition-all duration-300 bg-background/95 backdrop-blur-sm text-gray-900 border-b border-[rgb(124,118,89)]/20">
+      <nav aria-label="Site navigation" className="flex justify-center items-center h-14 left-0 right-0 z-40 transition-all duration-300 bg-background/95 backdrop-blur-sm text-gray-900 border-b border-[rgb(124,118,89)]/20">
         <div className="w-full px-10 py-4">
           <div className="flex items-center justify-between">
             {/* Hamburger Menu Button - Left */}
