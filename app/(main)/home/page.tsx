@@ -203,11 +203,13 @@ export default function Home() {
       ))}
       <Hero tenant={tenant} />
       <ShortAbout tenant={tenant} />
-      <h4 className="w-full border-t-2 border-b-2 font-extrabold text-3xl h-16 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex animate-slide-in-up">
-        Featured Gallery
-      </h4>
+      <div className="w-full px-8 md:px-14 mt-12 mb-8 flex items-center gap-4">
+        <span className="text-[10px] tracking-[0.38em] uppercase" style={{ color: "var(--color-sand)", opacity: 0.6 }}>02</span>
+        <div className="h-px flex-1" style={{ backgroundColor: "var(--color-sand)", opacity: 0.25 }} />
+        <span className="text-[10px] tracking-[0.38em] uppercase" style={{ color: "var(--color-sand)", opacity: 0.6 }}>Gallery</span>
+      </div>
       <Gallery images={transformedImages} galleryText={tenant?.galleryText} />
-      <div className="w-full border-t-2 border-b-2 h-16 mt-12 mb-12 border-[rgb(124,118,89)]/40 text-center items-center justify-center flex">
+      <div className="w-full border-t border-b h-16 mt-12 mb-12 flex items-center justify-center" style={{ borderColor: "color-mix(in srgb, var(--color-sand) 25%, transparent)" }}>
         <Link
           href="/gallery"
           className="px-12 py-3 hover:border-b-2 hover:border-[rgb(124,118,89)]/40 text-center justify-center items-center flex text-gray-900 transition-all duration-300 text-lg tracking-wider font-semibold hover:scale-105"

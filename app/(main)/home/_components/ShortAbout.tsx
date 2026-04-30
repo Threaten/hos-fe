@@ -62,7 +62,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       ref={sectionRef}
       className="relative w-full bg-background py-12 px-8 md:px-14 overflow-hidden"
     >
-      {/* ── Ghost decorative "02" watermark ── */}
+      {/* ── Ghost decorative "01" watermark ── */}
       <span
         className="absolute -top-4 right-4 md:right-10 font-bold leading-none select-none pointer-events-none"
         aria-hidden="true"
@@ -74,7 +74,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
           zIndex: 0,
         }}
       >
-        02
+        01
       </span>
 
       {/* ── Section marker ── */}
@@ -86,7 +86,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
           className="text-[10px] tracking-[0.38em] uppercase"
           style={{ color: "var(--color-sand)", opacity: 0.6 }}
         >
-          02
+          01
         </span>
         <div
           className="h-px flex-1"
@@ -268,14 +268,10 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
 
       {/* ── Bottom marquee strip ── */}
       <div
-        className={`relative z-10 mt-10 overflow-hidden ${revealCls}`}
-        style={{ transitionDelay: "420ms" }}
+        className={`relative z-10 mt-10 overflow-hidden border-t border-b ${revealCls}`}
+        style={{ transitionDelay: "420ms", borderColor: "color-mix(in srgb, var(--color-sand) 25%, transparent)" }}
       >
-        <div
-          className="h-px w-full mb-4"
-          style={{ backgroundColor: "var(--color-sand)", opacity: 0.2 }}
-        />
-        <div className="flex animate-marquee whitespace-nowrap items-center">
+        <div className="flex animate-marquee whitespace-nowrap items-center py-3">
           {[0, 1].map((r) => (
             <div key={r} className="flex shrink-0 items-center gap-8 pr-8">
               {MARQUEE_WORDS.map((word, i) => (

@@ -114,11 +114,26 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
         </div>
       </div>
 
-      {/* ── Content row: left meta + right editorial title ── */}
-      <div className="w-full px-8 md:px-14 py-10 md:py-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 md:gap-16 items-end">
+      {/* ── Content row: centered on mobile, side-by-side on desktop ── */}
+      <div className="w-full px-8 md:px-14 py-8 md:py-12 flex flex-col items-center md:grid md:grid-cols-[1fr_auto] md:items-end md:gap-16">
+
+        {/* Large display title — top on mobile, right column on desktop */}
+        <div className="text-center md:text-right order-first md:order-last mb-3 md:mb-0">
+          <h1
+            className="font-bold leading-[0.88] opacity-0 animate-reveal-up"
+            style={{
+              fontSize: "clamp(3rem, 14vw, 11rem)",
+              letterSpacing: "-0.035em",
+              color: "var(--foreground)",
+              animationDelay: "0.06s",
+            }}
+          >
+            {title}
+          </h1>
+        </div>
 
         {/* Left — subtitle + description + CTAs */}
-        <div className="flex flex-col gap-5 md:max-w-xs">
+        <div className="flex flex-col items-center md:items-start gap-4 md:max-w-xs">
           <div className="flex items-center gap-3 opacity-0 animate-reveal-up" style={{ animationDelay: "0.1s" }}>
             <div className="h-px w-6 shrink-0" style={{ backgroundColor: "var(--color-sand)" }} />
             <p className="text-[10px] tracking-[0.38em] uppercase" style={{ color: "var(--color-sand)" }}>
@@ -127,19 +142,19 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
           </div>
 
           <p
-            className="text-sm font-light leading-[1.8] opacity-0 animate-reveal-up"
+            className="text-sm font-light leading-[1.8] text-center md:text-left opacity-0 animate-reveal-up"
             style={{ color: "var(--color-sand)", animationDelay: "0.22s" }}
           >
             {description}
           </p>
 
           <div
-            className="flex flex-col gap-3 pt-2 opacity-0 animate-reveal-up"
+            className="flex flex-col items-center md:items-start gap-3 pt-1 opacity-0 animate-reveal-up"
             style={{ animationDelay: "0.36s" }}
           >
             <Link
               href="/reservation"
-              className="inline-flex items-center self-start px-7 py-3.5 text-[11px] tracking-[0.22em] uppercase font-medium transition-colors duration-300 button-ripple"
+              className="inline-flex items-center px-7 py-3.5 text-[11px] tracking-[0.22em] uppercase font-medium transition-colors duration-300 button-ripple"
               style={{ backgroundColor: "var(--color-earth)", color: "var(--background)" }}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--color-earth-dark)")}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--color-earth)")}
@@ -148,7 +163,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
             </Link>
             <Link
               href="/menu"
-              className="inline-flex items-center gap-1.5 self-start text-[11px] tracking-[0.22em] uppercase font-light transition-opacity duration-300 hover:opacity-40"
+              className="inline-flex items-center gap-1.5 text-[11px] tracking-[0.22em] uppercase font-light transition-opacity duration-300 hover:opacity-40"
               style={{
                 color: "var(--foreground)",
                 textDecoration: "underline",
@@ -159,21 +174,6 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
               Explore Menu →
             </Link>
           </div>
-        </div>
-
-        {/* Right — large display title */}
-        <div className="text-right">
-          <h1
-            className="font-bold leading-[0.88] opacity-0 animate-reveal-up"
-            style={{
-              fontSize: "clamp(3.5rem, 10vw, 11rem)",
-              letterSpacing: "-0.035em",
-              color: "var(--foreground)",
-              animationDelay: "0.06s",
-            }}
-          >
-            {title}
-          </h1>
         </div>
       </div>
     </section>
