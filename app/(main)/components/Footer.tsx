@@ -65,13 +65,13 @@ const Footer: React.FC = () => {
           aria-expanded={allExpanded}
         >
           <span
-            className="text-[8px] tracking-[0.42em] uppercase"
+            className="text-[12px] tracking-[0.42em] uppercase"
             style={{ color: FOOTER_MUTED }}
           >
             Our Locations
           </span>
           <span
-            className="text-[8px] transition-transform duration-300"
+            className="text-[7px] transition-transform duration-300"
             style={{
               color: FOOTER_MUTED,
               transform: allExpanded ? "rotate(180deg)" : "none",
@@ -103,7 +103,7 @@ const Footer: React.FC = () => {
                   <div className="flex items-center gap-2 mb-3">
                     <a
                       href={tenantUrl}
-                      className="text-[12px] tracking-[0.22em] uppercase font-semibold transition-opacity duration-200 hover:opacity-50"
+                      className="text-[15px] tracking-[0.22em] uppercase font-semibold transition-opacity duration-200 hover:opacity-50"
                       style={{
                         color: FOOTER_TEXT,
                         fontFamily: "var(--font-arimo)",
@@ -113,7 +113,7 @@ const Footer: React.FC = () => {
                     </a>
                     {currentTenant?.id === tenant.id && (
                       <span
-                        className="text-[8px] tracking-[0.28em]"
+                        className="text-[11px] tracking-[0.28em]"
                         style={{ color: FOOTER_GOLD }}
                       >
                         ← you&apos;re here
@@ -124,14 +124,17 @@ const Footer: React.FC = () => {
                   <div className="space-y-1.5 mb-5">
                     {tenant.address && (
                       <p
-                        className="text-[8px] leading-relaxed"
+                        className="text-[14px] leading-relaxed"
                         style={{ color: FOOTER_MUTED }}
                       >
                         {tenant.address}
                       </p>
                     )}
                     {tenant.phone && (
-                      <p className="text-[8px]" style={{ color: FOOTER_MUTED }}>
+                      <p
+                        className="text-[14px]"
+                        style={{ color: FOOTER_MUTED }}
+                      >
                         {tenant.phone}
                       </p>
                     )}
@@ -217,7 +220,7 @@ const Footer: React.FC = () => {
       />
 
       {/* Large brand mark */}
-      <div className="flex items-center justify-center px-4 md:px-8 py-12 md:py-16">
+      <div className="flex items-center justify-center px-8 md:px-14 py-12 md:py-16">
         <h2
           className="font-bold leading-none text-center wrap-break-word select-none"
           style={{
@@ -243,13 +246,13 @@ const Footer: React.FC = () => {
       />
       <div className="flex items-center justify-between px-8 md:px-14 py-5">
         <p
-          className="text-[8px] tracking-[0.32em] uppercase"
+          className="text-[10px] tracking-[0.32em] uppercase"
           style={{ color: FOOTER_MUTED }}
         >
           &copy; {new Date().getFullYear()} houseofsenses.vn
         </p>
         <p
-          className="text-[8px] tracking-[0.28em] uppercase"
+          className="text-[10px] tracking-[0.28em] uppercase"
           style={{ color: FOOTER_MUTED }}
         >
           All rights reserved
