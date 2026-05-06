@@ -7,15 +7,16 @@ import { useTenant } from "@/app/contexts/TenantContext";
 import { fetchHomeInformation, type HomeInformation } from "@/api/queries";
 
 const NAV_LINKS = [
-  { href: "/", label: "HOME" },
-  { href: "/about", label: "ABOUT" },
-  { href: "/menu", label: "MENU" },
-  { href: "/gallery", label: "GALLERY" },
-  { href: "/contact", label: "CONTACT" },
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/menu", label: "Menu" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [homeInfo, setHomeInfo] = useState<HomeInformation | null>(null);
   const pathname = usePathname();
   const { tenant } = useTenant();
@@ -26,6 +27,12 @@ export default function Navbar() {
     });
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const toggleMenu = () => setIsMenuOpen((v) => !v);
 
   return (
@@ -33,104 +40,188 @@ export default function Navbar() {
       {/* ── Main Navbar ── */}
       <nav
         aria-label="Site navigation"
-        className="z-40 h-14 bg-background/95 backdrop-blur-sm border-b border-[rgb(124,118,89)]/20"
+        className={`z-40 h-15 transition-all duration-500 ${
+          scrolled
+            ? "bg-(--background)/96 backdrop-blur-md shadow-[0_1px_0_0_color-mix(in_srgb,var(--color-gold)_18%,transparent)]"
+            : "bg-(--background)/95 backdrop-blur-sm border-b border-(--color-tan)/20"
+        }`}
       >
-        <div className="w-full h-full px-6 md:px-10 flex items-center justify-between">
-          {/* Brand — two-line left block */}
+        {/* Slim gold accent line at very top */}
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{
+            background:
+              "linear-gradient(to right, transparent, var(--color-gold), transparent)",
+            opacity: 0.35,
+          }}
+        />
+
+        <div className="w-full h-full px-6 md:px-12 flex items-center justify-between">
+          {/* Brand */}
           <Link
             href="/"
-            className="flex flex-col leading-tight focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded"
+            className="flex flex-col leading-none focus:outline-none group"
             aria-label={tenant ? `${tenant.name} Home` : "House of Senses Home"}
           >
-            <span className="text-sm md:text-base font-semibold tracking-widest text-gray-900 uppercase">
+            <span
+              className="text-[11px] md:text-[12px] font-semibold tracking-[0.32em] uppercase transition-opacity duration-300 group-hover:opacity-60"
+              style={{ color: "var(--foreground)" }}
+            >
               {tenant ? tenant.name : "House of Senses"}
             </span>
-            <span className="text-[9px] tracking-[0.22em] uppercase text-gray-400 mt-px">
-              {homeInfo?.name ?? (tenant?.address ? tenant.address.split(",")[0] : "Fine Dining")}
+            <span
+              className="text-[8px] tracking-[0.26em] uppercase mt-0.75"
+              style={{ color: "var(--foreground)", opacity: 0.82 }}
+            >
+              {homeInfo?.name ??
+                (tenant?.address
+                  ? tenant.address.split(",")[0]
+                  : "Fine Dining")}
             </span>
           </Link>
 
           {/* Desktop nav links */}
-          <div className="hidden md:flex items-center gap-7">
-            {NAV_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`text-[11px] tracking-[0.22em] uppercase transition-opacity duration-200 hover:opacity-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-1 rounded ${
-                  pathname === href ? "text-gray-900" : "text-gray-500"
-                }`}
-              >
-                {label}
-              </Link>
-            ))}
+          <div className="hidden md:flex items-center gap-8">
+            {NAV_LINKS.map(({ href, label }) => {
+              const isActive = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className="relative text-[10px] tracking-[0.28em] uppercase py-1 transition-opacity duration-300 hover:opacity-40 focus:outline-none"
+                  style={{
+                    color: "var(--foreground)",
+                    opacity: isActive ? 1 : 0.92,
+                  }}
+                >
+                  {label}
+                  {isActive && (
+                    <span
+                      className="absolute -bottom-0.5 left-0 right-0 h-px"
+                      style={{
+                        backgroundColor: "var(--color-gold)",
+                        opacity: 0.8,
+                      }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Right: RESERVE + mobile burger */}
           <div className="flex items-center gap-5">
             <Link
               href="/reservation"
-              className="hidden md:block text-[11px] tracking-[0.22em] uppercase font-semibold text-gray-900 underline underline-offset-4 decoration-[rgb(124,118,89)] hover:opacity-50 transition-opacity duration-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded"
+              className="hidden md:inline-flex items-center px-4 py-1.5 text-[9px] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:opacity-60 focus:outline-none"
+              style={{
+                border:
+                  "1px solid color-mix(in srgb, var(--color-gold) 55%, transparent)",
+                color: "var(--foreground)",
+              }}
               aria-label="Make a reservation"
             >
-              RESERVE
+              Reserve
             </Link>
 
-            {/* Hamburger — mobile only */}
+            {/* Hamburger */}
             <button
               onClick={toggleMenu}
-              className="md:hidden flex flex-col gap-[5px] w-5 justify-center items-center focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded"
+              className="md:hidden flex flex-col gap-1.25 w-5 justify-center items-center focus:outline-none"
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
             >
               <span
-                className={`block h-px w-5 bg-gray-900 transition-all duration-300 ${isMenuOpen ? "rotate-45 translate-y-1.5" : ""}`}
+                className={`block h-px bg-foreground transition-all duration-300 ${isMenuOpen ? "w-5 rotate-45 translate-y-1.25" : "w-5"}`}
               />
               <span
-                className={`block h-px w-5 bg-gray-900 transition-all duration-300 ${isMenuOpen ? "opacity-0" : ""}`}
+                className={`block h-px bg-foreground transition-all duration-300 ${isMenuOpen ? "opacity-0 w-0" : "w-4"}`}
               />
               <span
-                className={`block h-px w-5 bg-gray-900 transition-all duration-300 ${isMenuOpen ? "-rotate-45 -translate-y-1.5" : ""}`}
+                className={`block h-px bg-foreground transition-all duration-300 ${isMenuOpen ? "w-5 -rotate-45 -translate-y-1.25" : "w-5"}`}
               />
             </button>
           </div>
         </div>
       </nav>
 
-      {/* ── Mobile slide-down menu ── */}
+      {/* ── Mobile fullscreen menu ── */}
       <div
-        className={`md:hidden fixed left-0 right-0 top-[104px] z-40 transition-all duration-400 ease-in-out ${
+        className={`md:hidden fixed inset-0 z-200 flex flex-col transition-all duration-500 ${
           isMenuOpen
             ? "opacity-100 visible"
             : "opacity-0 invisible pointer-events-none"
         }`}
+        style={{ backgroundColor: "var(--background)" }}
       >
-        <div className="bg-background/98 backdrop-blur-md border-b border-[rgb(124,118,89)]/20 px-8 py-8 shadow-md">
-          <nav
-            aria-label="Main navigation menu"
-            className="flex flex-col gap-5"
+        {/* Close button */}
+        <div
+          className="flex items-center justify-between px-6 h-15 border-b"
+          style={{
+            borderColor:
+              "color-mix(in srgb, var(--color-tan) 30%, transparent)",
+          }}
+        >
+          <span
+            className="text-[10px] tracking-[0.32em] uppercase"
+            style={{ color: "var(--foreground)", opacity: 0.85 }}
           >
-            {NAV_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`text-xs tracking-[0.22em] uppercase transition-opacity duration-200 py-1 focus:outline-none ${
-                  pathname === href
-                    ? "text-gray-900 border-l-2 border-gray-900 pl-3"
-                    : "text-gray-500 hover:text-gray-900 pl-0"
-                }`}
-                onClick={toggleMenu}
-              >
-                {label}
-              </Link>
-            ))}
+            Navigation
+          </span>
+          <button
+            onClick={toggleMenu}
+            className="w-8 h-8 flex items-center justify-center focus:outline-none"
+            aria-label="Close menu"
+          >
+            <span className="block w-5 h-px bg-foreground rotate-45 absolute" />
+            <span className="block w-5 h-px bg-foreground -rotate-45 absolute" />
+          </button>
+        </div>
+
+        <nav
+          aria-label="Main navigation menu"
+          className="flex flex-col justify-center flex-1 px-10 gap-6"
+        >
+          {NAV_LINKS.map(({ href, label }, i) => (
             <Link
-              href="/reservation"
-              className="mt-3 text-xs tracking-[0.22em] uppercase font-semibold text-gray-900 underline underline-offset-4 decoration-[rgb(124,118,89)] hover:opacity-50 transition-opacity duration-200"
+              key={href}
+              href={href}
+              className="flex items-center gap-4 group focus:outline-none"
+              style={{ transitionDelay: `${i * 40}ms` }}
               onClick={toggleMenu}
             >
-              RESERVE
+              <span
+                className="text-[9px] tracking-[0.3em] tabular-nums"
+                style={{ color: "var(--foreground)", opacity: 0.75 }}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span
+                className="text-[clamp(1.6rem,6vw,2.8rem)] font-semibold leading-none tracking-tight transition-opacity duration-200 group-hover:opacity-40"
+                style={{
+                  fontFamily: "var(--font-arimo)",
+                  color: "var(--foreground)",
+                }}
+              >
+                {label}
+              </span>
             </Link>
-          </nav>
+          ))}
+        </nav>
+
+        <div className="px-10 pb-12">
+          <Link
+            href="/reservation"
+            className="inline-flex items-center px-7 py-3 text-[9px] tracking-[0.32em] uppercase font-medium transition-opacity duration-300 hover:opacity-60"
+            style={{
+              border:
+                "1px solid color-mix(in srgb, var(--color-gold) 55%, transparent)",
+              color: "var(--foreground)",
+            }}
+            onClick={toggleMenu}
+          >
+            Reserve a Table
+          </Link>
         </div>
       </div>
     </>

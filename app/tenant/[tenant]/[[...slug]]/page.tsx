@@ -74,7 +74,7 @@ export default async function TenantPage({ params }: PageProps) {
             <div className="flex items-center gap-4 mb-3 mt-3 ">
               <span
                 className="text-[10px] tracking-[0.38em] uppercase"
-                style={{ color: "var(--color-sand)", opacity: 0.6 }}
+                style={{ color: "var(--color-sand)", opacity: 0.95 }}
               >
                 03
               </span>
@@ -84,7 +84,7 @@ export default async function TenantPage({ params }: PageProps) {
               />
               <span
                 className="text-[10px] tracking-[0.38em] uppercase"
-                style={{ color: "var(--color-sand)", opacity: 0.6 }}
+                style={{ color: "var(--color-sand)", opacity: 0.95 }}
               >
                 Gallery
               </span>
@@ -126,7 +126,7 @@ export default async function TenantPage({ params }: PageProps) {
             <h2 className="text-3xl font-bold text-black mb-4">
               Menu Not Available
             </h2>
-            <p className="text-gray-600">
+            <p className="text-foreground/85">
               This restaurant hasn&apos;t uploaded their menu yet.
             </p>
           </div>

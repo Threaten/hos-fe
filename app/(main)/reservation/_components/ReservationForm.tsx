@@ -4,10 +4,20 @@ import React, { useState, useEffect, useRef } from "react";
 // ─── Calendar Picker ─────────────────────────────────────────────────────────
 
 const MONTH_NAMES = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
-const DAY_NAMES = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+const DAY_NAMES = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 function CalendarPicker({
   value,
@@ -45,12 +55,16 @@ function CalendarPicker({
   const firstDayOfWeek = new Date(viewYear, viewMonth, 1).getDay();
 
   const prevMonth = () => {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear((y) => y - 1); }
-    else setViewMonth((m) => m - 1);
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear((y) => y - 1);
+    } else setViewMonth((m) => m - 1);
   };
   const nextMonth = () => {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1); }
-    else setViewMonth((m) => m + 1);
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear((y) => y + 1);
+    } else setViewMonth((m) => m + 1);
   };
 
   const select = (day: number) => {
@@ -89,53 +103,94 @@ function CalendarPicker({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent text-left flex justify-between items-center ${
-          hasError ? "border-red-500" : "border-gray-200"
+        className={`w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent text-left flex justify-between items-center ${
+          hasError ? "border-red-400" : ""
         }`}
+        style={{
+          borderBottomColor: hasError
+            ? undefined
+            : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
+          color: displayValue ? "var(--foreground)" : "var(--color-sand)",
+        }}
       >
-        <span className={displayValue ? "text-gray-900" : "text-gray-400"}>
-          {displayValue || "Date"}
+        <span className="text-[13px] tracking-[0.04em]">
+          {displayValue || "Select date"}
         </span>
         <svg
-          className="w-4 h-4 text-gray-500 flex-shrink-0"
+          className="w-4 h-4 shrink-0"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          style={{ color: "var(--color-sand)", opacity: 0.85 }}
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
+            strokeWidth={1.5}
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl p-4 w-72">
+        <div
+          className="absolute z-50 mt-1 p-4 w-72"
+          style={{
+            backgroundColor: "var(--background)",
+            border:
+              "1px solid color-mix(in srgb, var(--color-tan) 40%, transparent)",
+            boxShadow:
+              "0 8px 32px color-mix(in srgb, var(--color-earth) 8%, transparent)",
+          }}
+        >
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <button
               type="button"
               onClick={prevMonth}
-              className="p-1 rounded hover:bg-gray-100 transition-colors"
+              className="p-1 transition-opacity hover:opacity-50"
               aria-label="Previous month"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                style={{ color: "var(--color-sand)" }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
-            <span className="text-sm font-semibold text-gray-900">
+            <span
+              className="text-[11px] tracking-[0.18em] uppercase font-medium"
+              style={{ color: "var(--foreground)" }}
+            >
               {MONTH_NAMES[viewMonth]} {viewYear}
             </span>
             <button
               type="button"
               onClick={nextMonth}
-              className="p-1 rounded hover:bg-gray-100 transition-colors"
+              className="p-1 transition-opacity hover:opacity-50"
               aria-label="Next month"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                style={{ color: "var(--color-sand)" }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </button>
           </div>
@@ -143,7 +198,11 @@ function CalendarPicker({
           {/* Day headers */}
           <div className="grid grid-cols-7 mb-2">
             {DAY_NAMES.map((d) => (
-              <div key={d} className="text-center text-xs font-medium text-gray-400 pb-1">
+              <div
+                key={d}
+                className="text-center text-[9px] tracking-[0.15em] uppercase pb-1"
+                style={{ color: "var(--color-sand)" }}
+              >
                 {d}
               </div>
             ))}
@@ -153,7 +212,9 @@ function CalendarPicker({
           <div className="grid grid-cols-7 gap-y-1">
             {Array(firstDayOfWeek)
               .fill(null)
-              .map((_, i) => <div key={`e-${i}`} />)}
+              .map((_, i) => (
+                <div key={`e-${i}`} />
+              ))}
             {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
               const disabled = isDisabled(day);
               const sel = isSelected(day);
@@ -164,13 +225,25 @@ function CalendarPicker({
                   type="button"
                   disabled={disabled}
                   onClick={() => select(day)}
-                  className={[
-                    "w-8 h-8 mx-auto flex items-center justify-center text-sm rounded-full transition-colors",
-                    disabled ? "text-gray-300 cursor-not-allowed" : "cursor-pointer",
-                    sel ? "bg-gray-900 text-white hover:bg-gray-800" : "",
-                    tod && !sel ? "border border-gray-900 font-semibold text-gray-900" : "",
-                    !disabled && !sel && !tod ? "text-gray-700 hover:bg-gray-100" : "",
-                  ].join(" ")}
+                  className="w-8 h-8 mx-auto flex items-center justify-center text-[12px] rounded-full transition-opacity"
+                  style={{
+                    color: disabled
+                      ? "var(--color-tan)"
+                      : sel
+                        ? "var(--color-parchment)"
+                        : "var(--foreground)",
+                    backgroundColor: sel
+                      ? "var(--color-earth)"
+                      : tod && !sel
+                        ? "transparent"
+                        : "transparent",
+                    border:
+                      tod && !sel
+                        ? "1px solid color-mix(in srgb, var(--color-gold) 60%, transparent)"
+                        : "none",
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.35 : 1,
+                  }}
                 >
                   {day}
                 </button>
@@ -274,8 +347,7 @@ const ReservationForm = ({
             }
           }
         }
-      } catch {
-      }
+      } catch {}
     };
 
     loadTenants();
@@ -496,17 +568,20 @@ const ReservationForm = ({
   };
 
   return (
-    <div className="min-h-screen mt-12 bg-background py-16 px-4">
+    <div
+      className="min-h-screen mt-12 py-16 px-4"
+      style={{ backgroundColor: "var(--background)" }}
+    >
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed top-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 transition-all ${
+          className={`fixed top-6 right-6 px-6 py-4 shadow-lg z-50 transition-all ${
             toast.type === "success"
-              ? "bg-green-600 text-white"
-              : "bg-red-600 text-white"
+              ? "bg-green-700 text-white"
+              : "bg-red-700 text-white"
           }`}
         >
-          <p className="font-medium">{toast.message}</p>
+          <p className="text-sm tracking-wide">{toast.message}</p>
         </div>
       )}
 
@@ -698,8 +773,26 @@ const ReservationForm = ({
         </div>
 
         {/* Right Side - Form */}
-        <div className="sm:border sm:border-gray-200 sm:rounded-2xl sm:px-8 lg:px-12 sm:pb-8 lg:pb-12 sm:pt-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+        <div
+          className="sm:px-8 lg:px-12 sm:pb-8 lg:pb-12 sm:pt-8 sm:border"
+          style={{
+            borderColor:
+              "color-mix(in srgb, var(--color-tan) 35%, transparent)",
+          }}
+        >
+          <p
+            className="text-[9px] tracking-[0.42em] uppercase mb-4"
+            style={{ color: "var(--color-sand)" }}
+          >
+            — book a table
+          </p>
+          <h2
+            className="text-2xl font-semibold mb-8 leading-tight"
+            style={{
+              color: "var(--foreground)",
+              fontFamily: "var(--font-arimo)",
+            }}
+          >
             Reservation
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -711,31 +804,22 @@ const ReservationForm = ({
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent ${
-                  errors.name ? "border-red-500" : "border-gray-200"
-                }`}
-                placeholder="Name"
-              />
-              {errors.name && (
-                <p className="mt-1 text-sm text-red-500">{errors.name}</p>
-              )}
-            </div>
-
-            {/* Phone */}
-            <div>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent ${
-                  errors.phone ? "border-red-500" : "border-gray-200"
-                }`}
-                placeholder="Phone"
+                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent text-[13px] tracking-[0.04em] placeholder:text-(--color-sand)"
+                style={{
+                  borderBottomColor: errors.name
+                    ? "rgb(239 68 68)"
+                    : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
+                  color: "var(--foreground)",
+                }}
+                placeholder="Full Name"
               />
               {errors.phone && (
-                <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+                <p
+                  className="mt-1 text-[11px]"
+                  style={{ color: "rgb(239 68 68)" }}
+                >
+                  {errors.phone}
+                </p>
               )}
             </div>
 
@@ -747,13 +831,16 @@ const ReservationForm = ({
                 value={formData.branch}
                 onChange={handleChange}
                 disabled={!!currentTenant}
-                className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent appearance-none text-gray-900 ${
-                  errors.branch ? "border-red-500" : "border-gray-200"
-                } ${currentTenant ? "opacity-60 cursor-not-allowed bg-gray-50" : ""}`}
+                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent appearance-none text-[13px] tracking-[0.04em]"
                 style={{
+                  borderBottomColor: errors.branch
+                    ? "rgb(239 68 68)"
+                    : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
+                  color: "var(--foreground)",
+                  opacity: currentTenant ? 0.55 : 1,
                   backgroundImage: currentTenant
                     ? "none"
-                    : "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
+                    : "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238a7d6a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
                   backgroundPosition: "right center",
                   backgroundRepeat: "no-repeat",
                   backgroundSize: "1.5em 1.5em",
@@ -767,10 +854,18 @@ const ReservationForm = ({
                 ))}
               </select>
               {errors.branch && (
-                <p className="mt-1 text-sm text-red-500">{errors.branch}</p>
+                <p
+                  className="mt-1 text-[11px]"
+                  style={{ color: "rgb(239 68 68)" }}
+                >
+                  {errors.branch}
+                </p>
               )}
               {formData.branch && (
-                <p className="mt-2 text-sm text-gray-600">
+                <p
+                  className="mt-2 text-[11px] leading-relaxed"
+                  style={{ color: "var(--color-sand)" }}
+                >
                   {branchAddresses[formData.branch]}
                 </p>
               )}
@@ -787,16 +882,24 @@ const ReservationForm = ({
                 }}
               />
               {errors.date && (
-                <p className="mt-1 text-sm text-red-500">{errors.date}</p>
+                <p
+                  className="mt-1 text-[11px]"
+                  style={{ color: "rgb(239 68 68)" }}
+                >
+                  {errors.date}
+                </p>
               )}
             </div>
 
             {/* Time */}
             <div>
               <div
-                className={`flex items-center gap-2 border-b-2 py-3 transition-all focus-within:border-gray-900 ${
-                  errors.time ? "border-red-500" : "border-gray-200"
-                }`}
+                className="flex items-center gap-2 border-b py-3 transition-all"
+                style={{
+                  borderBottomColor: errors.time
+                    ? "rgb(239 68 68)"
+                    : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
+                }}
               >
                 <select
                   value={formData.time ? formData.time.split(":")[0] : ""}
@@ -810,9 +913,13 @@ const ReservationForm = ({
                     }));
                     setErrors((prev) => ({ ...prev, time: undefined }));
                   }}
-                  className={`flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer ${
-                    formData.time && formData.time.split(":")[0] ? "text-gray-900" : "text-gray-400"
-                  }`}
+                  className="flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer text-[13px]"
+                  style={{
+                    color:
+                      formData.time && formData.time.split(":")[0]
+                        ? "var(--foreground)"
+                        : "var(--color-sand)",
+                  }}
                 >
                   <option value="" disabled>
                     Hour
@@ -823,7 +930,12 @@ const ReservationForm = ({
                     </option>
                   ))}
                 </select>
-                <span className="text-gray-400 font-semibold">:</span>
+                <span
+                  className="text-[12px] font-medium"
+                  style={{ color: "var(--color-tan)" }}
+                >
+                  :
+                </span>
                 <select
                   value={formData.time ? formData.time.split(":")[1] : ""}
                   onChange={(e) => {
@@ -836,37 +948,63 @@ const ReservationForm = ({
                     }));
                     setErrors((prev) => ({ ...prev, time: undefined }));
                   }}
-                  className={`flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer ${
-                    formData.time && formData.time.split(":")[1] ? "text-gray-900" : "text-gray-400"
-                  }`}
+                  className="flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer text-[13px]"
+                  style={{
+                    color:
+                      formData.time && formData.time.split(":")[1]
+                        ? "var(--foreground)"
+                        : "var(--color-sand)",
+                  }}
                 >
                   <option value="" disabled>
                     Min
                   </option>
-                  {["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"].map((m) => (
+                  {[
+                    "00",
+                    "05",
+                    "10",
+                    "15",
+                    "20",
+                    "25",
+                    "30",
+                    "35",
+                    "40",
+                    "45",
+                    "50",
+                    "55",
+                  ].map((m) => (
                     <option key={m} value={m}>
                       {m}
                     </option>
                   ))}
                 </select>
                 <svg
-                  className="w-4 h-4 text-gray-500 flex-shrink-0"
+                  className="w-4 h-4 shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  style={{ color: "var(--color-sand)", opacity: 0.85 }}
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
               </div>
               {errors.time && (
-                <p className="mt-1 text-sm text-red-500">{errors.time}</p>
+                <p
+                  className="mt-1 text-[11px]"
+                  style={{ color: "rgb(239 68 68)" }}
+                >
+                  {errors.time}
+                </p>
               )}
-              <p className="mt-2 text-sm text-gray-600">
+              <p
+                className="mt-2 text-[11px]"
+                style={{ color: "var(--color-sand)" }}
+              >
                 Last order: 30 minutes before closing.
               </p>
             </div>
@@ -878,10 +1016,13 @@ const ReservationForm = ({
                 name="quantity"
                 value={formData.quantity}
                 onChange={handleChange}
-                className="w-full px-0 py-3 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent appearance-none text-gray-900"
+                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent appearance-none text-[13px] tracking-[0.04em]"
                 style={{
+                  borderBottomColor:
+                    "color-mix(in srgb, var(--color-tan) 40%, transparent)",
+                  color: "var(--foreground)",
                   backgroundImage:
-                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
+                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238a7d6a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
                   backgroundPosition: "right center",
                   backgroundRepeat: "no-repeat",
                   backgroundSize: "1.5em 1.5em",
@@ -903,7 +1044,12 @@ const ReservationForm = ({
                 value={formData.notes}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-0 py-3 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent resize-none"
+                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent resize-none text-[13px] tracking-[0.04em] placeholder:text-(--color-sand)"
+                style={{
+                  borderBottomColor:
+                    "color-mix(in srgb, var(--color-tan) 40%, transparent)",
+                  color: "var(--foreground)",
+                }}
                 placeholder="Special Requests (Optional)"
               />
             </div>
@@ -912,10 +1058,16 @@ const ReservationForm = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full border-black border-2 text-black hover:text-white py-4 rounded-lg font-medium hover:bg-black transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed mt-8 button-ripple focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+              className="w-full py-4 font-medium text-[10px] tracking-[0.38em] uppercase transition-all duration-300 hover:opacity-60 disabled:opacity-30 disabled:cursor-not-allowed mt-8 focus:outline-none"
+              style={{
+                border:
+                  "1px solid color-mix(in srgb, var(--color-gold) 55%, transparent)",
+                color: "var(--foreground)",
+                backgroundColor: "transparent",
+              }}
               aria-label="Submit reservation"
             >
-              {isSubmitting ? "Submitting..." : "Reserve"}
+              {isSubmitting ? "Submitting..." : "Reserve a Table"}
             </button>
           </form>
         </div>

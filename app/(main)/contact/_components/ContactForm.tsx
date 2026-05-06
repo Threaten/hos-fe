@@ -251,7 +251,7 @@ const ContactForm = ({
 
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[400px]">
-          <div className="text-gray-600">Loading...</div>
+          <div className="text-foreground/90">Loading...</div>
         </div>
       ) : (
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
@@ -262,7 +262,7 @@ const ContactForm = ({
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">
                 Get in Touch
               </h2>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-foreground/90 leading-relaxed">
                 Have a question or feedback? We&apos;d love to hear from you.
                 Fill out the form and we&apos;ll get back to you as soon as
                 possible.
@@ -281,12 +281,12 @@ const ContactForm = ({
                       {currentBranchTenant.name.toLowerCase()}
                     </p>
                     {currentBranchTenant.address && (
-                      <p className="text-gray-600">
+                      <p className="text-foreground/90">
                         {currentBranchTenant.address}
                       </p>
                     )}
                     {currentBranchTenant.phone && (
-                      <p className="text-gray-600">
+                      <p className="text-foreground/90">
                         {currentBranchTenant.phone}
                       </p>
                     )}
@@ -298,20 +298,20 @@ const ContactForm = ({
                         {tenant.name.toLowerCase()}
                       </p>
                       {tenant.address && (
-                        <p className="text-gray-600">{tenant.address}</p>
+                        <p className="text-foreground/90">{tenant.address}</p>
                       )}
                       {tenant.phone && (
-                        <p className="text-gray-600">{tenant.phone}</p>
+                        <p className="text-foreground/90">{tenant.phone}</p>
                       )}
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-600">Loading locations...</p>
+                  <p className="text-foreground/90">Loading locations...</p>
                 )}
               </div>
             </div>
 
-            <hr className="border-gray-200" />
+            <hr className="border-foreground/15" />
 
             {/* Contact Info */}
             <div>
@@ -329,12 +329,12 @@ const ContactForm = ({
                     return email ? (
                       <a
                         href={`mailto:${email}`}
-                        className="text-gray-600 hover:text-gray-900"
+                        className="text-foreground/90 hover:text-foreground"
                       >
                         {email}
                       </a>
                     ) : (
-                      <p className="text-gray-400">No email available</p>
+                      <p className="text-foreground/65">No email available</p>
                     );
                   })()}
                 </div>
@@ -348,19 +348,19 @@ const ContactForm = ({
                     return phone ? (
                       <a
                         href={`tel:${phone}`}
-                        className="text-gray-600 hover:text-gray-900"
+                        className="text-foreground/90 hover:text-foreground"
                       >
                         {phone}
                       </a>
                     ) : (
-                      <p className="text-gray-400">No phone available</p>
+                      <p className="text-foreground/65">No phone available</p>
                     );
                   })()}
                 </div>
               </div>
             </div>
 
-            <hr className="border-gray-200" />
+            <hr className="border-foreground/15" />
 
             {/* Social Media */}
             <div>
@@ -379,7 +379,7 @@ const ContactForm = ({
                           href={tenant.facebook}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110"
+                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:scale-110"
                         >
                           <svg
                             className="w-5 h-5"
@@ -395,7 +395,7 @@ const ContactForm = ({
                           href={tenant.instagram}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110"
+                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:scale-110"
                         >
                           <svg
                             className="w-5 h-5"
@@ -411,7 +411,7 @@ const ContactForm = ({
                           href={tenant.tiktok}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110"
+                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:scale-110"
                         >
                           <svg
                             className="w-5 h-5"
@@ -427,7 +427,7 @@ const ContactForm = ({
                           href={tenant.youtube}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110"
+                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:scale-110"
                         >
                           <svg
                             className="w-5 h-5"
@@ -446,7 +446,7 @@ const ContactForm = ({
           </div>
 
           {/* Right Side - Form */}
-          <div className="sm:border sm:border-gray-200 sm:rounded-2xl sm:px-8 lg:px-12 sm:pb-8 lg:pb-12 sm:pt-8">
+          <div className="sm:border sm:border-foreground/15 sm:rounded-2xl sm:px-8 lg:px-12 sm:pb-8 lg:pb-12 sm:pt-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-6">
               Send us a Message
             </h2>
@@ -459,8 +459,8 @@ const ContactForm = ({
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent ${
-                    errors.name ? "border-red-500" : "border-gray-200"
+                  className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent ${
+                    errors.name ? "border-red-500" : "border-foreground/20"
                   }`}
                   placeholder="Name"
                 />
@@ -477,8 +477,8 @@ const ContactForm = ({
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent ${
-                    errors.phone ? "border-red-500" : "border-gray-200"
+                  className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent ${
+                    errors.phone ? "border-red-500" : "border-foreground/20"
                   }`}
                   placeholder="Phone"
                 />
@@ -495,8 +495,8 @@ const ContactForm = ({
                   value={formData.branch}
                   onChange={handleChange}
                   disabled={!!currentBranchTenant}
-                  className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent appearance-none text-gray-900 ${
-                    errors.branch ? "border-red-500" : "border-gray-200"
+                  className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent appearance-none text-foreground ${
+                    errors.branch ? "border-red-500" : "border-foreground/20"
                   } ${currentBranchTenant ? "opacity-60 cursor-not-allowed" : ""}`}
                   style={{
                     backgroundImage:
@@ -518,7 +518,7 @@ const ContactForm = ({
                 {formData.branch && (() => {
                   const t = currentBranchTenant || tenants.find((t) => t.name === formData.branch);
                   return t?.address ? (
-                    <p className="mt-2 text-sm text-gray-600">{t.address}</p>
+                    <p className="mt-2 text-sm text-foreground/90">{t.address}</p>
                   ) : null;
                 })()}
               </div>
@@ -531,7 +531,7 @@ const ContactForm = ({
                   value={formData.message}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-0 py-3 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-gray-900 outline-none transition-all bg-transparent resize-none"
+                  className="w-full px-0 py-3 border-0 border-b-2 border-foreground/20 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent resize-none"
                   placeholder="Message (Optional)"
                 />
               </div>

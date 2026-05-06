@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import ImageLightbox from "../../components/ImageLightbox";
 
@@ -20,6 +20,68 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loadedSet, setLoadedSet] = useState<Set<number>>(new Set());
+  const sectionRef = useRef<HTMLElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (images.length === 0) return;
+    let ctx: any = null;
+    let mounted = true;
+
+    (async () => {
+      const { gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap.registerPlugin(ScrollTrigger);
+      if (!mounted) return;
+
+      ctx = gsap.context(() => {
+        // Gallery text slides up
+        if (textRef.current) {
+          gsap.from(textRef.current, {
+            y: 30,
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: textRef.current,
+              start: "top 90%",
+              once: true,
+            },
+          });
+        }
+
+        // Grid items: clip-path curtain rise + stagger
+        if (gridRef.current) {
+          const items = gridRef.current.querySelectorAll(".gallery-item");
+          if (items.length) {
+            gsap.fromTo(
+              items,
+              { clipPath: "inset(100% 0 0 0)", opacity: 0 },
+              {
+                clipPath: "inset(0% 0 0% 0)",
+                opacity: 1,
+                duration: 1.3,
+                ease: "power4.out",
+                stagger: { each: 0.09, from: "start" },
+                scrollTrigger: {
+                  trigger: gridRef.current,
+                  start: "top 88%",
+                  once: true,
+                },
+              },
+            );
+          }
+        }
+      }, sectionRef);
+    })();
+
+    return () => {
+      mounted = false;
+      ctx?.revert();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [images.length]);
 
   const handleImageClick = (index: number) => {
     setCurrentImageIndex(index);
@@ -39,14 +101,11 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
   if (images.length === 0) {
     return (
       <section className="w-full px-8 md:px-14 pb-12 bg-background">
-        <div
-          className="w-full grid grid-cols-3"
-          style={{ gap: "3px" }}
-        >
+        <div className="w-full grid grid-cols-3" style={{ gap: "3px" }}>
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="h-[200px] md:h-[280px]"
+              className="h-50 md:h-70"
               style={{ backgroundColor: "var(--color-parchment)" }}
             />
           ))}
@@ -56,19 +115,24 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
   }
 
   return (
-    <section className="w-full px-8 md:px-14 pb-12 bg-background">
+    <section
+      ref={sectionRef}
+      className="w-full px-8 md:px-14 pb-12 bg-background"
+    >
       {/* Optional description text */}
       {galleryText && (
         <p
+          ref={textRef}
           className="text-sm font-light leading-[1.9] mb-10"
-          style={{ color: "var(--color-sand)", maxWidth: "52ch" }}
+          style={{ color: "var(--foreground)", opacity: 0.88, maxWidth: "52ch" }}
         >
           {galleryText}
         </p>
       )}
 
-      {/* Gallery Grid — no rounded corners, tight 3px gaps */}
+      {/* Gallery Grid — clip-path stagger on scroll */}
       <div
+        ref={gridRef}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
         style={{ gap: "3px" }}
       >
@@ -76,7 +140,7 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
           <div
             key={index}
             onClick={() => handleImageClick(index)}
-            className="relative h-[280px] md:h-[360px] overflow-hidden group cursor-pointer"
+            className="gallery-item relative h-70 md:h-90 overflow-hidden group cursor-pointer"
           >
             {!loadedSet.has(index) && (
               <div

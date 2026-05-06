@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { fetchTenants, type Tenant } from "@/api/queries";
 import { getTenantUrl } from "@/app/utils/domain";
@@ -14,20 +13,12 @@ export default function Topbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Fetch tenants
-    const loadTenants = async () => {
-      const data = await fetchTenants();
-      setTenants(data);
-    };
-
-    loadTenants();
+    fetchTenants().then(setTenants);
   }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-
-      // Close if clicking anywhere except the dropdown button, mobile menu, or dropdown content
       if (
         !target.closest("button[aria-expanded]") &&
         !target.closest("[data-mobile-menu]") &&
@@ -37,7 +28,6 @@ export default function Topbar() {
         setMobileMenuOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -46,70 +36,143 @@ export default function Topbar() {
   const hasNotification = notification?.enabled && notification?.message;
 
   return (
-    <div className="w-full bg-background/95 backdrop-blur-sm text-gray-900">
+    <div className="w-full" style={{ backgroundColor: "var(--background)" }}>
       {/* Notification banner */}
       {hasNotification && (
-        <div className="w-full min-h-8 flex items-center justify-center bg-[rgb(97,89,55)] text-[#eee9df] text-xs tracking-widest font-medium border-b border-[rgb(97,89,55)] py-2">
-          <span className="px-4 text-center">{notification.message}</span>
+        <div
+          className="w-full flex items-center justify-center py-2 px-4"
+          style={{
+            backgroundColor: "var(--color-earth)",
+            borderBottom:
+              "1px solid color-mix(in srgb, var(--color-gold) 30%, transparent)",
+          }}
+        >
+          <span
+            className="text-[9px] tracking-[0.38em] uppercase text-center"
+            style={{ color: "var(--color-cream)" }}
+          >
+            {notification.message}
+          </span>
         </div>
       )}
+
       {/* Branch switcher */}
-      <div className="w-full h-12 border-b border-[rgb(124,118,89)]/20">
-        <div className="w-full h-full px-4 flex items-center">
-          {/* Desktop Layout - Dropdown when content is too long */}
-          <div className="hidden md:block w-full">
+      <div
+        className="w-full h-9 border-b"
+        style={{
+          borderColor: "color-mix(in srgb, var(--color-tan) 25%, transparent)",
+        }}
+      >
+        <div className="w-full h-full px-6 flex items-center">
+          {/* Desktop */}
+          <div className="hidden md:block w-full relative">
             <button
               onClick={() => setOpenCard(openCard ? null : "branches")}
-              className="flex items-center justify-center gap-2 text-xs tracking-widest font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded px-2 py-1 mx-auto hover:text-gray-900 transition-all duration-300"
+              className="flex items-center justify-center gap-2.5 mx-auto transition-opacity duration-200 hover:opacity-50 focus:outline-none"
               aria-expanded={openCard === "branches"}
             >
-              <span className="text-gray-700 whitespace-nowrap">
-                Another Homes:
-              </span>
-              <span className="text-gray-900 font-semibold whitespace-nowrap">
-                {tenants.map((t) => t.name.toLowerCase()).join(" | ")}
+              <span
+                className="text-[8px] tracking-[0.35em] uppercase"
+                style={{ color: "var(--foreground)", opacity: 0.78 }}
+              >
+                Our Locations
               </span>
               <span
-                className={`transition-transform duration-300 text-gray-700 ${
-                  openCard === "branches" ? "rotate-180" : ""
-                }`}
+                className="text-[8px] tracking-[0.28em] uppercase font-semibold"
+                style={{ color: "var(--foreground)" }}
+              >
+                {tenants.map((t) => t.name.toLowerCase()).join("  ·  ")}
+              </span>
+              <span
+                className={`text-[7px] transition-transform duration-300`}
+                style={{
+                  color: "var(--foreground)",
+                  opacity: 0.78,
+                  transform:
+                    openCard === "branches" ? "rotate(180deg)" : "none",
+                }}
                 aria-hidden="true"
               >
-                ▼
+                ▾
               </span>
             </button>
 
-            {/* Desktop Dropdown Content */}
+            {/* Desktop Dropdown */}
             {openCard === "branches" && (
               <div
                 ref={dropdownRef}
-                className="absolute left-1/2 -translate-x-1/2 top-full mt-0 bg-white border border-gray-200 rounded-b-lg shadow-lg min-w-[600px] z-50"
+                className="absolute left-1/2 -translate-x-1/2 top-full mt-0 z-50 min-w-140"
+                style={{
+                  backgroundColor: "var(--background)",
+                  border:
+                    "1px solid color-mix(in srgb, var(--color-tan) 40%, transparent)",
+                  borderTop: "none",
+                  boxShadow:
+                    "0 8px 32px color-mix(in srgb, var(--color-earth) 8%, transparent)",
+                }}
               >
-                <div className="grid grid-cols-2 gap-4 p-4">
-                  {tenants.map((tenant) => (
+                <div className="grid grid-cols-2 gap-0">
+                  {tenants.map((tenant, idx) => (
                     <div
                       key={tenant.id}
                       onClick={() => {
                         window.location.href = getTenantUrl(tenant.domain);
                       }}
-                      className="border border-gray-200 rounded-lg p-4 hover:border-gray-400 hover:bg-gray-50 transition-all cursor-pointer"
+                      className="p-5 cursor-pointer transition-colors duration-200 group"
+                      style={{
+                        borderRight:
+                          idx % 2 === 0
+                            ? "1px solid color-mix(in srgb, var(--color-tan) 30%, transparent)"
+                            : "none",
+                        borderBottom:
+                          idx < tenants.length - 2
+                            ? "1px solid color-mix(in srgb, var(--color-tan) 30%, transparent)"
+                            : "none",
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          "color-mix(in srgb, var(--color-parchment) 80%, transparent)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          "transparent";
+                      }}
                     >
-                      <h3 className="font-bold text-sm mb-1 text-gray-900 tracking-wide">
-                        {tenant.name.toLowerCase()}
-                      </h3>
-                      <p className={`text-xs mb-1 ${currentTenant?.domain === tenant.domain ? "text-[rgb(124,118,89)]" : "invisible"}`}>
-                        (you are here)
-                      </p>
-                      <div className="space-y-1 text-left">
-                        {tenant.address && (
-                          <p className="text-xs text-gray-600">
-                            {tenant.address}
-                          </p>
-                        )}
-                        {tenant.phone && (
-                          <p className="text-xs text-gray-600">{tenant.phone}</p>
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <p
+                          className="text-[10px] tracking-[0.22em] uppercase font-semibold"
+                          style={{
+                            color: "var(--foreground)",
+                            fontFamily: "var(--font-arimo)",
+                          }}
+                        >
+                          {tenant.name.toLowerCase()}
+                        </p>
+                        {currentTenant?.id === tenant.id && (
+                          <span
+                            className="text-[7px] tracking-[0.28em] uppercase"
+                            style={{ color: "var(--color-gold)" }}
+                          >
+                            ← here
+                          </span>
                         )}
                       </div>
+                      {tenant.address && (
+                        <p
+                          className="text-[9px] leading-relaxed"
+                          style={{ color: "var(--color-sand)" }}
+                        >
+                          {tenant.address}
+                        </p>
+                      )}
+                      {tenant.phone && (
+                        <p
+                          className="text-[9px] mt-0.5"
+                          style={{ color: "var(--color-sand)" }}
+                        >
+                          {tenant.phone}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -117,58 +180,87 @@ export default function Topbar() {
             )}
           </div>
 
-          {/* Mobile Layout - Dropdown */}
-          <div className="md:hidden w-full" data-mobile-menu ref={mobileMenuRef}>
+          {/* Mobile */}
+          <div
+            className="md:hidden w-full"
+            data-mobile-menu
+            ref={mobileMenuRef}
+          >
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="w-full flex items-center justify-between text-xs tracking-widest font-medium focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded px-2 py-1"
+              className="w-full flex items-center justify-between focus:outline-none"
               aria-expanded={mobileMenuOpen}
-              aria-label={mobileMenuOpen ? "Close branch selector" : "Open branch selector"}
             >
-              <span className="text-gray-700">Another Homes:</span>
               <span
-                className={`transition-transform duration-300 ${
-                  mobileMenuOpen ? "rotate-180" : ""
-                }`}
+                className="text-[8px] tracking-[0.35em] uppercase"
+                style={{ color: "var(--foreground)", opacity: 0.78 }}
+              >
+                Our Locations
+              </span>
+              <span
+                className="text-[7px] transition-transform duration-300"
+                style={{
+                  color: "var(--foreground)",
+                  opacity: 0.78,
+                  transform: mobileMenuOpen ? "rotate(180deg)" : "none",
+                }}
                 aria-hidden="true"
               >
-                ▼
+                ▾
               </span>
             </button>
 
-            {/* Mobile Dropdown Content */}
             <div
-              className={`absolute left-0 right-0 top-full bg-[rgb(245,240,225)] border-b-2 border-[rgb(124,118,89)]/30 transition-all duration-300 ${
-                mobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
+              className={`absolute left-0 right-0 top-full z-50 transition-all duration-300 ${
+                mobileMenuOpen
+                  ? "opacity-100 visible"
+                  : "opacity-0 invisible pointer-events-none"
               }`}
+              style={{
+                backgroundColor: "var(--background)",
+                borderBottom:
+                  "1px solid color-mix(in srgb, var(--color-tan) 30%, transparent)",
+                boxShadow:
+                  "0 8px 24px color-mix(in srgb, var(--color-earth) 6%, transparent)",
+              }}
             >
-              <div className="px-4 py-3 space-y-3">
-                {tenants.map((tenant, index) => (
+              <div className="px-6 py-4 space-y-4">
+                {tenants.map((tenant) => (
                   <div
                     key={tenant.id}
                     onClick={() => {
                       window.location.href = getTenantUrl(tenant.domain);
                     }}
-                    className={`block hover:bg-gray-100 transition-colors rounded p-2 cursor-pointer ${
-                      index < tenants.length - 1
-                        ? "border-b border-gray-300 pb-3"
-                        : ""
-                    }`}
+                    className="cursor-pointer py-2 border-b last:border-b-0"
+                    style={{
+                      borderColor:
+                        "color-mix(in srgb, var(--color-tan) 25%, transparent)",
+                    }}
                   >
-                    <h3 className="font-bold text-sm mb-1 text-gray-900 uppercase tracking-wide">
-                      {tenant.name}
-                    </h3>
-                    {currentTenant?.domain === tenant.domain && (
-                      <p className="text-xs text-[rgb(124,118,89)] mb-1">(you are here)</p>
-                    )}
-                    <div className="space-y-1 text-left">
-                      {tenant.address && (
-                        <p className="text-xs text-gray-600">{tenant.address}</p>
-                      )}
-                      {tenant.phone && (
-                        <p className="text-xs text-gray-600">{tenant.phone}</p>
+                    <div className="flex items-center gap-2">
+                      <p
+                        className="text-[10px] tracking-[0.22em] uppercase font-semibold"
+                        style={{ color: "var(--foreground)" }}
+                      >
+                        {tenant.name.toLowerCase()}
+                      </p>
+                      {currentTenant?.id === tenant.id && (
+                        <span
+                          className="text-[7px] tracking-[0.28em]"
+                          style={{ color: "var(--color-gold)" }}
+                        >
+                          ← here
+                        </span>
                       )}
                     </div>
+                    {tenant.address && (
+                      <p
+                        className="text-[9px] mt-0.5"
+                        style={{ color: "var(--color-sand)" }}
+                      >
+                        {tenant.address}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>

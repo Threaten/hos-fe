@@ -58,7 +58,7 @@ export default function AboutPage() {
       </section>
 
       {/* Story Section */}
-      <section className="py-20 px-8 md:px-12">
+      <section className="py-20 px-8 md:px-14">
         {tenant?.aboutus ? (
           <div className="max-w-3xl">
             <RichTextRenderer
@@ -69,28 +69,46 @@ export default function AboutPage() {
         ) : (
           <div className="grid md:grid-cols-[1fr_1fr] gap-16 items-start max-w-6xl">
             <div className="md:pt-6">
-              <p className="text-[10px] tracking-[0.35em] uppercase text-[rgb(124,118,89)] mb-6">
+              <p
+                className="text-[9px] tracking-[0.4em] uppercase mb-6"
+                style={{ color: "var(--foreground)", opacity: 0.7 }}
+              >
                 — the beginning
               </p>
-              <h2 className="text-3xl md:text-4xl font-semibold mb-8 text-gray-900 leading-tight">
+              <h2
+                className="text-3xl md:text-4xl font-semibold mb-8 leading-tight"
+                style={{
+                  color: "var(--foreground)",
+                  fontFamily: "var(--font-arimo)",
+                }}
+              >
                 Our Story
               </h2>
-              <p className="text-base text-gray-600 mb-5 leading-relaxed">
+              <p
+                className="text-base mb-5 leading-relaxed"
+                style={{ color: "var(--foreground)", opacity: 0.88 }}
+              >
                 {tenantName} was born from a passion for creating unforgettable
                 dining experiences — a place where food and atmosphere conspire
                 to make every visit feel like coming home.
               </p>
-              <p className="text-base text-gray-600 mb-5 leading-relaxed">
+              <p
+                className="text-base mb-5 leading-relaxed"
+                style={{ color: "var(--foreground)", opacity: 0.88 }}
+              >
                 Every dish we serve tells a story, combining the warmth of
                 traditional techniques with the curiosity of contemporary
                 flavors.
               </p>
-              <p className="text-base text-gray-600 leading-relaxed">
+              <p
+                className="text-base leading-relaxed"
+                style={{ color: "var(--foreground)", opacity: 0.88 }}
+              >
                 We believe that great food brings people together. That is the
                 only philosophy that has ever guided us.
               </p>
             </div>
-            <div className="relative h-[520px] md:h-[640px]">
+            <div className="relative h-130 md:h-160">
               <SkeletonImage
                 src="/media/IMG_0050.JPG"
                 alt="Restaurant interior"

@@ -13,7 +13,9 @@ function getAspectRatio(index: number): string {
 }
 
 // Skeleton mirrors the editorial pattern
-const SKELETON_SPANS = Array.from({ length: 10 }, (_, i) => (i % 5 === 0 ? 2 : 1));
+const SKELETON_SPANS = Array.from({ length: 10 }, (_, i) =>
+  i % 5 === 0 ? 2 : 1,
+);
 
 const Gallery = () => {
   const [images, setImages] = useState<GalleryItem[]>([]);
@@ -56,9 +58,11 @@ const Gallery = () => {
       { rootMargin: "100px", threshold: 0.05 },
     );
 
-    document.querySelectorAll<HTMLElement>("[data-gallery-id]").forEach((el) => {
-      observerRef.current?.observe(el);
-    });
+    document
+      .querySelectorAll<HTMLElement>("[data-gallery-id]")
+      .forEach((el) => {
+        observerRef.current?.observe(el);
+      });
 
     return () => observerRef.current?.disconnect();
   }, [images]);
@@ -68,8 +72,7 @@ const Gallery = () => {
     setLightboxOpen(true);
   };
 
-  const handleNext = () =>
-    setCurrentImageIndex((p) => (p + 1) % images.length);
+  const handleNext = () => setCurrentImageIndex((p) => (p + 1) % images.length);
   const handlePrev = () =>
     setCurrentImageIndex((p) => (p - 1 + images.length) % images.length);
 
@@ -79,15 +82,27 @@ const Gallery = () => {
     <div className="min-h-screen bg-background">
       {/* Editorial header */}
       <header className="px-8 md:px-12 pt-14 pb-10">
-        <p className="text-[10px] tracking-[0.35em] uppercase text-[rgb(124,118,89)] mb-5">
+        <p
+          className="text-[9px] tracking-[0.42em] uppercase mb-5"
+          style={{ color: "var(--color-sand)" }}
+        >
           — visual journal
         </p>
         <div className="flex items-end justify-between">
-          <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-semibold leading-[0.9] tracking-tight">
+          <h1
+            className="text-[clamp(2.5rem,8vw,5rem)] font-semibold leading-[0.9] tracking-tight"
+            style={{
+              color: "var(--foreground)",
+              fontFamily: "var(--font-arimo)",
+            }}
+          >
             the gallery
           </h1>
           {!loading && images.length > 0 && (
-            <span className="text-[11px] tracking-[0.2em] text-gray-400 pb-1.5 tabular-nums">
+            <span
+              className="text-[11px] tracking-[0.2em] pb-1.5 tabular-nums"
+              style={{ color: "var(--color-sand)" }}
+            >
               {String(images.length).padStart(2, "0")} images
             </span>
           )}
@@ -114,10 +129,15 @@ const Gallery = () => {
       {/* Empty state */}
       {!loading && images.length === 0 && (
         <div className="flex flex-col items-center justify-center py-32">
-          <p className="text-[10px] tracking-[0.35em] uppercase text-[rgb(124,118,89)] mb-3">
+          <p
+            className="text-[9px] tracking-[0.42em] uppercase mb-3"
+            style={{ color: "var(--color-sand)" }}
+          >
             nothing here yet
           </p>
-          <p className="text-sm text-gray-400">Images will appear here soon.</p>
+          <p className="text-sm" style={{ color: "var(--color-sand)" }}>
+            Images will appear here soon.
+          </p>
         </div>
       )}
 
@@ -174,7 +194,8 @@ const Gallery = () => {
                     <div
                       className="absolute bottom-0 left-0 right-0 px-4 py-3 z-20 translate-y-full group-hover:translate-y-0"
                       style={{
-                        transition: "transform 0.45s cubic-bezier(0.25, 0, 0, 1)",
+                        transition:
+                          "transform 0.45s cubic-bezier(0.25, 0, 0, 1)",
                       }}
                     >
                       <p className="text-white/90 text-xs font-light leading-relaxed tracking-wide">
