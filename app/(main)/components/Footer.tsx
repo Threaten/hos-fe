@@ -91,13 +91,12 @@ const Footer: React.FC = () => {
               return (
                 <div
                   key={tenant.id}
-                  className="py-6 pr-8"
+                  className={`py-6 pr-8 pl-0 ${idx % 2 !== 0 ? "md:pl-8" : "md:pl-0"} ${idx % 3 !== 0 ? "lg:pl-8" : "lg:pl-0"}`}
                   style={{
                     borderRight:
                       idx % 3 !== 2 && !isLast
                         ? `1px solid ${FOOTER_BORDER}`
                         : "none",
-                    paddingLeft: idx % 3 !== 0 ? "2rem" : "0",
                   }}
                 >
                   <div className="flex items-center gap-2 mb-3">
@@ -220,7 +219,7 @@ const Footer: React.FC = () => {
       />
 
       {/* Large brand mark */}
-      <div className="flex items-center justify-center px-8 md:px-14 py-12 md:py-16">
+      <div className="flex items-center justify-center px-4 md:px-8 py-12 md:py-16">
         <h2
           className="font-bold leading-none text-center wrap-break-word select-none"
           style={{
@@ -246,13 +245,13 @@ const Footer: React.FC = () => {
       />
       <div className="flex items-center justify-between px-8 md:px-14 py-5">
         <p
-          className="text-[10px] tracking-[0.32em] uppercase"
+          className="text-[8px] tracking-[0.32em] uppercase"
           style={{ color: FOOTER_MUTED }}
         >
           &copy; {new Date().getFullYear()} houseofsenses.vn
         </p>
         <p
-          className="text-[10px] tracking-[0.28em] uppercase"
+          className="text-[8px] tracking-[0.28em] uppercase"
           style={{ color: FOOTER_MUTED }}
         >
           All rights reserved
