@@ -150,7 +150,7 @@ export default function Topbar() {
                         </p>
                         {currentTenant?.id === tenant.id && (
                           <span
-                            className="text-[7px] tracking-[0.28em] uppercase"
+                            className="text-[9px] tracking-[0.28em] uppercase"
                             style={{ color: "var(--color-gold)" }}
                           >
                             ← here
