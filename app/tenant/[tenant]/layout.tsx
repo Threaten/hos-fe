@@ -23,26 +23,24 @@ export default function TenantLayout({
 }>) {
   return (
     <TenantProvider>
-      <div className="md:h-dvh md:flex md:flex-col">
-        {/* Topbar — sticky on mobile, static in the desktop flex column */}
-        <div className="sticky top-0 z-50 md:static md:z-auto">
-          <Topbar />
-          {/* Horizontal navbar with hamburger — mobile only */}
-          <div className="md:hidden">
-            <Navbar />
-          </div>
-        </div>
-
-        {/* Body row: vertical sidebar (overlay) + scrollable content */}
-        <div className="flex flex-1 md:min-h-0 relative">
-          <VerticalNavbar />
-          <main className="flex-1 md:overflow-y-auto min-w-0 flex flex-col md:pl-16">
-            <Breadcrumbs />
-            <PageTransition>{children}</PageTransition>
-            <Footer />
-          </main>
+      {/* Topbar — always sticky so it remains visible while window scrolls */}
+      <div className="sticky top-0 z-50">
+        <Topbar />
+        {/* Horizontal navbar with hamburger — mobile only */}
+        <div className="md:hidden">
+          <Navbar />
         </div>
       </div>
+
+      {/* Fixed vertical sidebar (desktop) — window scroll keeps GSAP ScrollTrigger working */}
+      <VerticalNavbar />
+
+      {/* Main content offset by collapsed sidebar width on desktop */}
+      <main className="min-w-0 flex flex-col md:pl-16">
+        <Breadcrumbs />
+        <PageTransition>{children}</PageTransition>
+        <Footer />
+      </main>
     </TenantProvider>
   );
 }

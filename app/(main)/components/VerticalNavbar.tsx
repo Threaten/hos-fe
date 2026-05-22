@@ -52,7 +52,7 @@ export default function VerticalNavbar() {
 
   return (
     <aside
-      className="hidden md:flex flex-col absolute left-0 inset-y-0 z-40 overflow-hidden border-r"
+      className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 z-40 overflow-hidden border-r"
       style={{
         width: isExpanded ? EXPANDED_W : COLLAPSED_W,
         backgroundColor: "var(--background)",
@@ -81,7 +81,7 @@ export default function VerticalNavbar() {
         />
 
         {/* ── Brand section ── */}
-        <div className="flex flex-col shrink-0 pt-12 pb-6">
+        <div className="flex flex-col shrink-0 pt-20 pb-6">
 
           {/* Home logo — bigger, on top */}
           <Link
