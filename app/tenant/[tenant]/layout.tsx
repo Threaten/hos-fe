@@ -36,7 +36,7 @@ export default function TenantLayout({
         {/* Body row: vertical sidebar (overlay) + scrollable content */}
         <div className="flex flex-1 md:min-h-0 relative">
           <VerticalNavbar />
-          <main className="flex-1 md:overflow-y-auto min-w-0 flex flex-col">
+          <main className="flex-1 md:overflow-y-auto min-w-0 flex flex-col md:pl-16">
             <Breadcrumbs />
             <PageTransition>{children}</PageTransition>
             <Footer />
