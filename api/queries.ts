@@ -125,6 +125,9 @@ export interface Tenant {
 
 export interface HomeInformation {
   name?: string;
+  logo?: {
+    url: string;
+  } | null;
   CatchPhrase1: string;
   CatchPhrase2: string;
   quote_s_: Array<{ quote: string; id: string }>;
@@ -338,6 +341,9 @@ const GET_HOME_INFORMATION = gql`
   query getHomeInformation {
     HomeInformation {
       name
+      logo {
+        url
+      }
       CatchPhrase1
       CatchPhrase2
       quote_s_ {
