@@ -22,7 +22,6 @@ async function gqlFetch<T>(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query, variables }),
-      // @ts-expect-error – Next.js extends RequestInit with `next`
       next: { revalidate: 60 },
     });
     if (!res.ok) return null;
