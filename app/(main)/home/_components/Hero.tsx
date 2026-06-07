@@ -23,6 +23,9 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Skip heavy GSAP animations on mobile — reduces main-thread work and forced reflows
+    if (window.matchMedia("(max-width: 768px)").matches) return;
+
     let ctx: ReturnType<(typeof import("gsap"))["gsap"]["context"]> | null =
       null;
     let mounted = true;
@@ -32,6 +35,9 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       gsap.registerPlugin(ScrollTrigger);
       if (!mounted || !sectionRef.current) return;
+
+      // Set willChange only when GSAP is about to animate
+      if (parallaxRef.current) parallaxRef.current.style.willChange = "transform";
 
       ctx = gsap.context(() => {
         // Scrub-parallax: image strip drifts upward at 20% scroll speed
@@ -104,7 +110,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
   const scrollDuration = `${count * 7}s`;
 
   return (
-    <section ref={sectionRef} className="w-full">
+    <section ref={sectionRef} className="w-full flex flex-col" style={{ height: "100svh" }}>
       {/* ── Auto-scrolling image marquee ── */}
       <div
         className="w-full overflow-hidden"
@@ -114,7 +120,6 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
         <div
           ref={parallaxRef}
           className="h-full"
-          style={{ willChange: "transform" }}
         >
           {marqueeImages.length > 0 ? (
             <div
@@ -138,9 +143,8 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
                       alt={item.image?.filename || ""}
                       fill
                       className="object-cover"
-                      priority={idx < 4}
-                      loading={idx < 4 ? undefined : "lazy"}
-                      sizes="22vw"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 180px, 22vw"
                     />
                     <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none bg-linear-to-t from-black/20 to-transparent" />
                     <span className="absolute bottom-3 right-3 text-[10px] tracking-[0.2em] text-white/40 font-light tabular-nums select-none">
@@ -201,10 +205,10 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
       {/* ── Content row: centered on mobile, side-by-side on desktop ── */}
       <div
         ref={contentRef}
-        className="w-full px-8 md:px-14 py-8 md:py-12 flex flex-col items-center md:grid md:grid-cols-[1fr_auto] md:items-end md:gap-16"
+        className="w-full flex-1 px-8 md:px-14 py-8 md:py-0 flex flex-col items-center justify-center md:flex-row-reverse md:items-center md:justify-between md:gap-16"
       >
         {/* Large display title — top on mobile, right column on desktop */}
-        <div className="text-center md:text-right order-first md:order-last mb-3 md:mb-0">
+        <div className="text-center md:text-right mb-3 md:mb-0">
           <h1
             className="font-bold leading-[0.88] opacity-0 animate-reveal-up"
             style={{

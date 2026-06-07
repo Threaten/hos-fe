@@ -1,12 +1,3 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  gql,
-  HttpLink,
-  ApolloLink,
-} from "@apollo/client";
-import { onError } from "@apollo/client/link/error";
-
 /**
  * API URL Configuration
  * Uses environment variables with sensible defaults
@@ -19,33 +10,46 @@ export const API_URL =
 export const GRAPHQL_ENDPOINT = `${API_URL}/api/graphql`;
 
 /**
- * Apollo Client Setup
+ * Lightweight GraphQL fetch helper – replaces Apollo Client.
+ * Swallows errors and returns null so callers can handle gracefully.
  */
-
-export const httpLink = new HttpLink({
-  uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || GRAPHQL_ENDPOINT,
-  fetch: function (uri, options) {
-    return fetch(uri, {
-      ...options,
-      next: {
-        revalidate: 60,
-      },
+async function gqlFetch<T>(
+  query: string,
+  variables?: Record<string, unknown>,
+): Promise<T | null> {
+  try {
+    const res = await fetch(GRAPHQL_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, variables }),
+      // @ts-expect-error – Next.js extends RequestInit with `next`
+      next: { revalidate: 60 },
     });
-  },
-});
+    if (!res.ok) return null;
+    const json = await res.json();
+    return (json.data as T) ?? null;
+  } catch {
+    return null;
+  }
+}
 
-// Error link to catch GraphQL errors
-const errorLink = onError(() => {});
-
-export const client = new ApolloClient({
-  link: ApolloLink.from([errorLink, httpLink]),
-  cache: new InMemoryCache({}),
-  defaultOptions: {
-    query: {
-      fetchPolicy: "network-only",
-    },
-  },
-});
+/**
+ * Mutation helper – re-throws errors so callers can handle them.
+ */
+async function gqlMutate<T>(
+  query: string,
+  variables?: Record<string, unknown>,
+): Promise<T> {
+  const res = await fetch(GRAPHQL_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, variables }),
+  });
+  if (!res.ok) throw new Error(`GraphQL request failed: ${res.status}`);
+  const json = await res.json();
+  if (json.errors?.length) throw new Error(json.errors[0].message);
+  return json.data as T;
+}
 
 /**
  * Type Definitions
@@ -189,7 +193,7 @@ interface CustomerResponse {
  * QUERIES
  */
 
-const GET_TENANTS = gql`
+const GET_TENANTS = `
   query getTenants($limit: Int = 100) {
     Tenants(limit: $limit) {
       docs {
@@ -263,7 +267,7 @@ const GET_TENANTS = gql`
   }
 `;
 
-const GET_TENANT = gql`
+const GET_TENANT = `
   query getTenant($domain: String) {
     Tenants(where: { domain: { equals: $domain } }) {
       docs {
@@ -337,7 +341,7 @@ const GET_TENANT = gql`
   }
 `;
 
-const GET_HOME_INFORMATION = gql`
+const GET_HOME_INFORMATION = `
   query getHomeInformation {
     HomeInformation {
       name
@@ -357,7 +361,7 @@ const GET_HOME_INFORMATION = gql`
   }
 `;
 
-const GET_GALLERY = gql`
+const GET_GALLERY = `
   query getGallery {
     Galleries(limit: 100) {
       docs {
@@ -378,7 +382,7 @@ const GET_GALLERY = gql`
   }
 `;
 
-const GET_CUSTOMER = gql`
+const GET_CUSTOMER = `
   query getCustomer($customerPhone: String) {
     Customers(where: { customerPhone: { equals: $customerPhone } }) {
       docs {
@@ -394,7 +398,7 @@ const GET_CUSTOMER = gql`
  * MUTATIONS
  */
 
-const CREATE_CUSTOMER = gql`
+const CREATE_CUSTOMER = `
   mutation CreateCustomer($customerName: String!, $customerPhone: String!) {
     createCustomer(
       data: { customerName: $customerName, customerPhone: $customerPhone }
@@ -406,7 +410,7 @@ const CREATE_CUSTOMER = gql`
   }
 `;
 
-const CREATE_RESERVATION = gql`
+const CREATE_RESERVATION = `
   mutation CreateReservation(
     $customer: String!
     $reservationDateTime: String!
@@ -432,7 +436,7 @@ const CREATE_RESERVATION = gql`
   }
 `;
 
-const CREATE_CONTACT_MESSAGE = gql`
+const CREATE_CONTACT_MESSAGE = `
   mutation CreateContactMessage(
     $customer: String!
     $message: String
@@ -473,15 +477,8 @@ const CREATE_CONTACT_MESSAGE = gql`
  * @returns Promise with tenants data
  */
 export const fetchTenants = async (limit = 100) => {
-  try {
-    const { data } = await client.query<TenantsResponse>({
-      query: GET_TENANTS,
-      variables: { limit },
-    });
-    return data?.Tenants?.docs || [];
-  } catch {
-    return [];
-  }
+  const data = await gqlFetch<TenantsResponse>(GET_TENANTS, { limit });
+  return data?.Tenants?.docs || [];
 };
 
 /**
@@ -490,16 +487,8 @@ export const fetchTenants = async (limit = 100) => {
  * @returns Promise with tenant data
  */
 export const fetchTenantBySlug = async (slug: string) => {
-  try {
-    const { data } = await client.query<TenantResponse>({
-      query: GET_TENANT,
-      variables: { domain: slug },
-    });
-
-    return data?.Tenants?.docs?.[0] || null;
-  } catch {
-    return null;
-  }
+  const data = await gqlFetch<TenantResponse>(GET_TENANT, { domain: slug });
+  return data?.Tenants?.docs?.[0] || null;
 };
 
 /**
@@ -507,14 +496,8 @@ export const fetchTenantBySlug = async (slug: string) => {
  * @returns Promise with home information data
  */
 export const fetchHomeInformation = async () => {
-  try {
-    const { data } = await client.query<HomeInformationResponse>({
-      query: GET_HOME_INFORMATION,
-    });
-    return data?.HomeInformation;
-  } catch {
-    return null;
-  }
+  const data = await gqlFetch<HomeInformationResponse>(GET_HOME_INFORMATION);
+  return data?.HomeInformation ?? null;
 };
 
 /**
@@ -523,20 +506,12 @@ export const fetchHomeInformation = async () => {
  * @returns Promise with gallery items
  */
 export const fetchGallery = async (branchId?: string) => {
-  try {
-    const { data } = await client.query<GalleryResponse>({
-      query: GET_GALLERY,
-    });
-    // Filter by branch on the client side if branchId is provided
-    let docs = data?.Galleries?.docs || [];
-    if (branchId && docs.length > 0) {
-      docs = docs.filter((item) => item.branch?.id === branchId);
-    }
-
-    return docs;
-  } catch {
-    return [];
+  const data = await gqlFetch<GalleryResponse>(GET_GALLERY);
+  let docs = data?.Galleries?.docs || [];
+  if (branchId && docs.length > 0) {
+    docs = docs.filter((item) => item.branch?.id === branchId);
   }
+  return docs;
 };
 
 /* END OF QUERIES */
@@ -551,15 +526,8 @@ export const fetchGallery = async (branchId?: string) => {
  * @returns Promise with customer data or null
  */
 export const getCustomerByPhone = async (phone: string) => {
-  try {
-    const { data } = await client.query<CustomerResponse>({
-      query: GET_CUSTOMER,
-      variables: { customerPhone: phone },
-    });
-    return data?.Customers?.docs?.[0] || null;
-  } catch {
-    return null;
-  }
+  const data = await gqlFetch<CustomerResponse>(GET_CUSTOMER, { customerPhone: phone });
+  return data?.Customers?.docs?.[0] || null;
 };
 
 /**
@@ -569,18 +537,11 @@ export const getCustomerByPhone = async (phone: string) => {
  * @returns Promise with created customer data
  */
 export const createCustomer = async (name: string, phone: string) => {
-  try {
-    const { data } = await client.mutate({
-      mutation: CREATE_CUSTOMER,
-      variables: {
-        customerName: name,
-        customerPhone: phone,
-      },
-    });
-    return (data as any)?.createCustomer;
-  } catch (error) {
-    throw error;
-  }
+  const data = await gqlMutate<{ createCustomer: { id: string; customerName: string; customerPhone: string } }>(CREATE_CUSTOMER, {
+    customerName: name,
+    customerPhone: phone,
+  });
+  return data?.createCustomer;
 };
 
 /**
@@ -599,22 +560,14 @@ export const createReservation = async (
   specialRequests: string | undefined,
   branchId: string,
 ) => {
-  try {
-    const { data } = await client.mutate({
-      mutation: CREATE_RESERVATION,
-      variables: {
-        customer: customerId,
-        reservationDateTime,
-        numberOfGuests,
-        specialRequests,
-        branch: branchId,
-        status: "Pending",
-      },
-    });
-    return data as any;
-  } catch (error) {
-    throw error;
-  }
+  return gqlMutate(CREATE_RESERVATION, {
+    customer: customerId,
+    reservationDateTime,
+    numberOfGuests,
+    specialRequests,
+    branch: branchId,
+    status: "Pending",
+  });
 };
 
 /**
@@ -629,20 +582,12 @@ export const createContactMessage = async (
   message: string | undefined,
   branchId: string,
 ) => {
-  try {
-    const { data } = await client.mutate({
-      mutation: CREATE_CONTACT_MESSAGE,
-      variables: {
-        customer: customerId,
-        message: message || "",
-        branch: branchId,
-        status: "Pending",
-      },
-    });
-    return data as any;
-  } catch (error) {
-    throw error;
-  }
+  return gqlMutate(CREATE_CONTACT_MESSAGE, {
+    customer: customerId,
+    message: message || "",
+    branch: branchId,
+    status: "Pending",
+  });
 };
 
 /* END OF MUTATIONS */
