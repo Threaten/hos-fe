@@ -8,6 +8,7 @@ import GalleryPage from "../../../(main)/gallery/page";
 import ContactForm from "../../../(main)/contact/_components/ContactForm";
 import ReservationForm from "../../../(main)/reservation/_components/ReservationForm";
 import TenantFlipbookWrapper from "../../../(main)/menu/_components/TenantFlipbookWrapper";
+import LuckyWheel from "../../../(main)/lucky-wheel/_components/LuckyWheel";
 import Link from "next/link";
 import { API_URL } from "@/app/utils/constants";
 import type { Tenant, GalleryItem } from "@/api/queries";
@@ -151,6 +152,9 @@ export default async function TenantPage({ params }: PageProps) {
 
     case "reservation":
       return <ReservationForm currentTenant={tenant.domain} />;
+
+    case "lucky-wheel":
+      return <LuckyWheel />;
 
     default:
       notFound();

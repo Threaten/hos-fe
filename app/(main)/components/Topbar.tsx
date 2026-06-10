@@ -42,13 +42,13 @@ export default function Topbar() {
         <div
           className="w-full flex items-center justify-center py-2 px-4"
           style={{
-            backgroundColor: "var(--color-earth)",
+            backgroundColor: "#7A0000",
             borderBottom:
               "1px solid color-mix(in srgb, var(--color-gold) 30%, transparent)",
           }}
         >
           <span
-            className="text-[9px] tracking-[0.38em] uppercase text-center"
+            className="text-[11px] tracking-[0.38em] uppercase font-bold text-center"
             style={{ color: "var(--color-cream)" }}
           >
             {notification.message}

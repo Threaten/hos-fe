@@ -435,6 +435,30 @@ const CREATE_RESERVATION = `
   }
 `;
 
+const CREATE_SPIN_HISTORY = `
+  mutation CreateSpinHistory(
+    $occurredAt: String!
+    $reward: String!
+    $branch: String!
+  ) {
+    createSpinHistory(
+      data: {
+        occurredAt: $occurredAt
+        reward: $reward
+        branch: $branch
+      }
+    ) {
+      id
+      occurredAt
+      reward
+      branch {
+        id
+        name
+      }
+    }
+  }
+`;
+
 const CREATE_CONTACT_MESSAGE = `
   mutation CreateContactMessage(
     $customer: String!
@@ -586,6 +610,25 @@ export const createContactMessage = async (
     message: message || "",
     branch: branchId,
     status: "Pending",
+  });
+};
+
+/**
+ * Create a new spin history record
+ * @param occurredAt - ISO datetime string of when the spin occurred
+ * @param reward - The reward content the user landed on
+ * @param branchId - Branch/Tenant ID
+ * @returns Promise with created spin history data
+ */
+export const createSpinHistory = async (
+  occurredAt: string,
+  reward: string,
+  branchId: string,
+) => {
+  return gqlMutate(CREATE_SPIN_HISTORY, {
+    occurredAt,
+    reward,
+    branch: branchId,
   });
 };
 
