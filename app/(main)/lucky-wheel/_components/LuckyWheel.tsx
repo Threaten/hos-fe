@@ -6,31 +6,17 @@ import { createSpinHistory, API_URL } from "@/api/queries";
 
 // ─── Wheel Configuration ──────────────────────────────────────────────────────
 
-const SEGMENTS = [
-  { lines: ["Free", "Dessert"] },
-  { lines: ["10% Off"] },
-  { lines: ["Free", "Cocktail"] },
-  { lines: ["5%", "Off"] },
-  { lines: ["Free", "Starter"] },
-  { lines: ["3%", "Off"] },
-  { lines: ["Free", "Drink"] },
-  { lines: ["Chef's", "Surprise"] },
+const DEFAULT_PRIZES = [
+  "Free Dessert",
+  "10% Off",
+  "Free Cocktail",
+  "5% Off",
+  "Free Starter",
+  "3% Off",
+  "Free Drink",
+  "Chef's Surprise",
 ];
 
-// Alternate the tenant's main color with the site's warm white.
-const COLORS = [
-  { bg: "var(--color-main)", text: "var(--color-cream)" },
-  { bg: "var(--color-cream)", text: "var(--color-main)" },
-  { bg: "var(--color-main)", text: "var(--color-cream)" },
-  { bg: "var(--color-cream)", text: "var(--color-main)" },
-  { bg: "var(--color-main)", text: "var(--color-cream)" },
-  { bg: "var(--color-cream)", text: "var(--color-main)" },
-  { bg: "var(--color-main)", text: "var(--color-cream)" },
-  { bg: "var(--color-cream)", text: "var(--color-main)" },
-];
-
-const NUM = SEGMENTS.length;
-const ANGLE_DEG = 360 / NUM; // 45° each
 const R = 145;
 const CX = 160;
 const CY = 160;
@@ -46,13 +32,46 @@ function polarToXY(angleDeg: number, radius: number) {
   return { x: CX + radius * Math.cos(rad), y: CY + radius * Math.sin(rad) };
 }
 
+/** Split longer prize labels over two balanced lines. */
+function splitPrizeLabel(label: string): string[] {
+  const normalized = label.trim().replace(/\s+/g, " ");
+  const words = normalized.split(" ");
+
+  if (normalized.length <= 11 || words.length === 1) return [normalized];
+
+  let bestSplit = 1;
+  let smallestDifference = Number.POSITIVE_INFINITY;
+
+  for (let i = 1; i < words.length; i += 1) {
+    const firstLine = words.slice(0, i).join(" ");
+    const secondLine = words.slice(i).join(" ");
+    const difference = Math.abs(firstLine.length - secondLine.length);
+
+    if (difference < smallestDifference) {
+      bestSplit = i;
+      smallestDifference = difference;
+    }
+  }
+
+  return [
+    words.slice(0, bestSplit).join(" "),
+    words.slice(bestSplit).join(" "),
+  ];
+}
+
 /** Build a pie-slice SVG path for segment `i`. */
-function slicePath(i: number): string {
-  const start = i * ANGLE_DEG;
-  const end = (i + 1) * ANGLE_DEG;
+function slicePath(i: number, angleDeg: number): string {
+  const start = i * angleDeg;
+  const end = (i + 1) * angleDeg;
   const s = polarToXY(start, R);
   const e = polarToXY(end, R);
   return `M ${CX} ${CY} L ${s.x} ${s.y} A ${R} ${R} 0 0 1 ${e.x} ${e.y} Z`;
+}
+
+function getSegmentColor(index: number) {
+  return index % 2 === 0
+    ? { bg: "var(--color-main)", text: "var(--color-cream)" }
+    : { bg: "var(--color-cream)", text: "var(--color-main)" };
 }
 
 // ─── Login Form ───────────────────────────────────────────────────────────────
@@ -329,6 +348,18 @@ function RewardModal({
 
 export default function LuckyWheel() {
   const { tenant } = useTenant();
+  const configuredPrizes =
+    tenant?.spinWheelPrizes
+      ?.map((prize) => prize.label?.trim())
+      .filter((label): label is string => Boolean(label)) ?? [];
+  const prizeLabels =
+    configuredPrizes.length >= 2 ? configuredPrizes : DEFAULT_PRIZES;
+  const segments = prizeLabels.map((label) => ({
+    label,
+    lines: splitPrizeLabel(label),
+  }));
+  const numSegments = segments.length;
+  const angleDeg = 360 / numSegments;
 
   // Auth state
   const [token, setToken] = useState<string | null>(null);
@@ -351,10 +382,10 @@ export default function LuckyWheel() {
     setSpinning(true);
     setResult(null);
 
-    const selectedIndex = Math.floor(Math.random() * NUM);
+    const selectedIndex = Math.floor(Math.random() * numSegments);
 
     const targetOffset =
-      (360 - (selectedIndex + 0.5) * ANGLE_DEG + 360) % 360;
+      (360 - (selectedIndex + 0.5) * angleDeg + 360) % 360;
     const currentMod = rotationRef.current % 360;
     const delta = (targetOffset - currentMod + 360) % 360;
     const newRotation = rotationRef.current + 5 * 360 + delta;
@@ -363,7 +394,7 @@ export default function LuckyWheel() {
     setRotation(newRotation);
 
     setTimeout(async () => {
-      const reward = SEGMENTS[selectedIndex].lines.join(" ");
+      const reward = segments[selectedIndex].label;
       setResult(reward);
       setSpinning(false);
 
@@ -468,14 +499,14 @@ export default function LuckyWheel() {
           >
             <circle cx={CX} cy={CY} r={R + 2} fill="none" stroke="var(--color-main)" strokeWidth={4} />
 
-            {SEGMENTS.map((seg, i) => {
-              const midAngle = (i + 0.5) * ANGLE_DEG;
+            {segments.map((seg, i) => {
+              const midAngle = (i + 0.5) * angleDeg;
               const textPos = polarToXY(midAngle, R * 0.63);
-              const color = COLORS[i];
+              const color = getSegmentColor(i);
               const isMultiLine = seg.lines.length > 1;
               return (
                 <g key={i}>
-                  <path d={slicePath(i)} fill={color.bg} stroke="var(--color-cream)" strokeWidth={1.5} />
+                  <path d={slicePath(i, angleDeg)} fill={color.bg} stroke="var(--color-cream)" strokeWidth={1.5} />
                   <g transform={`translate(${textPos.x},${textPos.y})`}>
                     <g
                       style={{
@@ -511,8 +542,8 @@ export default function LuckyWheel() {
               );
             })}
 
-            {SEGMENTS.map((_, i) => {
-              const spoke = polarToXY(i * ANGLE_DEG, R);
+            {segments.map((_, i) => {
+              const spoke = polarToXY(i * angleDeg, R);
               return (
                 <line
                   key={`spoke-${i}`}

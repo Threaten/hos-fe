@@ -119,6 +119,10 @@ export interface Tenant {
     message?: string;
   };
   mainColor?: string;
+  spinWheelPrizes?: Array<{
+    label: string;
+    id?: string;
+  }>;
   meta?: {
     title?: string;
     description?: string;
@@ -203,6 +207,10 @@ const GET_TENANTS = `
         name
         domain
         mainColor
+        spinWheelPrizes {
+          label
+          id
+        }
         heroImagesList {
           image {
             url
@@ -284,6 +292,10 @@ const GET_TENANT = `
         name
         domain
         mainColor
+        spinWheelPrizes {
+          label
+          id
+        }
         heroImagesList {
           image {
             url
