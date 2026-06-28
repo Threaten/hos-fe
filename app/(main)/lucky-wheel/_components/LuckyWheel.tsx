@@ -17,16 +17,16 @@ const SEGMENTS = [
   { lines: ["Chef's", "Surprise"] },
 ];
 
-// Alternating warm-earth tones from brand palette
+// Alternate the tenant's main color with the site's warm white.
 const COLORS = [
-  { bg: "#6b5e38", text: "#f2ede4" }, // deep earth → cream text
-  { bg: "#c8b98a", text: "#3d3018" }, // light gold → dark text
-  { bg: "#8a7a50", text: "#f2ede4" }, // medium earth → cream text
-  { bg: "#ddd0b3", text: "#3d3018" }, // parchment → dark text
-  { bg: "#6b5e38", text: "#f2ede4" },
-  { bg: "#c8b98a", text: "#3d3018" },
-  { bg: "#8a7a50", text: "#f2ede4" },
-  { bg: "#ddd0b3", text: "#3d3018" },
+  { bg: "var(--color-main)", text: "var(--color-cream)" },
+  { bg: "var(--color-cream)", text: "var(--color-main)" },
+  { bg: "var(--color-main)", text: "var(--color-cream)" },
+  { bg: "var(--color-cream)", text: "var(--color-main)" },
+  { bg: "var(--color-main)", text: "var(--color-cream)" },
+  { bg: "var(--color-cream)", text: "var(--color-main)" },
+  { bg: "var(--color-main)", text: "var(--color-cream)" },
+  { bg: "var(--color-cream)", text: "var(--color-main)" },
 ];
 
 const NUM = SEGMENTS.length;
@@ -35,6 +35,7 @@ const R = 145;
 const CX = 160;
 const CY = 160;
 const VIEWBOX = 320;
+const WHEEL_SIZE = "min(460px, calc(100vw - 48px))";
 const SPIN_DURATION_MS = 4200;
 
 // ─── SVG Helpers ──────────────────────────────────────────────────────────────
@@ -52,14 +53,6 @@ function slicePath(i: number): string {
   const s = polarToXY(start, R);
   const e = polarToXY(end, R);
   return `M ${CX} ${CY} L ${s.x} ${s.y} A ${R} ${R} 0 0 1 ${e.x} ${e.y} Z`;
-}
-
-/**
- * Radial text rotation: flip text in the bottom half so it stays legible.
- * Without this, bottom-half labels appear upside-down.
- */
-function textRotation(midAngle: number) {
-  return midAngle > 90 && midAngle < 270 ? midAngle + 180 : midAngle;
 }
 
 // ─── Login Form ───────────────────────────────────────────────────────────────
@@ -112,11 +105,11 @@ function LoginGate({
     width: "100%",
     background: "transparent",
     border: "none",
-    borderBottom: "1px solid color-mix(in srgb, var(--color-tan) 45%, transparent)",
+    borderBottom: "1px solid color-mix(in srgb, var(--color-main) 45%, transparent)",
     outline: "none",
     padding: "10px 0",
-    fontSize: "13px",
-    color: "var(--foreground)",
+    fontSize: "15px",
+    color: "var(--color-main)",
     fontFamily: "var(--font-ibm-plex-mono), monospace",
     letterSpacing: "0.03em",
   };
@@ -128,14 +121,17 @@ function LoginGate({
     >
       <div className="w-full max-w-sm">
         <p
-          className="text-[10px] tracking-[0.38em] uppercase mb-5 text-center"
-          style={{ color: "var(--color-tan)" }}
+          className="text-[13px] tracking-[0.38em] uppercase mb-5 text-center"
+          style={{ color: "var(--color-main)" }}
         >
           — members only
         </p>
         <h1
-          className="text-[clamp(2rem,5vw,3rem)] font-semibold leading-tight tracking-tight text-center mb-10"
-          style={{ fontFamily: "var(--font-arimo), sans-serif" }}
+          className="text-[clamp(2.5rem,6vw,3.6rem)] font-semibold leading-tight tracking-tight text-center mb-10"
+          style={{
+            fontFamily: "var(--font-arimo), sans-serif",
+            color: "var(--color-main)",
+          }}
         >
           Lucky Wheel
         </h1>
@@ -143,8 +139,8 @@ function LoginGate({
         <form onSubmit={submit} noValidate>
           <div className="mb-6">
             <label
-              className="block text-[10px] tracking-[0.3em] uppercase mb-2"
-              style={{ color: "var(--color-tan)" }}
+              className="block text-[13px] tracking-[0.3em] uppercase mb-2"
+              style={{ color: "var(--color-main)" }}
             >
               Email
             </label>
@@ -161,8 +157,8 @@ function LoginGate({
 
           <div className="mb-8">
             <label
-              className="block text-[10px] tracking-[0.3em] uppercase mb-2"
-              style={{ color: "var(--color-tan)" }}
+              className="block text-[13px] tracking-[0.3em] uppercase mb-2"
+              style={{ color: "var(--color-main)" }}
             >
               Password
             </label>
@@ -179,7 +175,7 @@ function LoginGate({
 
           {error && (
             <p
-              className="text-[11px] mb-5 tracking-wide"
+              className="text-[13px] mb-5 tracking-wide"
               style={{ color: "#b04040" }}
             >
               {error}
@@ -189,10 +185,10 @@ function LoginGate({
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 text-xs tracking-[0.28em] uppercase transition-opacity"
+            className="w-full py-3 text-sm tracking-[0.28em] uppercase transition-opacity"
             style={{
-              backgroundColor: loading ? "var(--color-tan)" : "var(--color-earth)",
-              color: "#f2ede4",
+              backgroundColor: "var(--color-main)",
+              color: "var(--color-cream)",
               fontFamily: "var(--font-arimo), sans-serif",
               cursor: loading ? "not-allowed" : "pointer",
               opacity: loading ? 0.7 : 1,
@@ -272,8 +268,8 @@ function RewardModal({
             background: "none",
             border: "none",
             cursor: "pointer",
-            color: "var(--color-tan)",
-            fontSize: "20px",
+            color: "var(--color-main)",
+            fontSize: "24px",
             lineHeight: 1,
             padding: 4,
           }}
@@ -282,23 +278,23 @@ function RewardModal({
         </button>
 
         <p
-          className="text-[10px] tracking-[0.38em] uppercase mb-6"
-          style={{ color: "var(--color-tan)" }}
+          className="text-[13px] tracking-[0.38em] uppercase mb-6"
+          style={{ color: "var(--color-main)" }}
         >
           — your reward
         </p>
 
         {isNoReward ? (
           <p
-            className="text-3xl font-semibold"
-            style={{ fontFamily: "var(--font-arimo), sans-serif", color: "var(--color-sand)" }}
+            className="text-4xl font-semibold"
+            style={{ fontFamily: "var(--font-arimo), sans-serif", color: "var(--color-main)" }}
           >
             Better luck next time
           </p>
         ) : (
           <>
             <p
-              className="text-[clamp(2rem,8vw,3.2rem)] font-semibold leading-tight"
+              className="text-[clamp(2.4rem,9vw,3.8rem)] font-semibold leading-tight"
               style={{ fontFamily: "var(--font-arimo), sans-serif", color: "var(--foreground)" }}
             >
               {result}
@@ -306,12 +302,12 @@ function RewardModal({
 
             <div
               className="w-16 my-8"
-              style={{ height: 1, backgroundColor: "color-mix(in srgb, var(--color-tan) 35%, transparent)" }}
+              style={{ height: 1, backgroundColor: "color-mix(in srgb, var(--color-main) 35%, transparent)" }}
             />
 
             <p
-              className="text-[11px] tracking-wide leading-relaxed"
-              style={{ color: "var(--color-sand)" }}
+              className="text-[14px] tracking-wide leading-relaxed"
+              style={{ color: "var(--color-main)" }}
             >
               Show this screen to your server to redeem your reward.
             </p>
@@ -400,35 +396,43 @@ export default function LuckyWheel() {
         {/* ── Header ── */}
         <div className="text-center mb-10">
           <p
-            className="text-[10px] tracking-[0.38em] uppercase mb-5"
-            style={{ color: "var(--color-tan)" }}
+            className="text-[13px] tracking-[0.38em] uppercase mb-5"
+            style={{ color: "var(--color-main)" }}
           >
             — try your luck
           </p>
           <h1
-            className="text-[clamp(2.6rem,6vw,4.2rem)] font-semibold leading-[0.92] tracking-tight"
-            style={{ fontFamily: "var(--font-arimo), sans-serif", color: "var(--foreground)" }}
+            className="font-semibold leading-[0.92] tracking-tight"
+            style={{
+              fontFamily: "var(--font-arimo), sans-serif",
+              fontSize: "clamp(2.1rem, 8.25vw, 6rem)",
+              color: "var(--color-main)",
+              whiteSpace: "nowrap",
+            }}
           >
             Lucky Wheel
           </h1>
           {userName && (
             <p
-              className="mt-4 text-[12px] tracking-wide"
-              style={{ color: "var(--color-tan)" }}
+              className="mt-4 text-[15px] tracking-wide"
+              style={{ color: "var(--color-main)" }}
             >
               welcome, {userName}
             </p>
           )}
           <p
-            className="mt-3 text-[13px] leading-relaxed max-w-xs mx-auto"
-            style={{ color: "var(--color-sand)" }}
+            className="mt-3 text-[16px] leading-relaxed max-w-sm mx-auto"
+            style={{ color: "var(--color-main)" }}
           >
             One spin per visit. Show your reward to the team to redeem it.
           </p>
         </div>
 
         {/* ── Wheel ── */}
-        <div className="relative select-none" style={{ width: VIEWBOX, height: VIEWBOX }}>
+        <div
+          className="relative select-none"
+          style={{ width: WHEEL_SIZE, height: WHEEL_SIZE }}
+        >
           {/* Pointer */}
           <div
             aria-hidden="true"
@@ -441,7 +445,7 @@ export default function LuckyWheel() {
               height: 0,
               borderLeft: "11px solid transparent",
               borderRight: "11px solid transparent",
-              borderTop: "22px solid #3d3018",
+              borderTop: "22px solid var(--color-main)",
               zIndex: 10,
               filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15))",
             }}
@@ -449,8 +453,8 @@ export default function LuckyWheel() {
 
           {/* SVG Wheel */}
           <svg
-            width={VIEWBOX}
-            height={VIEWBOX}
+            width="100%"
+            height="100%"
             viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}
             style={{
               transform: `rotate(${rotation}deg)`,
@@ -462,37 +466,47 @@ export default function LuckyWheel() {
             aria-label="Lucky wheel"
             role="img"
           >
-            <circle cx={CX} cy={CY} r={R + 2} fill="none" stroke="#3d3018" strokeWidth={4} />
+            <circle cx={CX} cy={CY} r={R + 2} fill="none" stroke="var(--color-main)" strokeWidth={4} />
 
             {SEGMENTS.map((seg, i) => {
               const midAngle = (i + 0.5) * ANGLE_DEG;
               const textPos = polarToXY(midAngle, R * 0.63);
-              const rot = textRotation(midAngle);
               const color = COLORS[i];
               const isMultiLine = seg.lines.length > 1;
               return (
                 <g key={i}>
-                  <path d={slicePath(i)} fill={color.bg} stroke="#f2ede4" strokeWidth={1.5} />
-                  <text
-                    transform={`translate(${textPos.x},${textPos.y}) rotate(${rot})`}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    style={{
-                      fontSize: "9.5px",
-                      fontFamily: "var(--font-arimo), sans-serif",
-                      fontWeight: 600,
-                      fill: color.text,
-                      letterSpacing: "0.04em",
-                      pointerEvents: "none",
-                      userSelect: "none",
-                    }}
-                  >
-                    {seg.lines.map((line, j) => (
-                      <tspan key={j} x="0" dy={j === 0 ? (isMultiLine ? "-7" : "0") : "14"}>
-                        {line}
-                      </tspan>
-                    ))}
-                  </text>
+                  <path d={slicePath(i)} fill={color.bg} stroke="var(--color-cream)" strokeWidth={1.5} />
+                  <g transform={`translate(${textPos.x},${textPos.y})`}>
+                    <g
+                      style={{
+                        transform: `rotate(${-rotation}deg)`,
+                        transformOrigin: "0 0",
+                        transition: spinning
+                          ? `transform ${SPIN_DURATION_MS}ms cubic-bezier(0.17, 0.67, 0.12, 0.99)`
+                          : "none",
+                      }}
+                    >
+                      <text
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        style={{
+                          fontSize: "11px",
+                          fontFamily: "var(--font-arimo), sans-serif",
+                          fontWeight: 600,
+                          fill: color.text,
+                          letterSpacing: "0.04em",
+                          pointerEvents: "none",
+                          userSelect: "none",
+                        }}
+                      >
+                        {seg.lines.map((line, j) => (
+                          <tspan key={j} x="0" dy={j === 0 ? (isMultiLine ? "-7" : "0") : "14"}>
+                            {line}
+                          </tspan>
+                        ))}
+                      </text>
+                    </g>
+                  </g>
                 </g>
               );
             })}
@@ -503,14 +517,14 @@ export default function LuckyWheel() {
                 <line
                   key={`spoke-${i}`}
                   x1={CX} y1={CY} x2={spoke.x} y2={spoke.y}
-                  stroke="#f2ede4" strokeWidth={1.5}
+                  stroke="var(--color-cream)" strokeWidth={1.5}
                 />
               );
             })}
 
-            <circle cx={CX} cy={CY} r={20} fill="#3d3018" />
-            <circle cx={CX} cy={CY} r={15} fill="#f2ede4" />
-            <circle cx={CX} cy={CY} r={4} fill="#3d3018" />
+            <circle cx={CX} cy={CY} r={20} fill="var(--color-main)" />
+            <circle cx={CX} cy={CY} r={15} fill="var(--color-cream)" />
+            <circle cx={CX} cy={CY} r={4} fill="var(--color-main)" />
           </svg>
         </div>
 
@@ -518,10 +532,10 @@ export default function LuckyWheel() {
         <button
           onClick={spin}
           disabled={spinning}
-          className="mt-10 px-14 py-3 text-xs tracking-[0.28em] uppercase transition-opacity"
+          className="mt-10 px-14 py-3 text-sm tracking-[0.28em] uppercase transition-opacity"
           style={{
-            backgroundColor: spinning ? "var(--color-tan)" : "var(--color-earth)",
-            color: "#f2ede4",
+            backgroundColor: "var(--color-main)",
+            color: "var(--color-cream)",
             fontFamily: "var(--font-arimo), sans-serif",
             cursor: spinning ? "not-allowed" : "pointer",
             opacity: spinning ? 0.65 : 1,

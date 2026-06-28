@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Hero from "../../../(main)/home/_components/Hero";
 import ShortAbout from "../../../(main)/home/_components/ShortAbout";
 import CTA from "../../../(main)/components/CTA";
+import SocialLinks from "../../../(main)/components/SocialLinks";
 import TenantHomeInteractive from "./TenantHomeInteractive";
 import AboutPage from "../../../(main)/about/page";
 import GalleryPage from "../../../(main)/gallery/page";
@@ -72,47 +73,18 @@ export default async function TenantPage({ params }: PageProps) {
           <ShortAbout tenant={tenant} />
           {/* ── Gallery section header ── */}
           <div className="px-8 md:px-14 pt-0 pb-4">
-            <div className="flex items-center gap-4 mb-3 mt-3 ">
-              <span
-                className="text-[10px] tracking-[0.38em] uppercase"
-                style={{ color: "var(--color-sand)", opacity: 0.95 }}
-              >
-                03
-              </span>
-              <div
-                className="h-px flex-1"
-                style={{ backgroundColor: "var(--color-sand)", opacity: 0.25 }}
-              />
-              <span
-                className="text-[10px] tracking-[0.38em] uppercase"
-                style={{ color: "var(--color-sand)", opacity: 0.95 }}
-              >
-                Gallery
-              </span>
-            </div>
+            <div className="flex items-center gap-4 mb-3 mt-3 "></div>
           </div>
           <TenantHomeInteractive
             transformedImages={transformedImages}
             newMenu={tenant.newMenu ?? []}
             tenantName={tenant.name}
             galleryText={tenant.galleryText}
+            tenant={tenant}
           />
           {/* ── See all link ── */}
-          <div className="px-8 md:px-14 pt-4 pb-8">
-            <Link
-              href="/gallery"
-              className="inline-flex items-center gap-2 text-[11px] tracking-[0.28em] uppercase font-light transition-opacity duration-300 hover:opacity-40"
-              style={{
-                color: "var(--foreground)",
-                textDecoration: "underline",
-                textUnderlineOffset: "6px",
-                textDecorationColor: "var(--color-sand)",
-              }}
-            >
-              View full gallery →
-            </Link>
-          </div>
-          <CTA />
+
+          <SocialLinks tenant={tenant} />
         </div>
       );
     }

@@ -4,6 +4,19 @@ import { fetchTenants, type Tenant } from "@/api/queries";
 import { getTenantUrl } from "@/app/utils/domain";
 import { useTenant } from "@/app/contexts/TenantContext";
 
+const TenantDisplayName = ({ name }: { name: string }) => (
+  <>
+    {name.split(/(_+)/).map((part, index) => (
+      <span
+        key={`${part}-${index}`}
+        className={part.startsWith("_") ? "tracking-normal" : undefined}
+      >
+        {part}
+      </span>
+    ))}
+  </>
+);
+
 export default function Topbar() {
   const [openCard, setOpenCard] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -42,7 +55,7 @@ export default function Topbar() {
         <div
           className="w-full flex items-center justify-center py-2 px-4"
           style={{
-            backgroundColor: "#7A0000",
+            backgroundColor: "var(--color-main)",
             borderBottom:
               "1px solid color-mix(in srgb, var(--color-gold) 30%, transparent)",
           }}
@@ -72,16 +85,23 @@ export default function Topbar() {
               aria-expanded={openCard === "branches"}
             >
               <span
-                className="text-[8px] tracking-[0.35em] uppercase"
+                className="text-[12px] tracking-[0.35em] uppercase"
                 style={{ color: "var(--foreground)", opacity: 0.78 }}
               >
-                Our Locations
+                Our Locations:
               </span>
               <span
-                className="text-[8px] tracking-[0.28em] uppercase font-semibold"
+                className="flex items-center gap-3 text-[12px] tracking-[0.28em] uppercase font-semibold"
                 style={{ color: "var(--foreground)" }}
               >
-                {tenants.map((t) => t.name.toLowerCase()).join("  ·  ")}
+                {tenants.map((tenant, index) => (
+                  <span key={tenant.id} className="flex items-center gap-3">
+                    {index > 0 && <span aria-hidden="true">·</span>}
+                    <span>
+                      <TenantDisplayName name={tenant.name.toLowerCase()} />
+                    </span>
+                  </span>
+                ))}
               </span>
               <span
                 className={`text-[7px] transition-transform duration-300`}
@@ -146,7 +166,7 @@ export default function Topbar() {
                             fontFamily: "var(--font-arimo)",
                           }}
                         >
-                          {tenant.name.toLowerCase()}
+                          <TenantDisplayName name={tenant.name.toLowerCase()} />
                         </p>
                         {currentTenant?.id === tenant.id && (
                           <span
@@ -242,7 +262,7 @@ export default function Topbar() {
                         className="text-[10px] tracking-[0.22em] uppercase font-semibold"
                         style={{ color: "var(--foreground)" }}
                       >
-                        {tenant.name.toLowerCase()}
+                        <TenantDisplayName name={tenant.name.toLowerCase()} />
                       </p>
                       {currentTenant?.id === tenant.id && (
                         <span

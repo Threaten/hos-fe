@@ -26,7 +26,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadTenant = async () => {
       setLoading(true);
-      
+
       // Check if we're on /tenant/[slug] route
       const tenantSlug = Array.isArray(params?.tenant)
         ? params.tenant[0]
@@ -58,6 +58,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <TenantContext.Provider value={{ tenant, loading, setTenant }}>
+      <style>{`:root { --color-main: ${tenant?.mainColor ?? "#7A0000"}; }`}</style>
       {children}
     </TenantContext.Provider>
   );

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f2ede4;
+  --background: rgb(254 252 247);
   --foreground: #0f0e0b;
 
   /* Warm luxury palette */
@@ -27,20 +27,26 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-ibm-plex-mono);
-  --font-mono: var(--font-ibm-plex-mono);
-  --font-heading: var(--font-arimo);
+  --font-sans: "Minion Pro", "Minion", Georgia, serif;
+  --font-mono: "Minion Pro", "Minion", Georgia, serif;
+  --font-heading: "Minion Pro", "Minion", Georgia, serif;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+/* ── Minimum font size: nothing smaller than 12px ── */
+.text-\[8px\]  { font-size: 12px !important; line-height: 1.4 !important; }
+.text-\[9px\]  { font-size: 12px !important; line-height: 1.4 !important; }
+.text-\[10px\] { font-size: 12px !important; line-height: 1.4 !important; }
+.text-\[11px\] { font-size: 12px !important; line-height: 1.4 !important; }
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-ibm-plex-mono), monospace;
-  font-weight: 300;
+  font-family: "Minion Pro", "Minion", Georgia, serif;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

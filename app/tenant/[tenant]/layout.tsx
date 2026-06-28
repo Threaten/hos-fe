@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "../../globals.css";
 import Topbar from "../../(main)/components/Topbar";
 import Navbar from "../../(main)/components/Navbar";
-import VerticalNavbar from "../../(main)/components/VerticalNavbar";
 import Breadcrumbs from "../../(main)/components/Breadcrumbs";
 import Footer from "../../(main)/components/Footer";
 import PageTransition from "../../(main)/components/PageTransition";
@@ -23,24 +22,13 @@ export default function TenantLayout({
 }>) {
   return (
     <TenantProvider>
-      {/* Topbar — always sticky so it remains visible while window scrolls */}
-      <div className="sticky top-0 z-50">
+      <header className="sticky top-0 z-50">
         <Topbar />
-        {/* Horizontal navbar with hamburger — mobile only */}
-        <div className="md:hidden">
-          <Navbar />
-        </div>
-      </div>
-
-      {/* Fixed vertical sidebar (desktop) — window scroll keeps GSAP ScrollTrigger working */}
-      <VerticalNavbar />
-
-      {/* Main content offset by collapsed sidebar width on desktop */}
-      <main className="min-w-0 flex flex-col md:pl-16">
-        <Breadcrumbs />
-        <PageTransition>{children}</PageTransition>
-        <Footer />
-      </main>
+        <Navbar />
+      </header>
+      <Breadcrumbs />
+      <PageTransition>{children}</PageTransition>
+      <Footer />
     </TenantProvider>
   );
 }

@@ -1,0 +1,174 @@
+"use client";
+
+import type { Tenant } from "@/api/queries";
+import type { ReactNode } from "react";
+
+type SocialKey = "facebook" | "instagram" | "tiktok" | "youtube";
+
+interface SocialConfig {
+  key: SocialKey;
+  name: string;
+  baseUrl: string;
+  domain: string;
+  ring: string;
+  icon: ReactNode;
+}
+
+interface SocialLinksProps {
+  tenant: Tenant;
+}
+
+const normalizeSocialUrl = (value: string, baseUrl: string) => {
+  if (/^https?:\/\//i.test(value)) return value;
+  const handle = value.replace(/^@/, "").replace(/^\/+/, "");
+  return `${baseUrl}${handle}`;
+};
+
+const getHandle = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    const pathHandle = parsed.pathname
+      .split("/")
+      .filter(Boolean)
+      .find(Boolean);
+    return pathHandle ? `@${pathHandle}` : parsed.hostname;
+  } catch {
+    return url.startsWith("@") ? url : `@${url}`;
+  }
+};
+
+const socials: SocialConfig[] = [
+  {
+    key: "facebook",
+    name: "Facebook",
+    baseUrl: "https://www.facebook.com/",
+    domain: "facebook.com",
+    ring: "linear-gradient(135deg, #1877f2 0%, #75a7ff 100%)",
+    icon: (
+      <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      </svg>
+    ),
+  },
+  {
+    key: "instagram",
+    name: "Instagram",
+    baseUrl: "https://www.instagram.com/",
+    domain: "instagram.com",
+    ring: "radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-10 h-10">
+        <rect
+          x="2"
+          y="2"
+          width="20"
+          height="20"
+          rx="5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        <circle
+          cx="12"
+          cy="12"
+          r="4.5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    key: "tiktok",
+    name: "TikTok",
+    baseUrl: "https://www.tiktok.com/@",
+    domain: "tiktok.com",
+    ring: "linear-gradient(135deg, #25f4ee 0%, #111 48%, #fe2c55 100%)",
+    icon: (
+      <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+      </svg>
+    ),
+  },
+  {
+    key: "youtube",
+    name: "YouTube",
+    baseUrl: "https://www.youtube.com/",
+    domain: "youtube.com",
+    ring: "linear-gradient(135deg, #ff0033 0%, #ff6b6b 100%)",
+    icon: (
+      <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    ),
+  },
+];
+
+export default function SocialLinks({ tenant }: SocialLinksProps) {
+  const links = socials.flatMap((social) => {
+    const value = tenant[social.key];
+    if (!value) return [];
+    const url = normalizeSocialUrl(value, social.baseUrl);
+    return [{ ...social, url, handle: getHandle(url) }];
+  });
+
+  if (links.length === 0) return null;
+
+  return (
+    <section
+      className="w-full flex flex-col items-center py-20 px-8"
+      style={{ backgroundColor: "var(--background)" }}
+    >
+      <span
+        className="mb-12 text-[10px] tracking-[0.38em] uppercase"
+        style={{ color: "var(--color-sand)" }}
+      >
+        Follow us
+      </span>
+
+      <div className="flex max-w-5xl flex-wrap items-start justify-center gap-x-20 gap-y-14">
+        {links.map((social) => (
+          <a
+            key={social.key}
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${tenant.name} on ${social.name}`}
+            className="group flex w-48 flex-col items-center gap-6 text-center transition-opacity duration-300 hover:opacity-80"
+          >
+            <div
+              className="h-24 w-24 rounded-full p-[3px]"
+              style={{ background: social.ring }}
+            >
+              <div
+                className="flex h-full w-full items-center justify-center rounded-full"
+                style={{
+                  backgroundColor: "var(--background)",
+                  color: "var(--foreground)",
+                }}
+                aria-hidden="true"
+              >
+                {social.icon}
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-1">
+              <span
+                className="max-w-full text-[15px] font-semibold tracking-[0.04em] [overflow-wrap:anywhere]"
+                style={{ color: "var(--foreground)" }}
+              >
+                {social.handle}
+              </span>
+              <span
+                className="text-[11px] tracking-[0.12em]"
+                style={{ color: "var(--foreground)", opacity: 0.55 }}
+              >
+                {social.domain}
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}

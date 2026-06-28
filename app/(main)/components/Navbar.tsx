@@ -10,9 +10,22 @@ const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/menu", label: "Menu" },
-  { href: "/gallery", label: "Gallery" },
+  // { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
 ];
+
+const TenantDisplayName = ({ name }: { name: string }) => (
+  <>
+    {name.split(/(_+)/).map((part, index) => (
+      <span
+        key={`${part}-${index}`}
+        className={part.startsWith("_") ? "tracking-normal" : undefined}
+      >
+        {part}
+      </span>
+    ))}
+  </>
+);
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,39 +59,43 @@ export default function Navbar() {
             : "bg-(--background)/95 backdrop-blur-sm border-b border-(--color-tan)/20"
         }`}
       >
-        {/* Slim gold accent line at very top */}
-        <div
-          className="absolute top-0 left-0 right-0 h-px"
-          style={{
-            background:
-              "linear-gradient(to right, transparent, var(--color-gold), transparent)",
-            opacity: 0.35,
-          }}
-        />
-
         <div className="w-full h-full px-6 md:px-12 flex items-center justify-between">
           {/* Brand */}
-          <Link
-            href="/"
-            className="flex flex-col leading-none focus:outline-none group"
+          <div
+            className="  text-center items-center h-full w-44 flex flex-col leading-none focus:outline-none group"
             aria-label={tenant ? `${tenant.name} Home` : "House of Senses Home"}
           >
-            <span
-              className="text-[11px] md:text-[12px] font-semibold tracking-[0.32em] uppercase transition-opacity duration-300 group-hover:opacity-60"
-              style={{ color: "var(--foreground)" }}
+            <Link
+              href="/"
+              className="w-full h-1/2 font-bold flex items-center justify-center text-center text-[20px] md:text-[18px] tracking-[0.32em] transition-opacity duration-300 group-hover:opacity-60"
+              style={{
+                color: tenant
+                  ? tenant.mainColor || "var(--color-main)"
+                  : "var(--color-main)",
+              }}
             >
-              {tenant ? tenant.name : "House of Senses"}
-            </span>
-            <span
-              className="text-[8px] tracking-[0.26em] uppercase mt-0.75"
-              style={{ color: "var(--foreground)", opacity: 0.82 }}
+              {tenant ? (
+                <TenantDisplayName name={tenant.name} />
+              ) : (
+                "House of Senses"
+              )}
+            </Link>
+            <Link
+              href="https://houseofsenses.vn"
+              className="w-full h-1/2 flex items-center justify-center text-center text-[16px] md:text-[16px] font-bold tracking-[0.32em]  transition-opacity duration-300 group-hover:opacity-60"
+              style={{
+                color: tenant
+                  ? tenant.mainColor || "var(--color-main)"
+                  : "var(--color-main)",
+                opacity: 0.82,
+              }}
             >
               {homeInfo?.name ??
                 (tenant?.address
                   ? tenant.address.split(",")[0]
                   : "Fine Dining")}
-            </span>
-          </Link>
+            </Link>
+          </div>
 
           {/* Desktop nav links */}
           <div className="hidden md:flex items-center gap-8">
@@ -88,9 +105,9 @@ export default function Navbar() {
                 <Link
                   key={href}
                   href={href}
-                  className="relative text-[10px] tracking-[0.28em] uppercase py-1 transition-opacity duration-300 hover:opacity-40 focus:outline-none"
+                  className="relative text-[15px] tracking-[0.28em] uppercase py-1 transition-opacity duration-300 hover:opacity-40 focus:outline-none"
                   style={{
-                    color: "var(--foreground)",
+                    color: "#000000",
                     opacity: isActive ? 1 : 0.92,
                   }}
                 >
@@ -99,7 +116,7 @@ export default function Navbar() {
                     <span
                       className="absolute -bottom-0.5 left-0 right-0 h-px"
                       style={{
-                        backgroundColor: "var(--color-gold)",
+                        backgroundColor: "var(--color-main)",
                         opacity: 0.8,
                       }}
                     />
@@ -113,15 +130,16 @@ export default function Navbar() {
           <div className="flex items-center gap-5">
             <Link
               href="/reservation"
-              className="hidden md:inline-flex items-center px-4 py-1.5 text-[9px] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:opacity-60 focus:outline-none"
+              className="hidden font-bold md:inline-flex items-center px-4 py-1.5 text-[15px] uppercase transition-all duration-300 hover:opacity-60 focus:outline-none"
               style={{
+                backgroundColor: "var(--color-main)",
                 border:
                   "1px solid color-mix(in srgb, var(--color-gold) 55%, transparent)",
                 color: "var(--foreground)",
               }}
               aria-label="Make a reservation"
             >
-              Reserve
+              <span className="text-white">Book a Table</span>
             </Link>
 
             {/* Hamburger */}

@@ -138,6 +138,9 @@ export default function Home() {
       ...(t?.shortAboutCollages?.flatMap((item) =>
         item.image?.url ? [`${API_URL}${item.image.url}`] : [],
       ) ?? []),
+      ...(t?.homeGalleryImage?.url
+        ? [`${API_URL}${t.homeGalleryImage.url}`]
+        : []),
       ...g.flatMap((item) =>
         item.image?.url ? [`${API_URL}${item.image.url}`] : [],
       ),
@@ -302,7 +305,11 @@ export default function Home() {
           Gallery
         </span>
       </div>
-      <Gallery images={transformedImages} galleryText={tenant?.galleryText} />
+      <Gallery
+        images={transformedImages}
+        galleryText={tenant?.galleryText}
+        tenant={tenant}
+      />
       <div
         ref={ctaLinkRef}
         className="w-full border-t border-b h-16 mt-12 mb-12 flex items-center justify-center transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
@@ -311,14 +318,7 @@ export default function Home() {
           opacity: ctaLinkVisible ? 1 : 0,
           transform: ctaLinkVisible ? "translateY(0)" : "translateY(16px)",
         }}
-      >
-        <Link
-          href="/gallery"
-          className="px-12 py-3 hover:border-b-2 hover:border-[rgb(124,118,89)]/40 text-center justify-center items-center flex text-gray-900 transition-all duration-300 text-lg tracking-wider font-semibold hover:scale-105"
-        >
-          See all Gallery
-        </Link>
-      </div>
+      ></div>
       <CTA />
       {/* New Menu Modal — only shown after loading is complete */}
       {loadingPhase === "done" && (

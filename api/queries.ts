@@ -2,11 +2,7 @@
  * API URL Configuration
  * Uses environment variables with sensible defaults
  */
-export const API_URL =
-  process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_API_URL || "https://admin.houseofsenses.vn"
-    : process.env.NEXT_PUBLIC_API_URL || "http://admin.houseofsenses.vn";
-
+export const API_URL = "http://localhost:3000"; // Default to localhost for development
 export const GRAPHQL_ENDPOINT = `${API_URL}/api/graphql`;
 
 /**
@@ -70,6 +66,12 @@ export interface Tenant {
   heroDescription?: string;
   shortAboutTitle?: string;
   shortAboutText?: string;
+  homeGalleryImage?: {
+    url: string;
+    filename: string;
+    alt?: string;
+  };
+  galleryTitle?: string;
   galleryText?: string;
   ctaTitle?: string;
   ctaText?: string;
@@ -116,6 +118,7 @@ export interface Tenant {
     enabled?: boolean;
     message?: string;
   };
+  mainColor?: string;
   meta?: {
     title?: string;
     description?: string;
@@ -199,6 +202,7 @@ const GET_TENANTS = `
         id
         name
         domain
+        mainColor
         heroImagesList {
           image {
             url
@@ -211,7 +215,13 @@ const GET_TENANTS = `
         heroDescription
         shortAboutTitle
         shortAboutText
+        galleryTitle
         galleryText
+        homeGalleryImage {
+          url
+          filename
+          alt
+        }
         ctaTitle
         ctaText
         aboutTitle
@@ -273,6 +283,7 @@ const GET_TENANT = `
         id
         name
         domain
+        mainColor
         heroImagesList {
           image {
             url
@@ -285,7 +296,13 @@ const GET_TENANT = `
         heroDescription
         shortAboutTitle
         shortAboutText
+        galleryTitle
         galleryText
+        homeGalleryImage {
+          url
+          filename
+          alt
+        }
         ctaTitle
         ctaText
         aboutTitle
@@ -549,7 +566,9 @@ export const fetchGallery = async (branchId?: string) => {
  * @returns Promise with customer data or null
  */
 export const getCustomerByPhone = async (phone: string) => {
-  const data = await gqlFetch<CustomerResponse>(GET_CUSTOMER, { customerPhone: phone });
+  const data = await gqlFetch<CustomerResponse>(GET_CUSTOMER, {
+    customerPhone: phone,
+  });
   return data?.Customers?.docs?.[0] || null;
 };
 
@@ -560,7 +579,9 @@ export const getCustomerByPhone = async (phone: string) => {
  * @returns Promise with created customer data
  */
 export const createCustomer = async (name: string, phone: string) => {
-  const data = await gqlMutate<{ createCustomer: { id: string; customerName: string; customerPhone: string } }>(CREATE_CUSTOMER, {
+  const data = await gqlMutate<{
+    createCustomer: { id: string; customerName: string; customerPhone: string };
+  }>(CREATE_CUSTOMER, {
     customerName: name,
     customerPhone: phone,
   });

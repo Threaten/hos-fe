@@ -813,6 +813,35 @@ const ReservationForm = ({
                 }}
                 placeholder="Full Name"
               />
+              {errors.name && (
+                <p
+                  className="mt-1 text-[11px]"
+                  style={{ color: "rgb(239 68 68)" }}
+                >
+                  {errors.name}
+                </p>
+              )}
+            </div>
+
+            {/* Phone */}
+            <div>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                autoComplete="tel"
+                inputMode="tel"
+                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent text-[13px] tracking-[0.04em] placeholder:text-(--color-sand)"
+                style={{
+                  borderBottomColor: errors.phone
+                    ? "rgb(239 68 68)"
+                    : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
+                  color: "var(--foreground)",
+                }}
+                placeholder="Phone Number"
+              />
               {errors.phone && (
                 <p
                   className="mt-1 text-[11px]"

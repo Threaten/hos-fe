@@ -11,7 +11,8 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ tenant }) => {
-  const title = tenant?.heroTitle || tenant?.name || "House of Senses";
+  const title = tenant?.name || tenant?.heroTitle || "House of Senses";
+  const mainColor = tenant?.mainColor || "var(--color-main)";
   const subtitle = tenant?.heroSubtitle || "Fine Dining Experience";
   const description =
     tenant?.heroDescription ||
@@ -37,7 +38,8 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
       if (!mounted || !sectionRef.current) return;
 
       // Set willChange only when GSAP is about to animate
-      if (parallaxRef.current) parallaxRef.current.style.willChange = "transform";
+      if (parallaxRef.current)
+        parallaxRef.current.style.willChange = "transform";
 
       ctx = gsap.context(() => {
         // Scrub-parallax: image strip drifts upward at 20% scroll speed
@@ -97,8 +99,9 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
     tenant?.heroImagesList?.filter((item) => item.image?.url) ?? [];
   const count = Math.max(images.length, 1);
 
-  // Duplicate enough times so the strip always overflows the viewport
-  const copies = images.length > 0 ? Math.max(Math.ceil(10 / count) * 2, 4) : 0;
+  // Always exactly 2 copies: first half animates out, second half is identical
+  // so translateX(-50%) always lands perfectly at the loop boundary
+  const copies = images.length > 0 ? 2 : 0;
   const marqueeImages =
     images.length > 0
       ? Array.from({ length: copies }, (_, r) =>
@@ -106,27 +109,48 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
         ).flat()
       : [];
 
-  // scroll duration scales with image count so speed feels consistent
-  const scrollDuration = `${count * 7}s`;
+  // duration based on image count so speed feels consistent
+  const scrollDuration = `${count * 6}s`;
 
   return (
-    <section ref={sectionRef} className="w-full flex flex-col" style={{ height: "100svh" }}>
+    <section
+      ref={sectionRef}
+      className="w-full flex flex-col h-full"
+      style={{ height: "100svh" }}
+    >
+      <div
+        ref={contentRef}
+        className="w-full flex-1 px-8 md:px-14  md:py-0 flex flex-col items-center justify-center"
+      >
+        {/* Large display title — top on mobile, right column on desktop */}
+        <div className="w-full text-center md:mb-0">
+          <h1
+            className="mx-auto max-w-[min(92vw,1600px)] text-center font-extralight leading-[0.88] opacity-0 animate-reveal-up [overflow-wrap:anywhere]"
+            style={{
+              fontSize: "clamp(4.5rem, 17vw, 18rem)",
+              letterSpacing: "-0.025em",
+              color: mainColor,
+              fontFamily: "Minion Pro",
+              animationDelay: "0.06s",
+            }}
+          >
+            {title}
+          </h1>
+        </div>
+      </div>
       {/* ── Auto-scrolling image marquee ── */}
       <div
         className="w-full overflow-hidden"
         style={{ height: "clamp(280px, 52vh, 520px)" }}
       >
         {/* Parallax wrapper */}
-        <div
-          ref={parallaxRef}
-          className="h-full"
-        >
+        <div ref={parallaxRef} className="h-full">
           {marqueeImages.length > 0 ? (
             <div
               className="h-full flex animate-marquee"
               style={{
                 width: "max-content",
-                gap: "3px",
+                gap: "10px",
                 animationDuration: scrollDuration,
               }}
             >
@@ -136,7 +160,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
                   <div
                     key={item._key}
                     className="relative h-full shrink-0 overflow-hidden"
-                    style={{ width: "clamp(180px, 22vw, 290px)" }}
+                    style={{ width: "calc(50vw - 10px)" }}
                   >
                     <Image
                       src={`${API_URL}${item.image!.url}`}
@@ -144,7 +168,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
                       fill
                       className="object-cover"
                       loading="lazy"
-                      sizes="(max-width: 768px) 180px, 22vw"
+                      sizes="50vw"
                     />
                     <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none bg-linear-to-t from-black/20 to-transparent" />
                     <span className="absolute bottom-3 right-3 text-[10px] tracking-[0.2em] text-white/40 font-light tabular-nums select-none">
@@ -163,130 +187,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
         </div>
       </div>
 
-      {/* ── Marquee text ticker ── */}
-      <div
-        className="w-full overflow-hidden"
-        style={{
-          borderTop: "1px solid var(--color-tan)",
-          borderBottom: "1px solid var(--color-tan)",
-        }}
-      >
-        <div className="py-2.5 flex animate-marquee whitespace-nowrap">
-          {[0, 1].map((r) => (
-            <div key={r} className="flex shrink-0 items-center gap-7 pr-7">
-              {[
-                "Reserve a Table",
-                "Fine Dining",
-                "Explore the Menu",
-                "Crafted Cuisine",
-                "House of Senses",
-                "Experience the Moment",
-              ].map((word, i) => (
-                <React.Fragment key={i}>
-                  <span
-                    className="text-[9px] tracking-[0.38em] uppercase"
-                    style={{ color: "var(--foreground)", opacity: 0.82 }}
-                  >
-                    {word}
-                  </span>
-                  <span
-                    className="text-[7px]"
-                    style={{ color: "var(--foreground)", opacity: 0.25 }}
-                  >
-                    ◇
-                  </span>
-                </React.Fragment>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* ── Content row: centered on mobile, side-by-side on desktop ── */}
-      <div
-        ref={contentRef}
-        className="w-full flex-1 px-8 md:px-14 py-8 md:py-0 flex flex-col items-center justify-center md:flex-row-reverse md:items-center md:justify-between md:gap-16"
-      >
-        {/* Large display title — top on mobile, right column on desktop */}
-        <div className="text-center md:text-right mb-3 md:mb-0">
-          <h1
-            className="font-bold leading-[0.88] opacity-0 animate-reveal-up"
-            style={{
-              fontSize: "clamp(3rem, 14vw, 11rem)",
-              letterSpacing: "-0.035em",
-              color: "var(--foreground)",
-              animationDelay: "0.06s",
-            }}
-          >
-            {title}
-          </h1>
-        </div>
-
-        {/* Left — subtitle + description + CTAs */}
-        <div className="flex flex-col items-center md:items-start gap-4 md:max-w-xs">
-          <div
-            className="flex items-center gap-3 opacity-0 animate-reveal-up"
-            style={{ animationDelay: "0.1s" }}
-          >
-            <div
-              className="h-px w-6 shrink-0"
-              style={{ backgroundColor: "var(--foreground)", opacity: 0.3 }}
-            />
-            <p
-              className="text-[10px] tracking-[0.38em] uppercase"
-              style={{ color: "var(--foreground)", opacity: 0.88 }}
-            >
-              {subtitle}
-            </p>
-          </div>
-
-          <p
-            className="text-sm font-light leading-[1.8] text-center md:text-left opacity-0 animate-reveal-up"
-            style={{
-              color: "var(--foreground)",
-              opacity: 0.9,
-              animationDelay: "0.22s",
-            }}
-          >
-            {description}
-          </p>
-
-          <div
-            className="flex flex-col items-center md:items-start gap-3 pt-1 opacity-0 animate-reveal-up"
-            style={{ animationDelay: "0.36s" }}
-          >
-            <Link
-              href="/reservation"
-              className="inline-flex items-center px-7 py-3.5 text-[11px] tracking-[0.22em] uppercase font-medium transition-colors duration-300 button-ripple"
-              style={{
-                backgroundColor: "var(--color-earth)",
-                color: "var(--color-cream)",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  "var(--color-earth-dark)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "var(--color-earth)")
-              }
-            >
-              Reserve a Table
-            </Link>
-            <Link
-              href="/menu"
-              className="inline-flex items-center gap-1.5 text-[11px] tracking-[0.22em] uppercase font-light transition-opacity duration-300 hover:opacity-40"
-              style={{
-                color: "var(--foreground)",
-                textDecoration: "underline",
-                textUnderlineOffset: "5px",
-                textDecorationColor: "var(--color-sand)",
-              }}
-            >
-              Explore Menu →
-            </Link>
-          </div>
-        </div>
-      </div>
 
       {/* ── Scroll indicator ── */}
       <div

@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import Image from "next/image";
-import ImageLightbox from "../../components/ImageLightbox";
+import Link from "next/link";
+import type { Tenant } from "@/api/queries";
+import { API_URL } from "@/app/utils/constants";
 
 interface GalleryImage {
   src: string;
@@ -14,18 +16,22 @@ interface GalleryImage {
 interface GalleryProps {
   images?: GalleryImage[];
   galleryText?: string;
+  tenant?: Tenant | null;
 }
 
-const Gallery = ({ images = [], galleryText }: GalleryProps) => {
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [loadedSet, setLoadedSet] = useState<Set<number>>(new Set());
+const Gallery = ({ images = [], galleryText, tenant }: GalleryProps) => {
+  const mainColor = tenant?.mainColor || "var(--color-main)";
+  const title = tenant?.galleryTitle || "Gallery";
+  const text =
+    galleryText ||
+    "Tucked away in a quiet corner of the city, House of Senses is where meals unfold slowly and conversations linger a little longer. What began as a small dining space has grown into a gathering place for friends, families, first dates, and familiar faces returning time and again. We believe good food is only part of the experience — the rest lives in the atmosphere, the people around the table, and the moments shared between courses.";
   const sectionRef = useRef<HTMLElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
+  const btnRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (images.length === 0) return;
     let ctx: any = null;
     let mounted = true;
 
@@ -33,46 +39,50 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
       const { gsap } = await import("gsap");
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       gsap.registerPlugin(ScrollTrigger);
-      if (!mounted) return;
+      if (!mounted || !sectionRef.current) return;
 
       ctx = gsap.context(() => {
-        // Gallery text slides up
-        if (textRef.current) {
-          gsap.from(textRef.current, {
-            y: 30,
+        const trigger = {
+          trigger: sectionRef.current,
+          start: "top 80%",
+          once: true,
+        };
+
+        if (headingRef.current)
+          gsap.from(headingRef.current, {
             opacity: 0,
+            y: 40,
+            duration: 1.1,
+            ease: "power3.out",
+            scrollTrigger: trigger,
+          });
+        if (imgRef.current)
+          gsap.from(imgRef.current, {
+            opacity: 0,
+            scale: 0.96,
+            duration: 1.2,
+            ease: "power3.out",
+            delay: 0.15,
+            scrollTrigger: trigger,
+          });
+        if (textRef.current)
+          gsap.from(textRef.current, {
+            opacity: 0,
+            y: 24,
             duration: 1,
             ease: "power3.out",
-            scrollTrigger: {
-              trigger: textRef.current,
-              start: "top 90%",
-              once: true,
-            },
+            delay: 0.3,
+            scrollTrigger: trigger,
           });
-        }
-
-        // Grid items: clip-path curtain rise + stagger
-        if (gridRef.current) {
-          const items = gridRef.current.querySelectorAll(".gallery-item");
-          if (items.length) {
-            gsap.fromTo(
-              items,
-              { clipPath: "inset(100% 0 0 0)", opacity: 0 },
-              {
-                clipPath: "inset(0% 0 0% 0)",
-                opacity: 1,
-                duration: 1.3,
-                ease: "power4.out",
-                stagger: { each: 0.09, from: "start" },
-                scrollTrigger: {
-                  trigger: gridRef.current,
-                  start: "top 88%",
-                  once: true,
-                },
-              },
-            );
-          }
-        }
+        if (btnRef.current)
+          gsap.from(btnRef.current, {
+            opacity: 0,
+            y: 16,
+            duration: 0.8,
+            ease: "power3.out",
+            delay: 0.45,
+            scrollTrigger: trigger,
+          });
       }, sectionRef);
     })();
 
@@ -80,122 +90,81 @@ const Gallery = ({ images = [], galleryText }: GalleryProps) => {
       mounted = false;
       ctx?.revert();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images.length]);
+  }, []);
 
-  const handleImageClick = (index: number) => {
-    setCurrentImageIndex(index);
-    setLightboxOpen(true);
-  };
-
-  const handleNext = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  const currentImage = images[currentImageIndex];
-
-  if (images.length === 0) {
-    return (
-      <section className="w-full px-8 md:px-14 pb-12 bg-background">
-        <div className="w-full grid grid-cols-3" style={{ gap: "3px" }}>
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="h-50 md:h-70"
-              style={{ backgroundColor: "var(--color-parchment)" }}
-            />
-          ))}
-        </div>
-      </section>
-    );
-  }
+  const homeGalleryImageSrc = tenant?.homeGalleryImage?.url
+    ? `${API_URL}${tenant.homeGalleryImage.url}`
+    : tenant?.homeGalleryImage?.filename
+      ? `${API_URL}/api/media/file/${tenant.homeGalleryImage.filename}`
+      : "";
+  const featuredImage = homeGalleryImageSrc
+    ? {
+        src: homeGalleryImageSrc,
+        alt: tenant?.homeGalleryImage?.alt || title,
+      }
+    : images[0];
 
   return (
     <section
       ref={sectionRef}
-      className="w-full px-8 md:px-14 pb-12 bg-background"
+      className="w-full flex flex-col items-center py-20 px-8 md:px-14"
+      style={{ backgroundColor: mainColor }}
     >
-      {/* Optional description text */}
-      {galleryText && (
+      {/* Large serif heading */}
+      <h2
+        ref={headingRef}
+        className="text-center leading-[1.1] mb-14"
+        style={{
+          fontSize: "clamp(2.4rem, 6vw, 4rem)",
+          color: "#fff",
+          fontFamily: '"Minion Pro", "Minion", Georgia, serif',
+          maxWidth: "14ch",
+          letterSpacing: "-0.01em",
+        }}
+      >
+        {title}
+      </h2>
+
+      {/* Single centered image */}
+      {featuredImage && (
+        <div
+          ref={imgRef}
+          className="relative overflow-hidden mb-14"
+          style={{ width: "clamp(260px, 32vw, 420px)", aspectRatio: "3/4" }}
+        >
+          <Image
+            src={featuredImage.src}
+            alt={featuredImage.alt || ""}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 80vw, 32vw"
+          />
+        </div>
+      )}
+      <div className="flex flex-col items-center h-full w-3/4">
+        {/* Body text */}
         <p
           ref={textRef}
-          className="text-sm font-light leading-[1.9] mb-10"
-          style={{ color: "var(--foreground)", opacity: 0.88, maxWidth: "52ch" }}
+          className="text-center text-[18px] leading-[1.85] mb-10 w-full "
+          style={{ color: "rgba(255,255,255,0.85)", maxWidth: "75%" }}
         >
-          {galleryText}
+          {text}
         </p>
-      )}
 
-      {/* Gallery Grid — clip-path stagger on scroll */}
-      <div
-        ref={gridRef}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-        style={{ gap: "3px" }}
-      >
-        {images.map((image, index) => (
-          <div
-            key={index}
-            onClick={() => handleImageClick(index)}
-            className="gallery-item relative h-70 md:h-90 overflow-hidden group cursor-pointer"
+        {/* About us button */}
+        <div ref={btnRef}>
+          <Link
+            href="/about"
+            className="inline-flex items-center px-10 py-3 text-[11px] tracking-[0.28em] uppercase font-medium transition-opacity duration-300 hover:opacity-70"
+            style={{
+              border: "1px solid rgba(255,255,255,0.55)",
+              color: "#fff",
+            }}
           >
-            {!loadedSet.has(index) && (
-              <div
-                className="absolute inset-0 z-10 animate-shimmer"
-                style={{ backgroundColor: "var(--color-tan)" }}
-              />
-            )}
-            <Image
-              src={image.src}
-              alt={image.alt}
-              fill
-              className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-[1.05]"
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              priority={index < 3}
-              loading={index < 3 ? undefined : "lazy"}
-              onLoad={() => setLoadedSet((prev) => new Set(prev).add(index))}
-            />
-            {/* Subtle dark overlay */}
-            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/25 transition-colors duration-500" />
-            {/* Index number — faint top-left */}
-            <span className="absolute top-3 left-3 text-[9px] tracking-[0.3em] text-white/40 tabular-nums select-none">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-            {/* Caption bottom gradient — appears on hover */}
-            {image.caption && (
-              <div className="absolute inset-x-0 bottom-0 px-4 py-5 bg-linear-to-t from-black/70 to-transparent translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                <p className="text-white text-xs tracking-[0.12em] font-light">
-                  {image.caption}
-                </p>
-                {image.branch && (
-                  <p className="text-white/50 text-[9px] tracking-[0.28em] uppercase mt-1">
-                    {image.branch}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+            About us
+          </Link>
+        </div>
       </div>
-
-      {/* Image Lightbox */}
-      {currentImage && (
-        <ImageLightbox
-          isOpen={lightboxOpen}
-          imageSrc={currentImage.src}
-          imageAlt={currentImage.alt}
-          caption={currentImage.caption}
-          branch={currentImage.branch}
-          onClose={() => setLightboxOpen(false)}
-          onNext={handleNext}
-          onPrev={handlePrev}
-          currentIndex={currentImageIndex}
-          totalImages={images.length}
-        />
-      )}
     </section>
   );
 };
