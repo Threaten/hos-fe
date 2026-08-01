@@ -167,7 +167,7 @@ const ShortAbout: React.FC<ShortAboutProps> = ({ tenant }) => {
       <div
         ref={imagesRef}
         className="grid grid-cols-2 md:grid-cols-4 col-span-8"
-        style={{ gap: "2px" }}
+        style={{ gap: "1px" }}
       >
         {[0, 1, 2, 3].map((idx) => (
           <div

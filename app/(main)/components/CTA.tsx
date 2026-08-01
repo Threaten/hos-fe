@@ -18,54 +18,83 @@ const CTA = () => {
     let ctx: any = null;
     let mounted = true;
 
-    (async () => {
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
-      if (!mounted || !sectionRef.current) return;
+    const ensureContentIsVisible = () => {
+      [
+        labelRef.current,
+        titleRef.current,
+        ruleRef.current,
+        textRef.current,
+        buttonsRef.current,
+      ].forEach((element) => {
+        element?.style.removeProperty("opacity");
+        element?.style.removeProperty("visibility");
+        element?.style.removeProperty("transform");
+      });
+    };
 
-      ctx = gsap.context(() => {
-        const tl = gsap.timeline({
-          scrollTrigger: {
+    (async () => {
+      try {
+        const { gsap } = await import("gsap");
+        const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+        gsap.registerPlugin(ScrollTrigger);
+        if (!mounted || !sectionRef.current) return;
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          ensureContentIsVisible();
+          return;
+        }
+
+        ctx = gsap.context(() => {
+          // Build the complete paused timeline before attaching ScrollTrigger.
+          // This prevents a refresh at the CTA's scroll position from completing
+          // an empty timeline and leaving the content hidden.
+          const tl = gsap.timeline({
+            paused: true,
+            defaults: { ease: "power3.out" },
+          });
+
+          tl.fromTo(
+            labelRef.current,
+            { opacity: 0, y: 36 },
+            { opacity: 1, y: 0, duration: 0.7 },
+          )
+            .fromTo(
+              titleRef.current,
+              { opacity: 0, y: 36 },
+              { opacity: 1, y: 0, duration: 1, ease: "power4.out" },
+              "-=0.3",
+            )
+            .fromTo(
+              ruleRef.current,
+              { scaleX: 0, transformOrigin: "center center" },
+              { scaleX: 1, duration: 0.8, ease: "power2.inOut" },
+              "-=0.4",
+            )
+            .fromTo(
+              textRef.current,
+              { opacity: 0, y: 36 },
+              { opacity: 1, y: 0, duration: 0.8 },
+              "-=0.4",
+            )
+            .fromTo(
+              buttonsRef.current,
+              { opacity: 0, y: 36 },
+              { opacity: 1, y: 0, duration: 0.7 },
+              "-=0.3",
+            );
+
+          ScrollTrigger.create({
             trigger: sectionRef.current,
             start: "top 80%",
             once: true,
-          },
-          defaults: { ease: "power3.out" },
+            animation: tl,
+          });
         });
 
-        // Set initial states
-        gsap.set(
-          [
-            labelRef.current,
-            titleRef.current,
-            textRef.current,
-            buttonsRef.current,
-          ],
-          {
-            opacity: 0,
-            y: 36,
-          },
-        );
-        gsap.set(ruleRef.current, {
-          scaleX: 0,
-          transformOrigin: "center center",
-        });
-
-        tl.to(labelRef.current, { opacity: 1, y: 0, duration: 0.7 })
-          .to(
-            titleRef.current,
-            { opacity: 1, y: 0, duration: 1, ease: "power4.out" },
-            "-=0.3",
-          )
-          .to(
-            ruleRef.current,
-            { scaleX: 1, duration: 0.8, ease: "power2.inOut" },
-            "-=0.4",
-          )
-          .to(textRef.current, { opacity: 1, y: 0, duration: 0.8 }, "-=0.4")
-          .to(buttonsRef.current, { opacity: 1, y: 0, duration: 0.7 }, "-=0.3");
-      }, sectionRef);
+        ScrollTrigger.refresh();
+      } catch {
+        ensureContentIsVisible();
+      }
     })();
 
     return () => {
@@ -79,6 +108,7 @@ const CTA = () => {
   const ctaTitle = tenant?.ctaTitle || `Experience ${tenantName} Today`;
   const ctaText =
     tenant?.ctaText || "Join us for an unforgettable culinary journey";
+  const reservationButtonColor = tenant?.mainColor || "var(--color-earth)";
 
   return (
     <section
@@ -137,20 +167,20 @@ const CTA = () => {
           ref={buttonsRef}
           className="flex items-center justify-center gap-6 flex-wrap"
         >
-          {/* Primary: filled earth brown */}
+          {/* Primary: filled with the tenant's brand color */}
           <Link
             href="/reservation"
             className="inline-flex items-center px-7 py-3.5 text-xs tracking-[0.18em] uppercase font-medium transition-colors duration-300 button-ripple"
             style={{
-              backgroundColor: "var(--color-earth)",
+              backgroundColor: reservationButtonColor,
               color: "var(--color-cream)",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.backgroundColor =
-                "var(--color-earth-dark)")
+                `color-mix(in srgb, ${reservationButtonColor} 84%, var(--foreground))`)
             }
             onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--color-earth)")
+              (e.currentTarget.style.backgroundColor = reservationButtonColor)
             }
             aria-label={`Make a reservation at ${tenantName}`}
           >
