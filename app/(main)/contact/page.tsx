@@ -15,16 +15,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContactPage({
+export default async function ContactPage({
   searchParams,
 }: {
-  searchParams: { branch?: string; tenant?: string };
+  searchParams: Promise<{ branch?: string; tenant?: string }>;
 }) {
+  const params = await searchParams;
+
   return (
     <>
       <ContactForm
-        initialBranch={searchParams?.branch}
-        currentTenant={searchParams?.tenant}
+        initialBranch={params.branch}
+        currentTenant={params.tenant}
       />
       <CTA />
     </>

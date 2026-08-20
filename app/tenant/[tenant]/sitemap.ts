@@ -15,7 +15,9 @@ interface TenantSitemapProps {
  */
 export default async function sitemap({
   params,
-}: TenantSitemapProps): Promise<MetadataRoute.Sitemap> {
+}: TenantSitemapProps = {
+  params: Promise.resolve({ tenant: "" }),
+}): Promise<MetadataRoute.Sitemap> {
   const { tenant: slug } = await params;
 
   // Verify the tenant exists before generating a sitemap
