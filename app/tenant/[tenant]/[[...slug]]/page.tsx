@@ -14,6 +14,8 @@ import Link from "next/link";
 import { API_URL } from "@/app/utils/constants";
 import type { Tenant, GalleryItem } from "@/api/queries";
 
+const SERVER_API_URL = (process.env.API_INTERNAL_URL || "http://127.0.0.1:3000").replace(/\/$/, "");
+
 interface PageProps {
   params: Promise<{ tenant: string; slug?: string[] }>;
 }
@@ -21,7 +23,7 @@ interface PageProps {
 async function fetchTenantServer(slug: string): Promise<Tenant | null> {
   try {
     const res = await fetch(
-      `${API_URL}/api/tenants?where[domain][equals]=${encodeURIComponent(slug)}&depth=2&limit=1`,
+      `${SERVER_API_URL}/api/tenants?where[domain][equals]=${encodeURIComponent(slug)}&depth=2&limit=1`,
       { next: { revalidate: 60 } },
     );
     if (!res.ok) return null;
@@ -35,7 +37,7 @@ async function fetchTenantServer(slug: string): Promise<Tenant | null> {
 async function fetchGalleryServer(tenantId: string): Promise<GalleryItem[]> {
   try {
     const res = await fetch(
-      `${API_URL}/api/gallery?where[branch][equals]=${encodeURIComponent(tenantId)}&depth=1&limit=6`,
+      `${SERVER_API_URL}/api/gallery?where[branch][equals]=${encodeURIComponent(tenantId)}&depth=1&limit=6`,
       { next: { revalidate: 60 } },
     );
     if (!res.ok) return [];

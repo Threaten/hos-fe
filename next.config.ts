@@ -3,6 +3,13 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
 
+  async rewrites() {
+    const backend = (process.env.API_INTERNAL_URL || "http://127.0.0.1:3000").replace(/\/$/, "");
+    return [
+      { source: "/api/cms/api/:path*", destination: `${backend}/api/:path*` },
+    ];
+  },
+
   async headers() {
     return [
       {

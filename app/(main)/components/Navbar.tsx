@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTenant } from "@/app/contexts/TenantContext";
-import { fetchHomeInformation, type HomeInformation } from "@/api/queries";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -30,15 +29,8 @@ const TenantDisplayName = ({ name }: { name: string }) => (
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [homeInfo, setHomeInfo] = useState<HomeInformation | null>(null);
   const pathname = usePathname();
   const { tenant } = useTenant();
-
-  useEffect(() => {
-    fetchHomeInformation().then((data) => {
-      if (data) setHomeInfo(data);
-    });
-  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -59,15 +51,15 @@ export default function Navbar() {
             : "bg-(--background)/95 backdrop-blur-sm border-b border-(--color-tan)/20"
         }`}
       >
-        <div className="w-full h-full px-6 md:px-12 flex items-center justify-between">
+        <div className="w-full h-full px-6 md:px-12 flex items-center justify-between py-auto">
           {/* Brand */}
           <div
-            className="  text-center items-center h-full w-44 flex flex-col leading-none focus:outline-none group"
+            className="text-center items-center justify-center h-full w-48 flex flex-col gap-1.5 bg-transparent leading-none focus:outline-none"
             aria-label={tenant ? `${tenant.name} Home` : "House of Senses Home"}
           >
             <Link
               href="/"
-              className="w-full h-1/2 font-bold flex items-center justify-center text-center text-[20px] md:text-[18px] tracking-[0.32em] transition-opacity duration-300 group-hover:opacity-60"
+              className="w-full flex items-center justify-center text-center text-[20px] md:text-[18px] font-bold tracking-[0.32em] transition-opacity duration-300"
               style={{
                 color: tenant
                   ? tenant.mainColor || "var(--color-main)"
@@ -82,7 +74,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="https://houseofsenses.vn"
-              className="w-full h-1/2 flex items-center justify-center text-center text-[16px] md:text-[16px] font-bold tracking-[0.32em]  transition-opacity duration-300 group-hover:opacity-60"
+              className="group w-full flex items-center justify-center text-center text-[12px] md:text-[13px] font-bold tracking-[0.28em] transition-opacity duration-300 hover:opacity-60"
               style={{
                 color: tenant
                   ? tenant.mainColor || "var(--color-main)"
@@ -90,10 +82,7 @@ export default function Navbar() {
                 opacity: 0.82,
               }}
             >
-              {homeInfo?.name ??
-                (tenant?.address
-                  ? tenant.address.split(",")[0]
-                  : "Fine Dining")}
+              house of senses
             </Link>
           </div>
 

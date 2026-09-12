@@ -1,4 +1,5 @@
 "use client";
+import { tenantBranchLabel } from "@/app/utils/tenantStatus";
 import React, { useState, useEffect } from "react";
 import {
   fetchTenants,
@@ -508,7 +509,7 @@ const ContactForm = ({
                 >
                   {tenants.map((tenant) => (
                     <option key={tenant.id} value={tenant.name}>
-                      {tenant.name}
+                      {tenantBranchLabel(tenant)}
                     </option>
                   ))}
                 </select>

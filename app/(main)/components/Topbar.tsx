@@ -1,4 +1,5 @@
 "use client";
+import { tenantHoursOrStatus } from "@/app/utils/tenantStatus";
 import { useState, useRef, useEffect } from "react";
 import { fetchTenants, type Tenant } from "@/api/queries";
 import { getTenantUrl } from "@/app/utils/domain";
@@ -98,7 +99,7 @@ export default function Topbar() {
                   <span key={tenant.id} className="flex items-center gap-3">
                     {index > 0 && <span aria-hidden="true">·</span>}
                     <span>
-                      <TenantDisplayName name={tenant.name.toLowerCase()} />
+                      <TenantDisplayName name={tenant.name} />
                     </span>
                   </span>
                 ))}
@@ -138,7 +139,7 @@ export default function Topbar() {
                       onClick={() => {
                         window.location.href = getTenantUrl(tenant.domain);
                       }}
-                      className="p-5 cursor-pointer transition-colors duration-200 group"
+                      className="grid row-span-4 grid-rows-subgrid items-start p-5 cursor-pointer transition-colors duration-200 group"
                       style={{
                         borderRight:
                           idx % 2 === 0
@@ -166,7 +167,7 @@ export default function Topbar() {
                             fontFamily: "var(--font-arimo)",
                           }}
                         >
-                          <TenantDisplayName name={tenant.name.toLowerCase()} />
+                          <TenantDisplayName name={tenant.name} />
                         </p>
                         {currentTenant?.id === tenant.id && (
                           <span
@@ -177,22 +178,21 @@ export default function Topbar() {
                           </span>
                         )}
                       </div>
-                      {tenant.address && (
                         <p
                           className="text-[9px] leading-relaxed"
                           style={{ color: "var(--color-sand)" }}
                         >
                           {tenant.address}
                         </p>
-                      )}
-                      {tenant.phone && (
                         <p
                           className="text-[9px] mt-0.5"
                           style={{ color: "var(--color-sand)" }}
                         >
                           {tenant.phone}
                         </p>
-                      )}
+                        <p className="text-[9px] mt-0.5" style={{ color: "var(--color-sand)" }}>
+                          {tenantHoursOrStatus(tenant)}
+                        </p>
                     </div>
                   ))}
                 </div>
@@ -262,7 +262,7 @@ export default function Topbar() {
                         className="text-[10px] tracking-[0.22em] uppercase font-semibold"
                         style={{ color: "var(--foreground)" }}
                       >
-                        <TenantDisplayName name={tenant.name.toLowerCase()} />
+                        <TenantDisplayName name={tenant.name} />
                       </p>
                       {currentTenant?.id === tenant.id && (
                         <span
@@ -279,6 +279,16 @@ export default function Topbar() {
                         style={{ color: "var(--color-sand)" }}
                       >
                         {tenant.address}
+                      </p>
+                    )}
+                    {tenant.phone && (
+                      <p className="text-[9px] mt-0.5" style={{ color: "var(--color-sand)" }}>
+                        {tenant.phone}
+                      </p>
+                    )}
+                    {tenantHoursOrStatus(tenant) && (
+                      <p className="text-[9px] mt-0.5" style={{ color: "var(--color-sand)" }}>
+                        {tenantHoursOrStatus(tenant)}
                       </p>
                     )}
                   </div>

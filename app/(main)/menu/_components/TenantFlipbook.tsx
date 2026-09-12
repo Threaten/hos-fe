@@ -24,6 +24,7 @@ export default function TenantFlipbook({
   const [error, setError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [pageWidth, setPageWidth] = useState(500);
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const flipBookRef = useRef<any>(null);
 
@@ -36,12 +37,38 @@ export default function TenantFlipbook({
     []
   );
 
+  function onPageLoadSuccess(page: {
+    originalWidth?: number;
+    originalHeight?: number;
+    width?: number;
+    height?: number;
+  }) {
+    const w = page.originalWidth || page.width;
+    const h = page.originalHeight || page.height;
+    if (w && h) {
+      setAspectRatio(h / w);
+    }
+  }
+
+  const pageHeight = useMemo(() => {
+    if (aspectRatio) {
+      return Math.round(pageWidth * aspectRatio);
+    }
+    return isMobile ? 600 : 850;
+  }, [pageWidth, aspectRatio, isMobile]);
+
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      // Mobile: single page width, Desktop: page width for book view
-      setPageWidth(mobile ? Math.min(window.innerWidth - 40, 400) : 500);
+      // Mobile: single page width, Desktop: page width for book spread
+      if (mobile) {
+        setPageWidth(Math.min(window.innerWidth - 32, 500));
+      } else {
+        // Allow dynamic scaling up to 650px per page (1300px total spread width)
+        const calculatedWidth = Math.floor((window.innerWidth - 80) / 2);
+        setPageWidth(Math.min(Math.max(calculatedWidth, 580), 650));
+      }
     };
 
     checkMobile();
@@ -114,7 +141,7 @@ export default function TenantFlipbook({
           onLoadError={onDocumentLoadError}
           options={pdfOptions}
         >
-          <Page pageNumber={1} width={1} />
+          <Page pageNumber={1} width={1} onLoadSuccess={onPageLoadSuccess} />
         </Document>
       </div>
 
@@ -123,13 +150,13 @@ export default function TenantFlipbook({
         <>
           <div
             className="flex justify-center items-center w-full relative mt-8 px-4"
-            style={{ minHeight: isMobile ? "500px" : "800px" }}
+            style={{ minHeight: `${pageHeight}px` }}
           >
             <Document file={menuUrl} options={pdfOptions}>
               <HTMLFlipBook
                 ref={flipBookRef}
-                width={isMobile ? pageWidth : pageWidth}
-                height={isMobile ? 500 : 750}
+                width={pageWidth}
+                height={pageHeight}
                 size="fixed"
                 maxShadowOpacity={0.5}
                 showCover={false}
@@ -151,18 +178,19 @@ export default function TenantFlipbook({
                 minWidth={0}
                 maxWidth={pageWidth * 2}
                 minHeight={0}
-                maxHeight={isMobile ? 500 : 750}
+                maxHeight={pageHeight}
               >
                 {Array.from(new Array(numPages), (_, index) => (
                   <div
                     key={`page-${index}`}
-                    className="bg-white flex items-start justify-center overflow-hidden"
+                    className="flex items-center justify-center overflow-hidden"
                   >
                     <Page
                       pageNumber={index + 1}
                       renderTextLayer={false}
                       renderAnnotationLayer={false}
                       width={pageWidth}
+                      height={pageHeight}
                     />
                   </div>
                 ))}

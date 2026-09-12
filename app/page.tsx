@@ -1,4 +1,5 @@
 "use client";
+import { tenantBranchLabel } from "./utils/tenantStatus";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import SkeletonImage from "@/app/components/SkeletonImage";
@@ -273,7 +274,7 @@ export default function Welcome() {
                       <button
                         key={branch.name}
                         onClick={() => {
-                          setSelectedBranch(branch.name.toLowerCase());
+                          setSelectedBranch(tenantBranchLabel(branch));
                           setIsDropdownOpen(false);
                           // Redirect to tenant subdomain
 
@@ -287,7 +288,7 @@ export default function Welcome() {
                       >
                         <div className="flex flex-col w-full">
                           <span className="text-[0.95rem]">
-                            {branch.name.toLowerCase()}
+                            {tenantBranchLabel(branch)}
                           </span>
                           {branch.address && (
                             <span className="text-[0.69rem] text-gray-500 not-italic">

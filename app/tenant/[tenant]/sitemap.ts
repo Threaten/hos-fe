@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { API_URL } from "@/app/utils/constants";
+const API_URL = (process.env.API_INTERNAL_URL || "http://127.0.0.1:3000").replace(/\/$/, "");
 
 interface TenantSitemapProps {
   params: Promise<{ tenant: string }>;

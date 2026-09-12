@@ -1,5 +1,6 @@
 "use client";
 
+import { tenantHoursOrStatus } from "@/app/utils/tenantStatus";
 import React, { useState, useEffect } from "react";
 import { fetchTenants, type Tenant } from "@/api/queries";
 import { getTenantUrl } from "@/app/utils/domain";
@@ -158,6 +159,11 @@ const Footer: React.FC = () => {
                           T: {tenant.phone}
                         </p>
                       )}
+                      {tenantHoursOrStatus(tenant) && (
+                        <p className="text-[14px] leading-relaxed" style={{ color: FOOTER_MUTED }}>
+                          {tenantHoursOrStatus(tenant)}
+                        </p>
+                      )}
                       {tenant.email && (
                         <p
                           className="text-[14px]"
@@ -169,7 +175,6 @@ const Footer: React.FC = () => {
                     </div>
 
                     <div className="flex gap-3 mt-3">
-                      {tenant.mainColor}
                       {tenant.facebook && (
                         <SocialIcon
                           href={tenant.facebook}
@@ -240,18 +245,13 @@ const Footer: React.FC = () => {
         className="h-px mx-8 md:mx-14"
         style={{ backgroundColor: FOOTER_BORDER }}
       />
-      <div className="flex items-center justify-between px-8 md:px-14 py-5">
+      <div className="flex items-center justify-center px-8 md:px-14 py-5">
         <p
-          className="text-[12px] tracking-[0.32em] uppercase"
+          className="text-center text-[12px] tracking-[0.28em]"
           style={{ color: FOOTER_MUTED }}
         >
-          &copy; {new Date().getFullYear()} houseofsenses.vn
-        </p>
-        <p
-          className="text-[12px] tracking-[0.28em] uppercase"
-          style={{ color: FOOTER_MUTED }}
-        >
-          All rights reserved
+          &copy; {new Date().getFullYear()} houseofsenses.vn&nbsp;&nbsp;All rights
+          reserved
         </p>
       </div>
     </footer>

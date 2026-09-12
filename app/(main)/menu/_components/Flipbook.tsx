@@ -2,11 +2,16 @@
 
 "use client";
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import { fetchTenants, type Tenant } from "@/api/queries";
+import { tenantBranchLabel } from "@/app/utils/tenantStatus";
 import Image from "next/image";
 import SkeletonImage from "@/app/components/SkeletonImage";
 import HTMLFlipBook from "react-pageflip";
 
 const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  useEffect(() => { fetchTenants().then(setTenants); }, []);
+  const branchLabel = (name: string) => tenantBranchLabel(tenants.find((tenant) => tenant.name === name) || { name });
   const [currentPage, setCurrentPage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -108,15 +113,15 @@ const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
             backgroundSize: "1.5em 1.5em",
           }}
         >
-          <option value="Red Bistro">red bistro</option>
-          <option value="Blue Bistro">blue bistro</option>
+          <option value="Red Bistro">{branchLabel("Red Bistro")}</option>
+          <option value="Blue Bistro">{branchLabel("Blue Bistro")}</option>
         </select>
       </div>
 
       {/* Flipbook Container */}
       <div
         className="flex justify-center items-center w-full shrink-0 relative"
-        style={{ height: isMobile ? "600px" : "800px" }}
+        style={{ height: isMobile ? "650px" : "875px" }}
       >
         <div className="relative">
           {/* Book Spine Overlay - Only visible on desktop */}
@@ -125,7 +130,7 @@ const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
               className="absolute z-10 pointer-events-none"
               style={{
                 width: "20px",
-                height: "600px",
+                height: "100%",
                 background:
                   "linear-gradient(to right, " +
                   "rgba(40,30,20,0.8) 0%, " +
@@ -170,12 +175,12 @@ const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
           )}
           <HTMLFlipBook
             key={key}
-            width={isMobile ? 400 : 1000}
-            height={isMobile ? 600 : 800}
-            minWidth={isMobile ? 300 : 800}
-            maxWidth={isMobile ? 500 : 1400}
-            minHeight={isMobile ? 450 : 600}
-            maxHeight={isMobile ? 600 : 800}
+            width={isMobile ? 460 : 1200}
+            height={isMobile ? 650 : 875}
+            minWidth={isMobile ? 300 : 900}
+            maxWidth={isMobile ? 520 : 1500}
+            minHeight={isMobile ? 450 : 700}
+            maxHeight={isMobile ? 650 : 900}
             ref={flipBookRef}
             size="stretch"
             maxShadowOpacity={1}

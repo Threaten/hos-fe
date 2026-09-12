@@ -1,9 +1,11 @@
-/**
- * API URL Configuration
- * Uses environment variables with sensible defaults
- */
-export const API_URL = "http://localhost:3000"; // Default to localhost for development
-export const GRAPHQL_ENDPOINT = `${API_URL}/api/graphql`;
+import { API_URL } from "@/app/utils/constants";
+export { API_URL };
+
+// Server fetches require an absolute URL; browsers use the same-origin proxy.
+export const GRAPHQL_ENDPOINT =
+  typeof window === "undefined"
+    ? `${(process.env.API_INTERNAL_URL || "http://127.0.0.1:3000").replace(/\/$/, "")}/api/graphql`
+    : `${API_URL}/api/graphql`;
 
 /**
  * Lightweight GraphQL fetch helper – replaces Apollo Client.
@@ -51,6 +53,8 @@ async function gqlMutate<T>(
  */
 
 export interface Tenant {
+  openingHours?: string | null;
+  status?: "open" | "closed" | "temporarily-closed" | "temporarily_closed" | null;
   id: string;
   name: string;
   domain: string;
@@ -205,6 +209,8 @@ const GET_TENANTS = `
       docs {
         id
         name
+        status
+        openingHours
         domain
         mainColor
         spinWheelPrizes {
@@ -290,6 +296,8 @@ const GET_TENANT = `
       docs {
         id
         name
+        status
+        openingHours
         domain
         mainColor
         spinWheelPrizes {

@@ -1,4 +1,5 @@
 "use client";
+import { tenantBranchLabel } from "@/app/utils/tenantStatus";
 import React, { useState, useEffect, useRef } from "react";
 
 // ─── Calendar Picker ─────────────────────────────────────────────────────────
@@ -878,7 +879,7 @@ const ReservationForm = ({
               >
                 {tenants.map((tenant) => (
                   <option key={tenant.id} value={tenant.name}>
-                    {tenant.name}
+                    {tenantBranchLabel(tenant)}
                   </option>
                 ))}
               </select>
