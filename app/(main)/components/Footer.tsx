@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { fetchTenants, type Tenant } from "@/api/queries";
 import { getTenantUrl } from "@/app/utils/domain";
 import { useTenant } from "@/app/contexts/TenantContext";
+import { Clock3, Home, Mail, Phone } from "lucide-react";
 
 // Footer brand color tokens (deep earth, dark)
 const FOOTER_BG = "oklch(31% 0.058 85)";
@@ -127,7 +128,7 @@ const Footer: React.FC = () => {
                       <span>●</span>
                       <a
                         href={tenantUrl}
-                        className="text-[15px] tracking-[0.18em] uppercase font-semibold transition-opacity duration-200 hover:opacity-50"
+                        className="text-[15px] tracking-[0.18em] font-semibold transition-opacity duration-200 hover:opacity-50"
                         style={{ color: FOOTER_TEXT }}
                       >
                         <TenantDisplayName name={tenant.name} />
@@ -142,34 +143,38 @@ const Footer: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="space-y-1">
+                    <div className="flex flex-col gap-1.5">
                       {tenant.address && (
                         <p
-                          className="text-[14px] leading-relaxed"
+                          className="flex items-center gap-2 text-[14px] leading-relaxed"
                           style={{ color: FOOTER_MUTED }}
                         >
-                          {tenant.address}
+                          <Home size={15} strokeWidth={2} className="shrink-0" aria-hidden="true" />
+                          <span>{tenant.address}</span>
                         </p>
                       )}
                       {tenant.phone && (
                         <p
-                          className="text-[14px]"
+                          className="flex items-center gap-2 text-[14px] leading-relaxed"
                           style={{ color: FOOTER_MUTED }}
                         >
-                          T: {tenant.phone}
+                          <Phone size={15} strokeWidth={2} className="shrink-0" aria-hidden="true" />
+                          <span>{tenant.phone}</span>
                         </p>
                       )}
                       {tenantHoursOrStatus(tenant) && (
-                        <p className="text-[14px] leading-relaxed" style={{ color: FOOTER_MUTED }}>
-                          {tenantHoursOrStatus(tenant)}
+                        <p className="flex items-center gap-2 text-[14px] leading-relaxed" style={{ color: FOOTER_MUTED }}>
+                          <Clock3 size={15} strokeWidth={2} className="shrink-0" aria-hidden="true" />
+                          <span>{tenantHoursOrStatus(tenant)}</span>
                         </p>
                       )}
                       {tenant.email && (
                         <p
-                          className="text-[14px]"
+                          className="flex items-center gap-2 text-[14px]"
                           style={{ color: FOOTER_MUTED }}
                         >
-                          {tenant.email}
+                          <Mail size={15} strokeWidth={2} className="shrink-0" aria-hidden="true" />
+                          <span>{tenant.email}</span>
                         </p>
                       )}
                     </div>

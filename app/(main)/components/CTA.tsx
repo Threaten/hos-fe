@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from "react";
 import Link from "next/link";
 import { useTenant } from "@/app/contexts/TenantContext";
+import { ArrowRight } from "lucide-react";
 
 const CTA = () => {
   const { tenant } = useTenant();
@@ -190,7 +191,7 @@ const CTA = () => {
           {/* Secondary: text link */}
           <Link
             href="/menu"
-            className="text-xs tracking-[0.18em] uppercase font-light transition-opacity duration-300 hover:opacity-50"
+            className="inline-flex items-center gap-2 whitespace-nowrap text-xs tracking-[0.18em] uppercase font-light transition-opacity duration-300 hover:opacity-50"
             style={{
               color: "var(--foreground)",
               textDecoration: "underline",
@@ -199,7 +200,8 @@ const CTA = () => {
             }}
             aria-label={`View ${tenantName}'s menu`}
           >
-            Explore Menu →
+            <span>Explore Menu</span>
+            <ArrowRight size={14} strokeWidth={1.5} aria-hidden="true" />
           </Link>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { fetchTenants, type Tenant } from "@/api/queries";
 import { getTenantUrl } from "@/app/utils/domain";
 import { useTenant } from "@/app/contexts/TenantContext";
+import { Clock3, Home, Mail, Phone } from "lucide-react";
 
 const TenantDisplayName = ({ name }: { name: string }) => (
   <>
@@ -54,15 +55,15 @@ export default function Topbar() {
       {/* Notification banner */}
       {hasNotification && (
         <div
-          className="w-full flex items-center justify-center py-2 px-4"
+          className="w-full min-h-9 flex items-center justify-center py-1.5 px-4"
           style={{
-            backgroundColor: "var(--color-main)",
+            backgroundColor: currentTenant?.mainColor || "var(--color-main)",
             borderBottom:
               "1px solid color-mix(in srgb, var(--color-gold) 30%, transparent)",
           }}
         >
           <span
-            className="text-[11px] tracking-[0.38em] uppercase font-bold text-center"
+            className="text-[10px] leading-tight tracking-[0.18em] uppercase font-bold text-center"
             style={{ color: "var(--color-cream)" }}
           >
             {notification.message}
@@ -139,7 +140,7 @@ export default function Topbar() {
                       onClick={() => {
                         window.location.href = getTenantUrl(tenant.domain);
                       }}
-                      className="grid row-span-4 grid-rows-subgrid items-start p-5 cursor-pointer transition-colors duration-200 group"
+                      className="flex flex-col items-start p-5 cursor-pointer transition-colors duration-200 group"
                       style={{
                         borderRight:
                           idx % 2 === 0
@@ -178,21 +179,44 @@ export default function Topbar() {
                           </span>
                         )}
                       </div>
+                      <div className="flex w-full flex-col gap-1">
+                        {tenant.address && (
                         <p
-                          className="text-[9px] leading-relaxed"
+                          className="flex items-center gap-1.5 text-[9px] leading-relaxed"
                           style={{ color: "var(--color-sand)" }}
                         >
-                          {tenant.address}
+                          <Home size={12} strokeWidth={2} className="shrink-0 text-black" aria-hidden="true" />
+                          <span>{tenant.address}</span>
                         </p>
+                        )}
+                        {tenant.phone && (
                         <p
-                          className="text-[9px] mt-0.5"
+                          className="flex items-center gap-1.5 text-[9px] leading-relaxed"
                           style={{ color: "var(--color-sand)" }}
                         >
-                          {tenant.phone}
+                          <Phone size={12} strokeWidth={2} className="shrink-0 text-black" aria-hidden="true" />
+                          <span>{tenant.phone}</span>
                         </p>
-                        <p className="text-[9px] mt-0.5" style={{ color: "var(--color-sand)" }}>
-                          {tenantHoursOrStatus(tenant)}
+                        )}
+                        {tenantHoursOrStatus(tenant) && (
+                        <p
+                          className="flex items-center gap-1.5 text-[9px] leading-relaxed"
+                          style={{ color: "var(--color-sand)" }}
+                        >
+                          <Clock3 size={12} strokeWidth={2} className="shrink-0 text-black" aria-hidden="true" />
+                          <span>{tenantHoursOrStatus(tenant)}</span>
                         </p>
+                        )}
+                        {tenant.email && (
+                        <p
+                          className="flex items-center gap-1.5 text-[9px] leading-relaxed"
+                          style={{ color: "var(--color-sand)" }}
+                        >
+                          <Mail size={12} strokeWidth={2} className="shrink-0 text-black" aria-hidden="true" />
+                          <span>{tenant.email}</span>
+                        </p>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -273,24 +297,35 @@ export default function Topbar() {
                         </span>
                       )}
                     </div>
-                    {tenant.address && (
+                    <div className="flex w-full flex-col gap-1">
+                      {tenant.address && (
                       <p
-                        className="text-[9px] mt-0.5"
+                        className="flex items-center gap-1.5 text-[9px] leading-relaxed"
                         style={{ color: "var(--color-sand)" }}
                       >
-                        {tenant.address}
+                        <Home size={12} strokeWidth={2} className="shrink-0 text-black" aria-hidden="true" />
+                        <span>{tenant.address}</span>
                       </p>
-                    )}
-                    {tenant.phone && (
-                      <p className="text-[9px] mt-0.5" style={{ color: "var(--color-sand)" }}>
-                        {tenant.phone}
+                      )}
+                      {tenant.phone && (
+                      <p className="flex items-center gap-1.5 text-[9px] leading-relaxed" style={{ color: "var(--color-sand)" }}>
+                        <Phone size={12} strokeWidth={2} className="shrink-0 text-black" aria-hidden="true" />
+                        <span>{tenant.phone}</span>
                       </p>
-                    )}
-                    {tenantHoursOrStatus(tenant) && (
-                      <p className="text-[9px] mt-0.5" style={{ color: "var(--color-sand)" }}>
-                        {tenantHoursOrStatus(tenant)}
+                      )}
+                      {tenantHoursOrStatus(tenant) && (
+                      <p className="flex items-center gap-1.5 text-[9px] leading-relaxed" style={{ color: "var(--color-sand)" }}>
+                        <Clock3 size={12} strokeWidth={2} className="shrink-0 text-black" aria-hidden="true" />
+                        <span>{tenantHoursOrStatus(tenant)}</span>
                       </p>
-                    )}
+                      )}
+                      {tenant.email && (
+                      <p className="flex items-center gap-1.5 text-[9px] leading-relaxed" style={{ color: "var(--color-sand)" }}>
+                        <Mail size={12} strokeWidth={2} className="shrink-0 text-black" aria-hidden="true" />
+                        <span>{tenant.email}</span>
+                      </p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

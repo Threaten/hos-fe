@@ -59,7 +59,7 @@ export default function Navbar() {
           >
             <Link
               href="/"
-              className="w-full flex items-center justify-center text-center text-[20px] md:text-[18px] font-bold tracking-[0.32em] transition-opacity duration-300"
+              className="w-full flex items-center justify-center text-center text-[20px] md:text-[18px] font-bold tracking-[0.32em] transition-opacity duration-300 hover:opacity-60"
               style={{
                 color: tenant
                   ? tenant.mainColor || "var(--color-main)"
@@ -74,7 +74,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="https://houseofsenses.vn"
-              className="group w-full flex items-center justify-center text-center text-[12px] md:text-[13px] font-bold tracking-[0.28em] transition-opacity duration-300 hover:opacity-60"
+              className="w-full flex items-center justify-center text-center text-[12px] md:text-[13px] font-bold tracking-[0.28em] transition-opacity duration-300 hover:opacity-60"
               style={{
                 color: tenant
                   ? tenant.mainColor || "var(--color-main)"
@@ -121,7 +121,7 @@ export default function Navbar() {
               href="/reservation"
               className="hidden font-bold md:inline-flex items-center px-4 py-1.5 text-[15px] uppercase transition-all duration-300 hover:opacity-60 focus:outline-none"
               style={{
-                backgroundColor: "var(--color-main)",
+                backgroundColor: tenant?.mainColor || "var(--color-main)",
                 border:
                   "1px solid color-mix(in srgb, var(--color-gold) 55%, transparent)",
                 color: "var(--foreground)",
