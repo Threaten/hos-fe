@@ -19,6 +19,32 @@ const MONTH_NAMES = [
 ];
 const DAY_NAMES = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
+// Bookable window: first slot 16:00, last slot 22:00
+const FIRST_SLOT_MINUTES = 16 * 60;
+const LAST_SLOT_MINUTES = 22 * 60;
+
+/**
+ * "YYYY-MM-DD" (+ "HH:MM") as a local Date. `new Date("YYYY-MM-DD")` parses
+ * as UTC midnight, which is 07:00 in Vietnam and breaks same-day checks.
+ */
+function toLocalDateTime(date: string, time = "00:00"): Date {
+  const [y, m, d] = date.split("-").map(Number);
+  const [hh, mm] = time.split(":").map(Number);
+  return new Date(y, m - 1, d, hh || 0, mm || 0, 0, 0);
+}
+
+function isSameLocalDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function minutesSinceMidnight(d: Date): number {
+  return d.getHours() * 60 + d.getMinutes();
+}
+
 function CalendarPicker({
   value,
   onChange,
@@ -78,7 +104,10 @@ function CalendarPicker({
   const isDisabled = (day: number) => {
     const d = new Date(viewYear, viewMonth, day);
     d.setHours(0, 0, 0, 0);
-    return d < today;
+    if (d < today) return true;
+    // Today is closed once the last bookable slot is no longer in the future
+    const now = new Date();
+    return isSameLocalDay(d, now) && minutesSinceMidnight(now) >= LAST_SLOT_MINUTES;
   };
   const isSelected = (day: number) =>
     !!selected &&
@@ -400,7 +429,7 @@ const ReservationForm = ({
   const validateDate = (date: string, time: string): string | null => {
     if (!date) return "Date is required";
 
-    const selectedDate = new Date(date);
+    const selectedDate = toLocalDateTime(date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -408,18 +437,22 @@ const ReservationForm = ({
       return "Date must be today or later";
     }
 
-    // If date is today, check if time is valid
-    if (selectedDate.getTime() === today.getTime() && time) {
-      const [hours, minutes] = time.split(":").map(Number);
-      const currentTime = new Date();
-      const selectedDateTime = new Date();
-      selectedDateTime.setHours(hours, minutes, 0, 0);
-
-      if (selectedDateTime <= currentTime) {
-        return "For today's reservation, please select a time later than now";
-      }
+    if (
+      isSameLocalDay(selectedDate, today) &&
+      minutesSinceMidnight(new Date()) >= LAST_SLOT_MINUTES
+    ) {
+      return "Today's last booking time has passed. Please choose another day";
     }
 
+    return null;
+  };
+
+  /** The chosen date + time must be strictly later than now. */
+  const validateNotInPast = (date: string, time: string): string | null => {
+    if (!date || !time) return null;
+    if (toLocalDateTime(date, time) <= new Date()) {
+      return "Please choose a time later than now";
+    }
     return null;
   };
 
@@ -428,10 +461,8 @@ const ReservationForm = ({
 
     const [hours, minutes] = time.split(":").map(Number);
     const timeInMinutes = hours * 60 + minutes;
-    const startTime = 16 * 60; // 16:00
-    const endTime = 22 * 60; // 22:00
 
-    if (timeInMinutes < startTime || timeInMinutes > endTime) {
+    if (timeInMinutes < FIRST_SLOT_MINUTES || timeInMinutes > LAST_SLOT_MINUTES) {
       return "Time must be between 16:00 and 22:00";
     }
 
@@ -461,8 +492,10 @@ const ReservationForm = ({
       newErrors.date = dateError;
     }
 
-    // Validate time
-    const timeError = validateTime(formData.time);
+    // Validate time, then that date + time is still in the future
+    const timeError =
+      validateTime(formData.time) ??
+      (newErrors.date ? null : validateNotInPast(formData.date, formData.time));
     if (timeError) {
       newErrors.time = timeError;
     }
@@ -565,6 +598,20 @@ const ReservationForm = ({
       }));
     }
   };
+
+  // When today is selected, slots at or before the current minute can't be booked
+  const now = new Date();
+  const nowMinutes = minutesSinceMidnight(now);
+  const isTodaySelected =
+    !!formData.date && isSameLocalDay(toLocalDateTime(formData.date), now);
+  const selectedHour = formData.time ? formData.time.split(":")[0] : "";
+  const lastMinuteOfHour = (h: number) => (h * 60 >= LAST_SLOT_MINUTES ? 0 : 55);
+  const isHourPast = (h: number) =>
+    isTodaySelected && h * 60 + lastMinuteOfHour(h) <= nowMinutes;
+  const isMinutePast = (m: string) =>
+    isTodaySelected &&
+    !!selectedHour &&
+    Number(selectedHour) * 60 + Number(m) <= nowMinutes;
 
   return (
     <div
@@ -890,7 +937,11 @@ const ReservationForm = ({
                 hasError={!!errors.date}
                 onChange={(value) => {
                   setFormData((prev) => ({ ...prev, date: value }));
-                  setErrors((prev) => ({ ...prev, date: undefined }));
+                  setErrors((prev) => ({
+                    ...prev,
+                    date: undefined,
+                    time: validateNotInPast(value, formData.time) ?? undefined,
+                  }));
                 }}
               />
               {errors.date && (
@@ -919,11 +970,12 @@ const ReservationForm = ({
                     const minute = formData.time
                       ? formData.time.split(":")[1]
                       : "00";
-                    setFormData((prev) => ({
+                    const time = `${e.target.value}:${minute || "00"}`;
+                    setFormData((prev) => ({ ...prev, time }));
+                    setErrors((prev) => ({
                       ...prev,
-                      time: `${e.target.value}:${minute || "00"}`,
+                      time: validateNotInPast(formData.date, time) ?? undefined,
                     }));
-                    setErrors((prev) => ({ ...prev, time: undefined }));
                   }}
                   className="flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer text-[13px]"
                   style={{
@@ -937,7 +989,11 @@ const ReservationForm = ({
                     Hour
                   </option>
                   {[16, 17, 18, 19, 20, 21, 22].map((h) => (
-                    <option key={h} value={String(h).padStart(2, "0")}>
+                    <option
+                      key={h}
+                      value={String(h).padStart(2, "0")}
+                      disabled={isHourPast(h)}
+                    >
                       {String(h).padStart(2, "0")}
                     </option>
                   ))}
@@ -954,11 +1010,12 @@ const ReservationForm = ({
                     const hour = formData.time
                       ? formData.time.split(":")[0]
                       : "16";
-                    setFormData((prev) => ({
+                    const time = `${hour || "16"}:${e.target.value}`;
+                    setFormData((prev) => ({ ...prev, time }));
+                    setErrors((prev) => ({
                       ...prev,
-                      time: `${hour || "16"}:${e.target.value}`,
+                      time: validateNotInPast(formData.date, time) ?? undefined,
                     }));
-                    setErrors((prev) => ({ ...prev, time: undefined }));
                   }}
                   className="flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer text-[13px]"
                   style={{
@@ -985,7 +1042,7 @@ const ReservationForm = ({
                     "50",
                     "55",
                   ].map((m) => (
-                    <option key={m} value={m}>
+                    <option key={m} value={m} disabled={isMinutePast(m)}>
                       {m}
                     </option>
                   ))}
