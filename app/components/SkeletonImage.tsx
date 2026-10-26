@@ -13,7 +13,7 @@ export default function SkeletonImage({ className, onLoad, ...props }: ImageProp
   return (
     <>
       {!loaded && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse z-10" />
+        <div className="absolute inset-0 bg-[var(--paper-2)] animate-pulse z-10" />
       )}
       <Image
         {...props}

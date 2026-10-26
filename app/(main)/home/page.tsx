@@ -5,9 +5,8 @@ import { createPortal } from "react-dom";
 import Hero from "./_components/Hero";
 import ShortAbout from "./_components/ShortAbout";
 import Gallery from "./_components/Gallery";
-import CTA from "../components/CTA";
+import Moments from "./_components/Moments";
 import NewMenuModal from "../components/NewMenuModal";
-import Link from "next/link";
 import {
   fetchTenantBySlug,
   fetchGallery,
@@ -39,61 +38,10 @@ export default function Home() {
     "loading" | "fading" | "done"
   >("loading");
   const [mounted, setMounted] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [galleryDividerVisible, setGalleryDividerVisible] = useState(false);
-  const [ctaLinkVisible, setCtaLinkVisible] = useState(false);
-  const galleryDividerRef = useRef<HTMLDivElement>(null);
-  const ctaLinkRef = useRef<HTMLDivElement>(null);
 
   // Mount after hydration so that createPortal targets document.body safely
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  // Scroll progress bar
-  useEffect(() => {
-    const onScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Gallery divider reveal
-  useEffect(() => {
-    const el = galleryDividerRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setGalleryDividerVisible(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.5 },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  // CTA link reveal
-  useEffect(() => {
-    const el = ctaLinkRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setCtaLinkVisible(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.3 },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
   }, []);
 
   // Safety: always dismiss the overlay within 8 s regardless of network/hero state
@@ -232,37 +180,28 @@ export default function Home() {
   }));
 
   return (
-    <div className="">
-      {/* Scroll progress bar */}
-      {mounted && (
-        <div
-          className="fixed top-0 left-0 z-10000 h-px transition-none pointer-events-none"
-          style={{
-            width: `${scrollProgress}%`,
-            backgroundColor: "var(--color-earth)",
-            opacity: 0.7,
-          }}
-        />
-      )}
+    <div>
       {/* Full-page loading overlay — portal to body escapes PageTransition's opacity */}
       {mounted &&
         loadingPhase !== "done" &&
         createPortal(
           <div
-            className={`fixed inset-0 z-9999 flex flex-col items-center justify-center bg-[rgb(247,242,234)] transition-opacity duration-300 ${loadingPhase === "fading" ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+            className={`fixed inset-0 z-9999 flex items-center justify-center bg-paper transition-opacity duration-300 ${loadingPhase === "fading" ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+            role="status"
           >
-            <div className="flex flex-col items-center gap-6">
-              <div className="w-12 h-12 rounded-full border-2 border-[rgb(124,118,89)]/30 border-t-[rgb(124,118,89)] animate-spin" />
-              <p className="text-sm tracking-widest uppercase text-[rgb(124,118,89)] font-light">
-                Loading
-              </p>
-            </div>
+            <p
+              className="font-serif text-[clamp(2rem,6vw,3.5rem)] animate-pulse"
+              style={{ color: "var(--color-main)" }}
+            >
+              {tenant?.name ?? "House of Senses"}
+            </p>
           </div>,
           document.body,
         )}
       {/* Preload hero images into <head> so they fetch even while the modal is visible */}
       {tenant?.heroImagesList
         ?.filter((item) => item.image?.url)
+        .slice(0, 2)
         .map((item, idx) => (
           <link
             key={`hero-preload-${idx}`}
@@ -275,51 +214,19 @@ export default function Home() {
         ))}
       <Hero tenant={tenant} />
       <ShortAbout tenant={tenant} />
-      <div
-        ref={galleryDividerRef}
-        className="w-full px-8 md:px-14 mt-12 mb-8 flex items-center gap-4 transition-[opacity,transform] duration-900 ease-[cubic-bezier(0.16,1,0.3,1)]"
-        style={{
-          opacity: galleryDividerVisible ? 1 : 0,
-          transform: galleryDividerVisible
-            ? "translateY(0)"
-            : "translateY(20px)",
-        }}
-      >
-        <span
-          className="text-[10px] tracking-[0.38em] uppercase"
-          style={{ color: "var(--color-sand)", opacity: 0.95 }}
-        >
-          02
-        </span>
-        <div
-          className="h-px flex-1"
-          style={{ backgroundColor: "var(--color-sand)", opacity: 0.25 }}
-        />
-        <span
-          className="text-[10px] tracking-[0.38em] uppercase"
-          style={{ color: "var(--color-sand)", opacity: 0.95 }}
-        >
-          Gallery
-        </span>
-      </div>
-      <Gallery images={transformedImages} galleryText={tenant?.galleryText} />
-      <div
-        ref={ctaLinkRef}
-        className="w-full border-t border-b h-16 mt-12 mb-12 flex items-center justify-center transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
-        style={{
-          borderColor: "color-mix(in srgb, var(--color-sand) 25%, transparent)",
-          opacity: ctaLinkVisible ? 1 : 0,
-          transform: ctaLinkVisible ? "translateY(0)" : "translateY(16px)",
-        }}
-      >
-        <Link
-          href="/gallery"
-          className="px-12 py-3 hover:border-b-2 hover:border-[rgb(124,118,89)]/40 text-center justify-center items-center flex text-gray-900 transition-all duration-300 text-lg tracking-wider font-semibold hover:scale-105"
-        >
-          See all Gallery
-        </Link>
-      </div>
-      <CTA />
+      <Gallery
+        images={transformedImages}
+        galleryText={tenant?.galleryText}
+        tenant={tenant}
+      />
+      <Moments
+        images={
+          transformedImages.length > 1
+            ? transformedImages.slice(1)
+            : transformedImages
+        }
+        tenant={tenant}
+      />
       {/* New Menu Modal — only shown after loading is complete */}
       {loadingPhase === "done" && (
         <NewMenuModal

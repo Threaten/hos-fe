@@ -4,223 +4,149 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTenant } from "@/app/contexts/TenantContext";
-import { fetchHomeInformation, type HomeInformation } from "@/api/queries";
+import Wordmark from "./Wordmark";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
   { href: "/menu", label: "Menu" },
-  { href: "/gallery", label: "Gallery" },
+  { href: "/about", label: "About" },
+  // { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [homeInfo, setHomeInfo] = useState<HomeInformation | null>(null);
   const pathname = usePathname();
   const { tenant } = useTenant();
+  const brandName = tenant?.name ?? "House of Senses";
 
+  // Close the mobile menu on navigation and lock page scroll while it is open
+  useEffect(() => setIsMenuOpen(false), [pathname]);
   useEffect(() => {
-    fetchHomeInformation().then((data) => {
-      if (data) setHomeInfo(data);
-    });
-  }, []);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
 
   const toggleMenu = () => setIsMenuOpen((v) => !v);
 
   return (
     <>
-      {/* ── Main Navbar ── */}
       <nav
         aria-label="Site navigation"
-        className={`z-40 h-15 transition-all duration-500 ${
-          scrolled
-            ? "bg-(--background)/96 backdrop-blur-md shadow-[0_1px_0_0_color-mix(in_srgb,var(--color-gold)_18%,transparent)]"
-            : "bg-(--background)/95 backdrop-blur-sm border-b border-(--color-tan)/20"
-        }`}
+        className="relative z-40 bg-paper hos-gutter"
+        style={{ height: "var(--header-h)" }}
       >
-        {/* Slim gold accent line at very top */}
-        <div
-          className="absolute top-0 left-0 right-0 h-px"
-          style={{
-            background:
-              "linear-gradient(to right, transparent, var(--color-gold), transparent)",
-            opacity: 0.35,
-          }}
-        />
-
-        <div className="w-full h-full px-6 md:px-12 flex items-center justify-between">
-          {/* Brand */}
+        <div className="h-full grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center">
           <Link
             href="/"
-            className="flex flex-col leading-none focus:outline-none group"
-            aria-label={tenant ? `${tenant.name} Home` : "House of Senses Home"}
+            className="justify-self-start text-[1.75rem] lg:text-[2.25rem] transition-opacity duration-300 hover:opacity-70"
+            style={{ color: "var(--color-ink)" }}
+            aria-label={`${brandName} home`}
           >
-            <span
-              className="text-[11px] md:text-[12px] font-semibold tracking-[0.32em] uppercase transition-opacity duration-300 group-hover:opacity-60"
-              style={{ color: "var(--foreground)" }}
-            >
-              {tenant ? tenant.name : "House of Senses"}
-            </span>
-            <span
-              className="text-[8px] tracking-[0.26em] uppercase mt-0.75"
-              style={{ color: "var(--foreground)", opacity: 0.82 }}
-            >
-              {homeInfo?.name ??
-                (tenant?.address
-                  ? tenant.address.split(",")[0]
-                  : "Fine Dining")}
-            </span>
+            <Wordmark name={brandName} />
           </Link>
 
-          {/* Desktop nav links */}
-          <div className="hidden md:flex items-center gap-8">
+          <ul className="hidden lg:flex items-center gap-[22px]">
             {NAV_LINKS.map(({ href, label }) => {
               const isActive = pathname === href;
               return (
-                <Link
-                  key={href}
-                  href={href}
-                  className="relative text-[10px] tracking-[0.28em] uppercase py-1 transition-opacity duration-300 hover:opacity-40 focus:outline-none"
-                  style={{
-                    color: "var(--foreground)",
-                    opacity: isActive ? 1 : 0.92,
-                  }}
-                >
-                  {label}
-                  {isActive && (
-                    <span
-                      className="absolute -bottom-0.5 left-0 right-0 h-px"
-                      style={{
-                        backgroundColor: "var(--color-gold)",
-                        opacity: 0.8,
-                      }}
-                    />
-                  )}
-                </Link>
+                <li key={href}>
+                  <Link
+                    href={href}
+                    aria-current={isActive ? "page" : undefined}
+                    className="hos-link text-[18px] leading-[1.3]"
+                    style={{ color: "var(--color-ink)" }}
+                  >
+                    {label}
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
 
-          {/* Right: RESERVE + mobile burger */}
-          <div className="flex items-center gap-5">
+          <div className="justify-self-end flex items-center">
             <Link
               href="/reservation"
-              className="hidden md:inline-flex items-center px-4 py-1.5 text-[9px] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:opacity-60 focus:outline-none"
-              style={{
-                border:
-                  "1px solid color-mix(in srgb, var(--color-gold) 55%, transparent)",
-                color: "var(--foreground)",
-              }}
+              className="hos-btn hos-btn-solid hidden lg:inline-flex"
+              style={{ minHeight: 45, paddingInline: 23 }}
               aria-label="Make a reservation"
             >
-              Reserve
+              Book a table
             </Link>
 
-            {/* Hamburger */}
             <button
               onClick={toggleMenu}
-              className="md:hidden flex flex-col gap-1.25 w-5 justify-center items-center focus:outline-none"
+              className="lg:hidden flex flex-col items-center justify-center gap-[3px] w-6 h-6"
+              style={{ backgroundColor: "var(--color-ink)" }}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
             >
-              <span
-                className={`block h-px bg-foreground transition-all duration-300 ${isMenuOpen ? "w-5 rotate-45 translate-y-1.25" : "w-5"}`}
-              />
-              <span
-                className={`block h-px bg-foreground transition-all duration-300 ${isMenuOpen ? "opacity-0 w-0" : "w-4"}`}
-              />
-              <span
-                className={`block h-px bg-foreground transition-all duration-300 ${isMenuOpen ? "w-5 -rotate-45 -translate-y-1.25" : "w-5"}`}
-              />
+              <span className="block w-3 h-px bg-paper" />
+              <span className="block w-3 h-px bg-paper" />
+              <span className="block w-3 h-px bg-paper" />
             </button>
           </div>
         </div>
       </nav>
 
-      {/* ── Mobile fullscreen menu ── */}
+      {/* Mobile fullscreen menu */}
       <div
-        className={`md:hidden fixed inset-0 z-200 flex flex-col transition-all duration-500 ${
-          isMenuOpen
-            ? "opacity-100 visible"
-            : "opacity-0 invisible pointer-events-none"
+        id="mobile-menu"
+        className={`lg:hidden fixed inset-0 z-200 flex flex-col bg-paper transition-opacity duration-500 ${
+          isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
         }`}
-        style={{ backgroundColor: "var(--background)" }}
+        style={{ transitionTimingFunction: "var(--ease-out)" }}
       >
-        {/* Close button */}
         <div
-          className="flex items-center justify-between px-6 h-15 border-b"
-          style={{
-            borderColor:
-              "color-mix(in srgb, var(--color-tan) 30%, transparent)",
-          }}
+          className="flex items-center justify-between hos-gutter shrink-0"
+          style={{ height: "var(--header-h)" }}
         >
-          <span
-            className="text-[10px] tracking-[0.32em] uppercase"
-            style={{ color: "var(--foreground)", opacity: 0.85 }}
+          <Link
+            href="/"
+            className="text-[1.75rem]"
+            style={{ color: "var(--color-ink)" }}
+            onClick={toggleMenu}
           >
-            Navigation
-          </span>
+            <Wordmark name={brandName} />
+          </Link>
           <button
             onClick={toggleMenu}
-            className="w-8 h-8 flex items-center justify-center focus:outline-none"
+            className="relative w-6 h-6 flex items-center justify-center"
+            style={{ backgroundColor: "var(--color-ink)" }}
             aria-label="Close menu"
           >
-            <span className="block w-5 h-px bg-foreground rotate-45 absolute" />
-            <span className="block w-5 h-px bg-foreground -rotate-45 absolute" />
+            <span className="absolute block w-3.5 h-px bg-paper rotate-45" />
+            <span className="absolute block w-3.5 h-px bg-paper -rotate-45" />
           </button>
         </div>
 
-        <nav
-          aria-label="Main navigation menu"
-          className="flex flex-col justify-center flex-1 px-10 gap-6"
-        >
-          {NAV_LINKS.map(({ href, label }, i) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex items-center gap-4 group focus:outline-none"
-              style={{ transitionDelay: `${i * 40}ms` }}
-              onClick={toggleMenu}
-            >
-              <span
-                className="text-[9px] tracking-[0.3em] tabular-nums"
-                style={{ color: "var(--foreground)", opacity: 0.75 }}
-              >
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span
-                className="text-[clamp(1.6rem,6vw,2.8rem)] font-semibold leading-none tracking-tight transition-opacity duration-200 group-hover:opacity-40"
-                style={{
-                  fontFamily: "var(--font-arimo)",
-                  color: "var(--foreground)",
-                }}
-              >
-                {label}
-              </span>
-            </Link>
-          ))}
+        <nav aria-label="Main navigation menu" className="flex-1 flex flex-col justify-center hos-gutter">
+          <ul className="flex flex-col gap-2">
+            {NAV_LINKS.map(({ href, label }) => {
+              const isActive = pathname === href;
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    aria-current={isActive ? "page" : undefined}
+                    className="hos-link font-serif text-[clamp(2.75rem,13vw,4.5rem)] leading-[1.05]"
+                    style={{ color: "var(--color-main)" }}
+                    onClick={toggleMenu}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </nav>
 
-        <div className="px-10 pb-12">
-          <Link
-            href="/reservation"
-            className="inline-flex items-center px-7 py-3 text-[9px] tracking-[0.32em] uppercase font-medium transition-opacity duration-300 hover:opacity-60"
-            style={{
-              border:
-                "1px solid color-mix(in srgb, var(--color-gold) 55%, transparent)",
-              color: "var(--foreground)",
-            }}
-            onClick={toggleMenu}
-          >
-            Reserve a Table
+        <div className="hos-gutter pb-10">
+          <Link href="/reservation" className="hos-btn hos-btn-solid w-full" onClick={toggleMenu}>
+            Book a table
           </Link>
         </div>
       </div>

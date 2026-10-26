@@ -3,11 +3,13 @@
  * Uses environment variables with sensible defaults
  */
 export const API_URL =
-  process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_API_URL || "https://admin.houseofsenses.vn"
-    : process.env.NEXT_PUBLIC_API_URL || "http://admin.houseofsenses.vn";
-
-export const GRAPHQL_ENDPOINT = `${API_URL}/api/graphql`;
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
+  "http://admin.houseofsenses.vn";
+export const GRAPHQL_ENDPOINT =
+  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT?.replace(/\/$/, "") ||
+  `${API_URL}/api/graphql`;
+const GRAPHQL_PROXY_ENDPOINT = "/api/backend/graphql";
+const REST_PROXY_PREFIX = "/api/backend";
 
 /**
  * Lightweight GraphQL fetch helper – replaces Apollo Client.
@@ -17,19 +19,23 @@ async function gqlFetch<T>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<T | null> {
-  try {
-    const res = await fetch(GRAPHQL_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, variables }),
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return null;
-    const json = await res.json();
-    return (json.data as T) ?? null;
-  } catch {
-    return null;
+  const endpoints = [GRAPHQL_ENDPOINT, GRAPHQL_PROXY_ENDPOINT];
+
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, variables }),
+        next: { revalidate: 60 },
+      });
+      if (!res.ok) continue;
+      const json = await res.json();
+      if (json.data) return json.data as T;
+    } catch {}
   }
+
+  return null;
 }
 
 /**
@@ -39,15 +45,44 @@ async function gqlMutate<T>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<T> {
-  const res = await fetch(GRAPHQL_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, variables }),
-  });
-  if (!res.ok) throw new Error(`GraphQL request failed: ${res.status}`);
-  const json = await res.json();
-  if (json.errors?.length) throw new Error(json.errors[0].message);
-  return json.data as T;
+  const endpoints = [GRAPHQL_ENDPOINT, GRAPHQL_PROXY_ENDPOINT];
+  let lastError: unknown = null;
+
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, variables }),
+      });
+      if (!res.ok) throw new Error(`GraphQL request failed: ${res.status}`);
+      const json = await res.json();
+      if (json.errors?.length) throw new Error(json.errors[0].message);
+      return json.data as T;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("GraphQL request failed");
+}
+
+async function restFetch<T>(path: string): Promise<T | null> {
+  const urls = [`${API_URL}${path}`, `${REST_PROXY_PREFIX}${path}`];
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, {
+        next: { revalidate: 60 },
+      });
+      if (!res.ok) continue;
+      return (await res.json()) as T;
+    } catch {}
+  }
+
+  return null;
 }
 
 /**
@@ -70,6 +105,7 @@ export interface Tenant {
   heroDescription?: string;
   shortAboutTitle?: string;
   shortAboutText?: string;
+  galleryTitle?: string;
   galleryText?: string;
   ctaTitle?: string;
   ctaText?: string;
@@ -116,6 +152,7 @@ export interface Tenant {
     enabled?: boolean;
     message?: string;
   };
+  mainColor?: string;
   meta?: {
     title?: string;
     description?: string;
@@ -153,6 +190,30 @@ export interface GalleryItem {
   };
 }
 
+export interface MenuItem {
+  id: string;
+  title: string;
+  branch?: {
+    id: string;
+    name: string;
+    domain?: string;
+  };
+  file?: {
+    url: string;
+    filename: string;
+    originalName?: string;
+    mimeType?: string;
+  };
+  pages?: Array<{
+    url: string;
+    filename: string;
+    originalName?: string;
+    mimeType?: string;
+    id?: string;
+  }>;
+  status?: "Draft" | "Published" | "Archived";
+}
+
 interface TenantsResponse {
   Tenants: {
     docs: Tenant[];
@@ -178,6 +239,11 @@ interface GalleryResponse {
   };
 }
 
+interface MenusRestResponse {
+  docs: MenuItem[];
+  totalDocs: number;
+}
+
 interface CustomerResponse {
   Customers: {
     docs: Array<{
@@ -199,6 +265,7 @@ const GET_TENANTS = `
         id
         name
         domain
+        mainColor
         heroImagesList {
           image {
             url
@@ -273,6 +340,7 @@ const GET_TENANT = `
         id
         name
         domain
+        mainColor
         heroImagesList {
           image {
             url
@@ -285,6 +353,7 @@ const GET_TENANT = `
         heroDescription
         shortAboutTitle
         shortAboutText
+        galleryTitle
         galleryText
         ctaTitle
         ctaText
@@ -298,6 +367,10 @@ const GET_TENANT = `
           id
         }
         aboutus
+        aboutusHero {
+          url
+          filename
+        }
         menu {
           url
           filename
@@ -501,7 +574,12 @@ const CREATE_CONTACT_MESSAGE = `
  */
 export const fetchTenants = async (limit = 100) => {
   const data = await gqlFetch<TenantsResponse>(GET_TENANTS, { limit });
-  return data?.Tenants?.docs || [];
+  if (data?.Tenants?.docs?.length) return data.Tenants.docs;
+
+  const restData = await restFetch<TenantsResponse["Tenants"]>(
+    `/api/tenants?depth=2&limit=${limit}`,
+  );
+  return restData?.docs || [];
 };
 
 /**
@@ -511,7 +589,12 @@ export const fetchTenants = async (limit = 100) => {
  */
 export const fetchTenantBySlug = async (slug: string) => {
   const data = await gqlFetch<TenantResponse>(GET_TENANT, { domain: slug });
-  return data?.Tenants?.docs?.[0] || null;
+  if (data?.Tenants?.docs?.[0]) return data.Tenants.docs[0];
+
+  const restData = await restFetch<TenantResponse["Tenants"]>(
+    `/api/tenants?where[domain][equals]=${encodeURIComponent(slug)}&depth=2&limit=1`,
+  );
+  return restData?.docs?.[0] || null;
 };
 
 /**
@@ -537,6 +620,19 @@ export const fetchGallery = async (branchId?: string) => {
   return docs;
 };
 
+export const fetchMenus = async (branchId?: string) => {
+  const path = branchId
+    ? `/api/menus?where[branch][equals]=${encodeURIComponent(branchId)}&where[status][equals]=Published&depth=1&limit=100`
+    : "/api/menus?where[status][equals]=Published&depth=1&limit=100";
+  const data = await restFetch<MenusRestResponse>(path);
+  return data?.docs || [];
+};
+
+export const fetchMenuByBranch = async (branchId: string) => {
+  const docs = await fetchMenus(branchId);
+  return docs[0] || null;
+};
+
 /* END OF QUERIES */
 
 /**
@@ -549,7 +645,9 @@ export const fetchGallery = async (branchId?: string) => {
  * @returns Promise with customer data or null
  */
 export const getCustomerByPhone = async (phone: string) => {
-  const data = await gqlFetch<CustomerResponse>(GET_CUSTOMER, { customerPhone: phone });
+  const data = await gqlFetch<CustomerResponse>(GET_CUSTOMER, {
+    customerPhone: phone,
+  });
   return data?.Customers?.docs?.[0] || null;
 };
 
@@ -560,7 +658,9 @@ export const getCustomerByPhone = async (phone: string) => {
  * @returns Promise with created customer data
  */
 export const createCustomer = async (name: string, phone: string) => {
-  const data = await gqlMutate<{ createCustomer: { id: string; customerName: string; customerPhone: string } }>(CREATE_CUSTOMER, {
+  const data = await gqlMutate<{
+    createCustomer: { id: string; customerName: string; customerPhone: string };
+  }>(CREATE_CUSTOMER, {
     customerName: name,
     customerPhone: phone,
   });

@@ -5,116 +5,87 @@ import SkeletonImage from "@/app/components/SkeletonImage";
 import CTA from "../components/CTA";
 import RichTextRenderer from "../../components/RichTextRenderer";
 import { useTenant } from "@/app/contexts/TenantContext";
-import { API_URL } from "@/api/queries";
+import { resolveBackendMediaUrl } from "@/app/utils/media";
 
 export default function AboutPage() {
   const { tenant } = useTenant();
 
   const tenantName = tenant ? tenant.name.toLowerCase() : "houseofsenses.vn";
-  const aboutTitle = tenant?.aboutTitle || `about ${tenantName}`;
+  const aboutTitle = tenant?.aboutTitle || `About ${tenantName}`;
   const aboutSubtitle =
     tenant?.aboutSubtitle || "A Journey of Culinary Excellence";
+  const heroSrc = resolveBackendMediaUrl(tenant?.aboutusHero) || "/media/IMG_0050.JPG";
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero — editorial, text anchored bottom-left */}
-      <section
-        className="relative overflow-hidden"
-        style={{ height: "calc(100vh - 80px)" }}
-      >
-        <div className="absolute inset-0">
-          <SkeletonImage
-            src={
-              tenant?.aboutusHero?.url
-                ? `${API_URL}${tenant.aboutusHero.url}`
-                : "/media/IMG_0050.JPG"
-            }
-            alt="Restaurant interior"
-            fill
-            className="object-cover"
-          />
-          {/* Warm gradient — heavier at the base where text lives */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to top, rgba(23,23,23,0.72) 0%, rgba(23,23,23,0.18) 55%, rgba(23,23,23,0) 100%)",
-            }}
-          />
-        </div>
-
-        {/* Text block — bottom-left */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 px-8 md:px-12 pb-12 md:pb-16">
-          <p className="text-[10px] tracking-[0.35em] uppercase text-white/55 mb-5">
-            — our story
-          </p>
-          <h1 className="text-[clamp(2.5rem,7vw,5rem)] font-semibold leading-[0.9] tracking-tight text-white mb-5 max-w-xl">
-            {aboutTitle}
-          </h1>
-          <p className="text-sm md:text-base font-light text-white/70 max-w-md leading-relaxed">
-            {aboutSubtitle}
-          </p>
-        </div>
+    <div className="bg-paper">
+      <section className="hos-gutter pt-12 md:pt-[78px]" aria-labelledby="about-heading">
+        <p className="hos-label mb-3" style={{ color: "var(--foreground)" }}>
+          Our story
+        </p>
+        <h1
+          id="about-heading"
+          className="font-serif text-balance max-w-[14ch]"
+          style={{
+            fontSize: "clamp(3rem, 8.5vw, 8.5rem)",
+            lineHeight: 0.92,
+            letterSpacing: "-0.02em",
+            color: "var(--color-main)",
+          }}
+        >
+          {aboutTitle}
+        </h1>
+        <p className="mt-5 max-w-[48ch]" style={{ color: "var(--color-ink)" }}>
+          {aboutSubtitle}
+        </p>
       </section>
 
-      {/* Story Section */}
-      <section className="py-20 px-8 md:px-14">
+      <div className="hos-gutter mt-10 md:mt-[56px]">
+        <div
+          className="relative w-full aspect-[342/300] md:aspect-[1418/640] overflow-hidden"
+          style={{ backgroundColor: "var(--paper-2)" }}
+        >
+          <SkeletonImage
+            src={heroSrc}
+            alt={`${tenantName} dining room`}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
+      </div>
+
+      <section className="hos-gutter py-16 md:py-[112px]">
         {tenant?.aboutus ? (
-          <div className="max-w-3xl">
+          <div className="grid md:grid-cols-[50%_1fr]">
+            <h2 className="hos-display mb-8 md:mb-0" style={{ color: "var(--color-main)" }}>
+              The story so far
+            </h2>
             <RichTextRenderer
               data={tenant.aboutus}
-              className="text-base leading-relaxed"
+              className="max-w-[65ch]"
             />
           </div>
         ) : (
-          <div className="grid md:grid-cols-[1fr_1fr] gap-16 items-start max-w-6xl">
-            <div className="md:pt-6">
-              <p
-                className="text-[9px] tracking-[0.4em] uppercase mb-6"
-                style={{ color: "var(--foreground)", opacity: 0.7 }}
-              >
-                — the beginning
-              </p>
-              <h2
-                className="text-3xl md:text-4xl font-semibold mb-8 leading-tight"
-                style={{
-                  color: "var(--foreground)",
-                  fontFamily: "var(--font-arimo)",
-                }}
-              >
-                Our Story
-              </h2>
-              <p
-                className="text-base mb-5 leading-relaxed"
-                style={{ color: "var(--foreground)", opacity: 0.88 }}
-              >
+          <div className="grid md:grid-cols-[50%_1fr] gap-y-8">
+            <h2 className="hos-display" style={{ color: "var(--color-main)" }}>
+              Our story
+            </h2>
+            <div className="max-w-[65ch] flex flex-col gap-5" style={{ color: "var(--color-ink)" }}>
+              <p>
                 {tenantName} was born from a passion for creating unforgettable
-                dining experiences — a place where food and atmosphere conspire
+                dining experiences: a place where food and atmosphere conspire
                 to make every visit feel like coming home.
               </p>
-              <p
-                className="text-base mb-5 leading-relaxed"
-                style={{ color: "var(--foreground)", opacity: 0.88 }}
-              >
+              <p>
                 Every dish we serve tells a story, combining the warmth of
                 traditional techniques with the curiosity of contemporary
                 flavors.
               </p>
-              <p
-                className="text-base leading-relaxed"
-                style={{ color: "var(--foreground)", opacity: 0.88 }}
-              >
+              <p>
                 We believe that great food brings people together. That is the
                 only philosophy that has ever guided us.
               </p>
-            </div>
-            <div className="relative h-130 md:h-160">
-              <SkeletonImage
-                src="/media/IMG_0050.JPG"
-                alt="Restaurant interior"
-                fill
-                className="object-cover"
-              />
             </div>
           </div>
         )}

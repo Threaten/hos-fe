@@ -9,7 +9,7 @@ import { TenantProvider } from "../contexts/TenantContext";
 
 export const metadata: Metadata = {
   title: "houseofsenses.vn",
-  description: "Experience exceptional  dining at houseofsenses.vn",
+  description: "House of Senses restaurants, menus, reservations, and branch information.",
 };
 
 export default function MainLayout({
@@ -19,7 +19,7 @@ export default function MainLayout({
 }>) {
   return (
     <TenantProvider>
-      <header className="sticky top-0 z-50">
+      <header className="relative z-50">
         <Topbar />
         <Navbar />
       </header>

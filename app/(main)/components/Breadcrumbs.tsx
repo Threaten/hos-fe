@@ -34,42 +34,23 @@ const Breadcrumbs = () => {
   if (breadcrumbs.length <= 1) return null;
 
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className="py-3 px-6 md:px-12 border-b"
-      style={{
-        backgroundColor: "var(--background)",
-        borderColor: "color-mix(in srgb, var(--color-tan) 25%, transparent)",
-      }}
-    >
-      <ol className="flex items-center gap-0">
+    <nav aria-label="Breadcrumb" className="hos-gutter pt-2 bg-paper">
+      <ol className="flex items-center text-[14px] leading-[1.3]" style={{ color: "var(--color-ink-muted)" }}>
         {breadcrumbs.map((breadcrumb, index) => {
           const isLast = index === breadcrumbs.length - 1;
           return (
             <li key={breadcrumb.href} className="flex items-center">
               {index > 0 && (
-                <span
-                  className="mx-2.5 text-[7px]"
-                  style={{ color: "var(--color-gold)", opacity: 0.6 }}
-                  aria-hidden="true"
-                >
-                  ◇
+                <span className="mx-2" aria-hidden="true">
+                  /
                 </span>
               )}
               {isLast ? (
-                <span
-                  className="text-[9px] tracking-[0.22em] uppercase font-medium"
-                  style={{ color: "var(--foreground)" }}
-                  aria-current="page"
-                >
+                <span style={{ color: "var(--color-ink)" }} aria-current="page">
                   {breadcrumb.label}
                 </span>
               ) : (
-                <Link
-                  href={breadcrumb.href}
-                  className="text-[9px] tracking-[0.22em] uppercase transition-opacity duration-200 hover:opacity-50 focus:outline-none"
-                  style={{ color: "var(--color-sand)" }}
-                >
+                <Link href={breadcrumb.href} className="hos-link">
                   {breadcrumb.label}
                 </Link>
               )}

@@ -14,11 +14,17 @@ const TenantFlipbook = dynamic(() => import("./TenantFlipbook"), {
 interface TenantFlipbookWrapperProps {
   menuUrl: string;
   tenantName: string;
+  imagePages?: Array<{
+    url?: string;
+    filename?: string;
+    id?: string;
+  }>;
 }
 
 export default function TenantFlipbookWrapper({
   menuUrl,
   tenantName,
+  imagePages,
 }: TenantFlipbookWrapperProps) {
-  return <TenantFlipbook menuUrl={`${menuUrl}`} tenantName={tenantName} />;
+  return <TenantFlipbook menuUrl={`${menuUrl}`} tenantName={tenantName} imagePages={imagePages} />;
 }

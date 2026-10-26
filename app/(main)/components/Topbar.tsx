@@ -5,12 +5,10 @@ import { getTenantUrl } from "@/app/utils/domain";
 import { useTenant } from "@/app/contexts/TenantContext";
 
 export default function Topbar() {
-  const [openCard, setOpenCard] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const { tenant: currentTenant } = useTenant();
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchTenants().then(setTenants);
@@ -18,254 +16,104 @@ export default function Topbar() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (
-        !target.closest("button[aria-expanded]") &&
-        !target.closest("[data-mobile-menu]") &&
-        !dropdownRef.current?.contains(target as Node)
-      ) {
-        setOpenCard(null);
-        setMobileMenuOpen(false);
-      }
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, []);
 
   const notification = currentTenant?.topbarNotification;
   const hasNotification = notification?.enabled && notification?.message;
 
   return (
-    <div className="w-full" style={{ backgroundColor: "var(--background)" }}>
-      {/* Notification banner */}
+    <div className="w-full bg-paper" ref={rootRef}>
       {hasNotification && (
         <div
-          className="w-full flex items-center justify-center py-2 px-4"
-          style={{
-            backgroundColor: "#7A0000",
-            borderBottom:
-              "1px solid color-mix(in srgb, var(--color-gold) 30%, transparent)",
-          }}
+          className="w-full flex items-center justify-center py-2 hos-gutter text-center text-[14px] leading-[1.3]"
+          style={{ backgroundColor: "var(--color-main)", color: "var(--color-on-main)" }}
         >
-          <span
-            className="text-[11px] tracking-[0.38em] uppercase font-bold text-center"
-            style={{ color: "var(--color-cream)" }}
-          >
-            {notification.message}
-          </span>
+          {notification.message}
         </div>
       )}
 
       {/* Branch switcher */}
       <div
-        className="w-full h-9 border-b"
-        style={{
-          borderColor: "color-mix(in srgb, var(--color-tan) 25%, transparent)",
-        }}
+        className="relative w-full h-[34px] border-b hos-gutter flex items-center justify-center"
+        style={{ borderColor: "var(--color-line)" }}
       >
-        <div className="w-full h-full px-6 flex items-center">
-          {/* Desktop */}
-          <div className="hidden md:block w-full relative">
-            <button
-              onClick={() => setOpenCard(openCard ? null : "branches")}
-              className="flex items-center justify-center gap-2.5 mx-auto transition-opacity duration-200 hover:opacity-50 focus:outline-none"
-              aria-expanded={openCard === "branches"}
-            >
-              <span
-                className="text-[8px] tracking-[0.35em] uppercase"
-                style={{ color: "var(--foreground)", opacity: 0.78 }}
-              >
-                Our Locations
-              </span>
-              <span
-                className="text-[8px] tracking-[0.28em] uppercase font-semibold"
-                style={{ color: "var(--foreground)" }}
-              >
-                {tenants.map((t) => t.name.toLowerCase()).join("  ·  ")}
-              </span>
-              <span
-                className={`text-[7px] transition-transform duration-300`}
-                style={{
-                  color: "var(--foreground)",
-                  opacity: 0.78,
-                  transform:
-                    openCard === "branches" ? "rotate(180deg)" : "none",
-                }}
-                aria-hidden="true"
-              >
-                ▾
-              </span>
-            </button>
-
-            {/* Desktop Dropdown */}
-            {openCard === "branches" && (
-              <div
-                ref={dropdownRef}
-                className="absolute left-1/2 -translate-x-1/2 top-full mt-0 z-50 min-w-140"
-                style={{
-                  backgroundColor: "var(--background)",
-                  border:
-                    "1px solid color-mix(in srgb, var(--color-tan) 40%, transparent)",
-                  borderTop: "none",
-                  boxShadow:
-                    "0 8px 32px color-mix(in srgb, var(--color-earth) 8%, transparent)",
-                }}
-              >
-                <div className="grid grid-cols-2 gap-0">
-                  {tenants.map((tenant, idx) => (
-                    <div
-                      key={tenant.id}
-                      onClick={() => {
-                        window.location.href = getTenantUrl(tenant.domain);
-                      }}
-                      className="p-5 cursor-pointer transition-colors duration-200 group"
-                      style={{
-                        borderRight:
-                          idx % 2 === 0
-                            ? "1px solid color-mix(in srgb, var(--color-tan) 30%, transparent)"
-                            : "none",
-                        borderBottom:
-                          idx < tenants.length - 2
-                            ? "1px solid color-mix(in srgb, var(--color-tan) 30%, transparent)"
-                            : "none",
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor =
-                          "color-mix(in srgb, var(--color-parchment) 80%, transparent)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor =
-                          "transparent";
-                      }}
-                    >
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <p
-                          className="text-[10px] tracking-[0.22em] uppercase font-semibold"
-                          style={{
-                            color: "var(--foreground)",
-                            fontFamily: "var(--font-arimo)",
-                          }}
-                        >
-                          {tenant.name.toLowerCase()}
-                        </p>
-                        {currentTenant?.id === tenant.id && (
-                          <span
-                            className="text-[9px] tracking-[0.28em] uppercase"
-                            style={{ color: "var(--color-gold)" }}
-                          >
-                            ← here
-                          </span>
-                        )}
-                      </div>
-                      {tenant.address && (
-                        <p
-                          className="text-[9px] leading-relaxed"
-                          style={{ color: "var(--color-sand)" }}
-                        >
-                          {tenant.address}
-                        </p>
-                      )}
-                      {tenant.phone && (
-                        <p
-                          className="text-[9px] mt-0.5"
-                          style={{ color: "var(--color-sand)" }}
-                        >
-                          {tenant.phone}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile */}
-          <div
-            className="md:hidden w-full"
-            data-mobile-menu
-            ref={mobileMenuRef}
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className="flex items-center gap-2 text-[14px] leading-none transition-opacity duration-300 hover:opacity-70"
+          style={{ color: "var(--color-ink)" }}
+          aria-expanded={open}
+          aria-controls="branch-switcher"
+        >
+          <span>Our locations</span>
+          <span className="hidden md:inline" style={{ color: "var(--color-ink-muted)" }}>
+            {tenants.map((t) => t.name.toLowerCase()).join(" · ")}
+          </span>
+          <svg
+            width="9"
+            height="6"
+            viewBox="0 0 9 6"
+            aria-hidden="true"
+            className="transition-transform duration-300"
+            style={{ transform: open ? "rotate(180deg)" : "none" }}
           >
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="w-full flex items-center justify-between focus:outline-none"
-              aria-expanded={mobileMenuOpen}
-            >
-              <span
-                className="text-[8px] tracking-[0.35em] uppercase"
-                style={{ color: "var(--foreground)", opacity: 0.78 }}
-              >
-                Our Locations
-              </span>
-              <span
-                className="text-[7px] transition-transform duration-300"
-                style={{
-                  color: "var(--foreground)",
-                  opacity: 0.78,
-                  transform: mobileMenuOpen ? "rotate(180deg)" : "none",
-                }}
-                aria-hidden="true"
-              >
-                ▾
-              </span>
-            </button>
+            <path d="M.5.75 4.5 4.75 8.5.75" fill="none" stroke="currentColor" />
+          </svg>
+        </button>
 
-            <div
-              className={`absolute left-0 right-0 top-full z-50 transition-all duration-300 ${
-                mobileMenuOpen
-                  ? "opacity-100 visible"
-                  : "opacity-0 invisible pointer-events-none"
-              }`}
-              style={{
-                backgroundColor: "var(--background)",
-                borderBottom:
-                  "1px solid color-mix(in srgb, var(--color-tan) 30%, transparent)",
-                boxShadow:
-                  "0 8px 24px color-mix(in srgb, var(--color-earth) 6%, transparent)",
-              }}
-            >
-              <div className="px-6 py-4 space-y-4">
-                {tenants.map((tenant) => (
-                  <div
-                    key={tenant.id}
-                    onClick={() => {
-                      window.location.href = getTenantUrl(tenant.domain);
-                    }}
-                    className="cursor-pointer py-2 border-b last:border-b-0"
-                    style={{
-                      borderColor:
-                        "color-mix(in srgb, var(--color-tan) 25%, transparent)",
-                    }}
+        <div
+          id="branch-switcher"
+          className={`absolute left-0 right-0 top-full z-50 bg-paper border-b transition-opacity duration-300 ${
+            open ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+          }`}
+          style={{ borderColor: "var(--color-line)" }}
+        >
+          <ul className="hos-gutter py-6 md:py-8 grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(260px,340px))] md:justify-center gap-x-[22px] gap-y-6">
+            {tenants.map((tenant) => {
+              const isCurrent = currentTenant?.id === tenant.id;
+              return (
+                <li key={tenant.id}>
+                  <a
+                    href={getTenantUrl(tenant.domain)}
+                    className="group block"
+                    aria-current={isCurrent ? "true" : undefined}
                   >
-                    <div className="flex items-center gap-2">
-                      <p
-                        className="text-[10px] tracking-[0.22em] uppercase font-semibold"
-                        style={{ color: "var(--foreground)" }}
-                      >
-                        {tenant.name.toLowerCase()}
-                      </p>
-                      {currentTenant?.id === tenant.id && (
-                        <span
-                          className="text-[7px] tracking-[0.28em]"
-                          style={{ color: "var(--color-gold)" }}
-                        >
-                          ← here
+                    <span
+                      className="block font-serif text-[1.75rem] leading-none mb-2 hos-link group-hover:decoration-current"
+                      style={{ color: tenant.mainColor || "var(--color-main)" }}
+                    >
+                      {tenant.name.toLowerCase()}
+                      {isCurrent && (
+                        <span className="font-sans text-[13px] align-middle ml-2" style={{ color: "var(--color-ink-muted)" }}>
+                          you are here
                         </span>
                       )}
-                    </div>
+                    </span>
                     {tenant.address && (
-                      <p
-                        className="text-[9px] mt-0.5"
-                        style={{ color: "var(--color-sand)" }}
-                      >
+                      <span className="block text-[15px] leading-[1.3]" style={{ color: "var(--color-ink)" }}>
                         {tenant.address}
-                      </p>
+                      </span>
                     )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+                    {tenant.phone && (
+                      <span className="block text-[15px] leading-[1.3]" style={{ color: "var(--color-ink)" }}>
+                        T: {tenant.phone}
+                      </span>
+                    )}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
     </div>

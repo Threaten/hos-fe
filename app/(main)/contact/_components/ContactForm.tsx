@@ -199,9 +199,8 @@ const ContactForm = ({
       });
       setErrors({});
     } catch {
-      // Show error toast
       setToast({
-        message: "Failed to send message. Please try again.",
+        message: "We could not send your message. Please check the details and try again.",
         type: "error",
       });
     } finally {
@@ -235,17 +234,17 @@ const ContactForm = ({
   };
 
   return (
-    <div className="min-h-screen mt-12 bg-background py-16 px-4">
+    <div className="bg-paper hos-gutter pt-12 md:pt-[78px] pb-20 md:pb-[112px]">
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed top-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 transition-all ${
+          className={`fixed top-6 right-6 px-6 py-4 z-50 transition-all text-paper ${
             toast.type === "success"
-              ? "bg-green-600 text-white"
-              : "bg-red-600 text-white"
+              ? "bg-[var(--color-ink)]"
+              : "bg-red-700"
           }`}
         >
-          <p className="font-medium">{toast.message}</p>
+          <p className="">{toast.message}</p>
         </div>
       )}
 
@@ -254,14 +253,14 @@ const ContactForm = ({
           <div className="text-foreground/90">Loading...</div>
         </div>
       ) : (
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-[50%_1fr] gap-16 lg:gap-0">
           {/* Left Side - Info */}
-          <div className="space-y-12 sm:pt-8">
+          <div className="space-y-12 lg:pr-16">
             {/* Title Section */}
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-                Get in Touch
-              </h2>
+              <h1 className="hos-display mb-6" style={{ color: "var(--color-main)" }}>
+                Get in touch
+              </h1>
               <p className="text-foreground/90 leading-relaxed">
                 Have a question or feedback? We&apos;d love to hear from you.
                 Fill out the form and we&apos;ll get back to you as soon as
@@ -271,13 +270,13 @@ const ContactForm = ({
 
             {/* Branch Info */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="hos-label mb-4">
                 {currentBranchTenant ? "Our Location" : "Our Locations"}
               </h3>
               <div className="space-y-6">
                 {currentBranchTenant ? (
                   <div>
-                    <p className="font-medium text-gray-900 mb-2">
+                    <p className="font-serif text-[1.6rem] leading-none mb-2" style={{ color: "var(--color-main)" }}>
                       {currentBranchTenant.name.toLowerCase()}
                     </p>
                     {currentBranchTenant.address && (
@@ -294,7 +293,7 @@ const ContactForm = ({
                 ) : tenants && tenants.length > 0 ? (
                   tenants.map((tenant) => (
                     <div key={tenant.id}>
-                      <p className="font-medium text-gray-900 mb-2">
+                      <p className="font-serif text-[1.6rem] leading-none mb-2" style={{ color: "var(--color-main)" }}>
                         {tenant.name.toLowerCase()}
                       </p>
                       {tenant.address && (
@@ -315,12 +314,12 @@ const ContactForm = ({
 
             {/* Contact Info */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="hos-label mb-4">
                 Our Contact
               </h3>
               <div className="grid grid-cols-2 gap-8">
                 <div>
-                  <p className="font-medium text-gray-900 mb-1">Email</p>
+                  <p className="font-medium mb-1">Email</p>
                   {(() => {
                     const tenant =
                       currentBranchTenant ||
@@ -339,7 +338,7 @@ const ContactForm = ({
                   })()}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900 mb-1">Phone</p>
+                  <p className="font-medium mb-1">Phone</p>
                   {(() => {
                     const tenant =
                       currentBranchTenant ||
@@ -364,7 +363,7 @@ const ContactForm = ({
 
             {/* Social Media */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="hos-label mb-4">
                 Follow us
               </h3>
               <div className="flex gap-4">
@@ -379,7 +378,7 @@ const ContactForm = ({
                           href={tenant.facebook}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:scale-110"
+                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:opacity-70"
                         >
                           <svg
                             className="w-5 h-5"
@@ -395,7 +394,7 @@ const ContactForm = ({
                           href={tenant.instagram}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:scale-110"
+                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:opacity-70"
                         >
                           <svg
                             className="w-5 h-5"
@@ -411,7 +410,7 @@ const ContactForm = ({
                           href={tenant.tiktok}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:scale-110"
+                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:opacity-70"
                         >
                           <svg
                             className="w-5 h-5"
@@ -427,7 +426,7 @@ const ContactForm = ({
                           href={tenant.youtube}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:scale-110"
+                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:opacity-70"
                         >
                           <svg
                             className="w-5 h-5"
@@ -446,9 +445,9 @@ const ContactForm = ({
           </div>
 
           {/* Right Side - Form */}
-          <div className="sm:border sm:border-foreground/15 sm:rounded-2xl sm:px-8 lg:px-12 sm:pb-8 lg:pb-12 sm:pt-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-              Send us a Message
+          <div className="lg:border-l lg:pl-16 border-[color:var(--color-line)]">
+            <h2 className="hos-display mb-8" style={{ color: "var(--color-main)" }}>
+              Send us a message
             </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Name */}
@@ -459,7 +458,7 @@ const ContactForm = ({
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent ${
+                  className={`w-full px-0 py-3 border-0 border-b focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent ${
                     errors.name ? "border-red-500" : "border-foreground/20"
                   }`}
                   placeholder="Name"
@@ -477,7 +476,7 @@ const ContactForm = ({
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent ${
+                  className={`w-full px-0 py-3 border-0 border-b focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent ${
                     errors.phone ? "border-red-500" : "border-foreground/20"
                   }`}
                   placeholder="Phone"
@@ -495,7 +494,7 @@ const ContactForm = ({
                   value={formData.branch}
                   onChange={handleChange}
                   disabled={!!currentBranchTenant}
-                  className={`w-full px-0 py-3 border-0 border-b-2 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent appearance-none text-foreground ${
+                  className={`w-full px-0 py-3 border-0 border-b focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent appearance-none text-foreground ${
                     errors.branch ? "border-red-500" : "border-foreground/20"
                   } ${currentBranchTenant ? "opacity-60 cursor-not-allowed" : ""}`}
                   style={{
@@ -531,7 +530,7 @@ const ContactForm = ({
                   value={formData.message}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-0 py-3 border-0 border-b-2 border-foreground/20 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent resize-none"
+                  className="w-full px-0 py-3 border-0 border-b border-foreground/20 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent resize-none"
                   placeholder="Message (Optional)"
                 />
               </div>
@@ -540,7 +539,7 @@ const ContactForm = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full border-black border-2 text-black hover:text-white py-4 rounded-lg font-medium hover:bg-black transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed mt-8 button-ripple focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+                className="hos-btn hos-btn-solid w-full mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Send contact message"
               >
                 {isSubmitting ? "Sending..." : "Send Message"}

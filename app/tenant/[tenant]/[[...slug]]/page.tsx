@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Hero from "../../../(main)/home/_components/Hero";
 import ShortAbout from "../../../(main)/home/_components/ShortAbout";
 import CTA from "../../../(main)/components/CTA";
+import Moments from "../../../(main)/home/_components/Moments";
 import TenantHomeInteractive from "./TenantHomeInteractive";
 import AboutPage from "../../../(main)/about/page";
 import GalleryPage from "../../../(main)/gallery/page";
@@ -9,9 +10,10 @@ import ContactForm from "../../../(main)/contact/_components/ContactForm";
 import ReservationForm from "../../../(main)/reservation/_components/ReservationForm";
 import TenantFlipbookWrapper from "../../../(main)/menu/_components/TenantFlipbookWrapper";
 import LuckyWheel from "../../../(main)/lucky-wheel/_components/LuckyWheel";
-import Link from "next/link";
 import { API_URL } from "@/app/utils/constants";
-import type { Tenant, GalleryItem } from "@/api/queries";
+import Link from "next/link";
+import { resolveBackendMediaUrl } from "@/app/utils/media";
+import { fetchMenuByBranch, type Tenant, type GalleryItem } from "@/api/queries";
 
 interface PageProps {
   params: Promise<{ tenant: string; slug?: string[] }>;
@@ -57,11 +59,7 @@ export default async function TenantPage({ params }: PageProps) {
     case "home": {
       const galleryItems = await fetchGalleryServer(tenant.id);
       const transformedImages = galleryItems.map((item: GalleryItem) => ({
-        src: item.image?.filename
-          ? `${API_URL}/api/media/file/${item.image.filename}`
-          : item.image?.url
-            ? `${API_URL}${item.image.url}`
-            : "",
+        src: resolveBackendMediaUrl(item.image),
         alt: item.caption || item.image?.alt || "Gallery image",
         branch: item.branch?.name || "",
         caption: item.caption || "",
@@ -70,49 +68,21 @@ export default async function TenantPage({ params }: PageProps) {
         <div>
           <Hero tenant={tenant} />
           <ShortAbout tenant={tenant} />
-          {/* ── Gallery section header ── */}
-          <div className="px-8 md:px-14 pt-0 pb-4">
-            <div className="flex items-center gap-4 mb-3 mt-3 ">
-              <span
-                className="text-[10px] tracking-[0.38em] uppercase"
-                style={{ color: "var(--color-sand)", opacity: 0.95 }}
-              >
-                03
-              </span>
-              <div
-                className="h-px flex-1"
-                style={{ backgroundColor: "var(--color-sand)", opacity: 0.25 }}
-              />
-              <span
-                className="text-[10px] tracking-[0.38em] uppercase"
-                style={{ color: "var(--color-sand)", opacity: 0.95 }}
-              >
-                Gallery
-              </span>
-            </div>
-          </div>
           <TenantHomeInteractive
             transformedImages={transformedImages}
             newMenu={tenant.newMenu ?? []}
             tenantName={tenant.name}
             galleryText={tenant.galleryText}
+            tenant={tenant}
           />
-          {/* ── See all link ── */}
-          <div className="px-8 md:px-14 pt-4 pb-8">
-            <Link
-              href="/gallery"
-              className="inline-flex items-center gap-2 text-[11px] tracking-[0.28em] uppercase font-light transition-opacity duration-300 hover:opacity-40"
-              style={{
-                color: "var(--foreground)",
-                textDecoration: "underline",
-                textUnderlineOffset: "6px",
-                textDecorationColor: "var(--color-sand)",
-              }}
-            >
-              View full gallery →
-            </Link>
-          </div>
-          <CTA />
+          <Moments
+            images={
+              transformedImages.length > 1
+                ? transformedImages.slice(1)
+                : transformedImages
+            }
+            tenant={tenant}
+          />
         </div>
       );
     }
@@ -121,24 +91,38 @@ export default async function TenantPage({ params }: PageProps) {
       return <AboutPage />;
 
     case "menu": {
-      if (!tenant.menu?.url) {
+      const menu = await fetchMenuByBranch(tenant.id);
+      const menuUrl = resolveBackendMediaUrl(
+        menu?.file || menu?.pages?.[0] || tenant.menu,
+      );
+
+      if (!menuUrl) {
         return (
-          <div className="w-full min-h-screen flex flex-col items-center justify-center px-4">
-            <h2 className="text-3xl font-bold text-black mb-4">
-              Menu Not Available
-            </h2>
-            <p className="text-foreground/85">
-              This restaurant hasn&apos;t uploaded their menu yet.
+          <section className="hos-gutter pt-12 md:pt-[78px] pb-24 md:pb-[160px]">
+            <p className="hos-label mb-3" style={{ color: "var(--foreground)" }}>
+              Our menu
             </p>
-          </div>
+            <h1 className="hos-display max-w-[18ch]" style={{ color: "var(--color-main)" }}>
+              The menu is being set at the table. Check back soon.
+            </h1>
+            <p className="mt-5 max-w-[48ch]" style={{ color: "var(--color-ink)" }}>
+              {tenant.name} hasn&apos;t published its menu online yet. Call us
+              {tenant.phone ? ` on ${tenant.phone}` : ""} and we&apos;ll walk you
+              through what&apos;s cooking.
+            </p>
+            <Link href="/reservation" className="hos-btn hos-btn-solid mt-8">
+              Book a table
+            </Link>
+          </section>
         );
       }
-      const menuUrl = tenant.menu.filename
-        ? `${API_URL}/api/media/file/${tenant.menu.filename}`
-        : `${API_URL}${tenant.menu.url}`;
       return (
         <div>
-          <TenantFlipbookWrapper menuUrl={menuUrl} tenantName={tenant.name} />
+          <TenantFlipbookWrapper
+            menuUrl={menuUrl}
+            tenantName={tenant.name}
+            imagePages={menu?.pages}
+          />
           <CTA />
         </div>
       );

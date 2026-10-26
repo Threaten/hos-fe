@@ -1,23 +1,25 @@
 import type { Metadata } from "next";
-import { Arimo, IBM_Plex_Mono } from "next/font/google";
+import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
-const arimo = Arimo({
-  variable: "--font-arimo",
-  subsets: ["latin"],
-  weight: ["600"],
+const display = Instrument_Serif({
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
   style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
+  display: "swap",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  subsets: ["latin"],
-  weight: ["200"],
+const text = Instrument_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  variable: "--font-instrument-sans",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "houseofsenses.vn",
-  description: "Experience exceptional dining at houseofsenses.vn",
+  description: "House of Senses restaurants, menus, reservations, and branch information.",
 };
 
 export default function RootLayout({
@@ -26,8 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${arimo.variable} ${ibmPlexMono.variable}`}>
+    <html lang="en" className={`${display.variable} ${text.variable}`}>
+      <body>
         {children}
       </body>
     </html>

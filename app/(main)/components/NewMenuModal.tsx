@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import SkeletonImage from "@/app/components/SkeletonImage";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { API_URL } from "@/api/queries";
+import { resolveBackendMediaUrl } from "@/app/utils/media";
 
 interface NewMenuImage {
   src?: {
@@ -72,37 +72,50 @@ export default function NewMenuModal({
   return (
     <div
       key={isOpen ? "open" : "closed"}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in"
+      style={{ backgroundColor: "color-mix(in oklab, var(--foreground) 82%, transparent)" }}
       onClick={handleBackdropClick}
     >
-      <div className="relative w-full max-w-4xl mx-4 bg-white rounded-lg shadow-2xl overflow-hidden animate-slide-in-up">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="updates-heading"
+        className="relative w-full max-w-4xl mx-4 bg-paper overflow-hidden animate-slide-in-up"
+      >
+        <div className="flex items-start justify-between gap-6 px-5 md:px-8 pt-5 md:pt-7 pb-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Latest News</h2>
+            <h2 id="updates-heading" className="hos-display" style={{ color: "var(--color-main)" }}>
+              What&apos;s new
+            </h2>
             {tenantName && (
-              <p className="text-sm text-gray-600 mt-1">
-                Check out our latest news at {tenantName.toLowerCase()}
+              <p className="mt-1" style={{ color: "var(--color-ink)" }}>
+                Recent notes from {tenantName.toLowerCase()}
+                {images.length > 1 && (
+                  <span style={{ color: "var(--color-ink-muted)" }}>
+                    {" "}· {currentIndex + 1} / {images.length}
+                  </span>
+                )}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-            aria-label="Close modal"
+            className="shrink-0 w-10 h-10 flex items-center justify-center transition-opacity duration-300 hover:opacity-60"
+            style={{ color: "var(--foreground)" }}
+            aria-label="Close updates"
           >
-            <X className="w-6 h-6 text-gray-700" />
+            <X strokeWidth={1.25} className="w-7 h-7" />
           </button>
         </div>
 
-        {/* Carousel */}
-        <div className="relative">
-          {/* Image Container */}
-          <div className="relative w-full h-[50vh] md:h-[60vh] bg-gray-100 flex items-center justify-center">
+        <div className="relative px-5 md:px-8">
+          <div
+            className="relative w-full h-[50vh] md:h-[60vh] flex items-center justify-center bg-paper"
+          >
             {images[currentIndex]?.src?.url && (
               <SkeletonImage
-                src={`${API_URL}${images[currentIndex].src.url}`}
-                alt={` Page ${currentIndex + 1}`}
+                src={resolveBackendMediaUrl(images[currentIndex].src)}
+                alt={`${tenantName || "Update"} page ${currentIndex + 1}`}
                 fill
                 quality={90}
                 sizes="(max-width: 768px) 100vw, 80vw"
@@ -111,46 +124,48 @@ export default function NewMenuModal({
             )}
           </div>
 
-          {/* Navigation Buttons */}
           {images.length > 1 && (
             <>
               <button
                 onClick={handlePrevious}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all hover:scale-110"
-                aria-label="Previous image"
+                className="absolute left-8 md:left-12 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-paper flex items-center justify-center transition-transform duration-300 hover:scale-105"
+                style={{ color: "var(--foreground)" }}
+                aria-label="Previous update"
               >
-                <ChevronLeft className="w-6 h-6 text-gray-900" />
+                <ChevronLeft strokeWidth={1.25} className="w-5 h-5" />
               </button>
               <button
                 onClick={handleNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all hover:scale-110"
-                aria-label="Next image"
+                className="absolute right-8 md:right-12 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-paper flex items-center justify-center transition-transform duration-300 hover:scale-105"
+                style={{ color: "var(--foreground)" }}
+                aria-label="Next update"
               >
-                <ChevronRight className="w-6 h-6 text-gray-900" />
+                <ChevronRight strokeWidth={1.25} className="w-5 h-5" />
               </button>
             </>
           )}
-
         </div>
 
-        {/* Thumbnail Navigation */}
         {images.length > 1 && (
-          <div className="p-4 bg-gray-50 border-t">
-            <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="px-5 md:px-8 pt-4 pb-5 md:pb-7">
+            <div className="flex gap-[11px] overflow-x-auto pb-1">
               {images.map((image, index) => (
                 <button
                   key={image.id || index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`relative shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                    currentIndex === index
-                      ? "border-blue-500 scale-105"
-                      : "border-gray-300 hover:border-gray-400"
-                  }`}
+                  aria-label={`Show update ${index + 1}`}
+                  aria-current={currentIndex === index ? "true" : undefined}
+                  className="relative shrink-0 w-16 h-16 md:w-20 md:h-20 overflow-hidden transition-opacity duration-300"
+                  style={{
+                    outline: currentIndex === index ? "1px solid var(--color-main)" : "none",
+                    outlineOffset: 3,
+                    opacity: currentIndex === index ? 1 : 0.6,
+                  }}
                 >
                   {image.src?.url && (
                     <SkeletonImage
-                      src={`${API_URL}${image.src.url}`}
-                      alt={`Thumbnail ${index + 1}`}
+                      src={resolveBackendMediaUrl(image.src)}
+                      alt=""
                       fill
                       quality={60}
                       sizes="80px"
@@ -162,22 +177,7 @@ export default function NewMenuModal({
             </div>
           </div>
         )}
-
-        {/* Progress Indicator */}
-        {images.length > 1 && (
-          <div className="flex justify-center py-2 bg-gray-50">
-            <span className="text-gray-700 text-sm font-medium">
-              {currentIndex + 1} / {images.length}
-            </span>
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="p-4 bg-gray-50 border-t text-center">
-          <p className="text-sm text-gray-600">
-            Use arrow keys to navigate • Press ESC to close
-          </p>
-        </div>
+        {images.length <= 1 && <div className="h-5 md:h-7" />}
       </div>
     </div>
   );

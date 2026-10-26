@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 const API_URL =
   process.env.NODE_ENV === 'production'
     ? process.env.NEXT_PUBLIC_API_URL || 'https://admin.houseofsenses.vn'
-    : process.env.NEXT_PUBLIC_API_URL || 'http://admin.houseofsenses.vn'
+    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 
 const BASE_DOMAIN = 'houseofsenses.vn'
 
@@ -96,15 +96,15 @@ export async function fetchTenantConfigForSEO(
  * Page-level overrides passed to generateTenantMetadata.
  */
 export interface PageSEOOptions {
-  /** Page title — will be combined as "{title} | {tenantName}" */
+  /** Page title, combined as "{title} | {tenantName}". */
   title?: string
-  /** Page description — overrides tenant description */
+  /** Page description. Overrides tenant description. */
   description?: string
   /** Absolute URL of the OG image */
   ogImageUrl?: string
   /** Page path relative to tenant root (e.g. "about", "gallery") */
   path?: string
-  /** Open Graph type — default "website" */
+  /** Open Graph type. Defaults to "website". */
   type?: 'website' | 'article'
   /** Exclude from search engine indexing */
   noIndex?: boolean
@@ -123,18 +123,18 @@ const PAGE_LABELS: Record<string, string> = {
 
 /** Page-specific descriptions appended when no override is provided. */
 const PAGE_DESCRIPTIONS: Record<string, (siteName: string) => string> = {
-  about: (n) => `Learn the story behind ${n} — our philosophy, our chefs, and the passion for exceptional fine dining.`,
-  gallery: (n) => `Explore the ${n} gallery — a visual journey through our restaurant spaces and signature dishes.`,
-  menu: (n) => `Discover the ${n} menu — a curated selection of contemporary Vietnamese and international cuisine.`,
+  about: (n) => `Learn the story behind ${n}: the room, the kitchen, and the people shaping each service.`,
+  gallery: (n) => `Explore the ${n} gallery: restaurant spaces, dishes, and moments from service.`,
+  menu: (n) => `Discover the ${n} menu: seasonal dishes, drinks, and branch favorites.`,
   contact: (n) => `Get in touch with ${n}. Find our location, phone number, email, and send us a message.`,
-  reservation: (n) => `Reserve your table at ${n}. Book online for an unforgettable fine dining experience.`,
+  reservation: (n) => `Reserve your table at ${n}. Choose a branch, date, time, and party size online.`,
 }
 
 /**
  * Generate Next.js Metadata for a tenant page.
  *
- * @param tenantSlug - The subdomain / domain field value for the tenant
- * @param page       - Optional page-level overrides
+ * @param tenantSlug - The subdomain or domain field value for the tenant.
+ * @param page - Optional page-level overrides.
  */
 export async function generateTenantMetadata(
   tenantSlug: string,
@@ -147,28 +147,28 @@ export async function generateTenantMetadata(
   // Resolve page path label
   const pathLabel = page?.path ? PAGE_LABELS[page.path] || page.path : undefined
 
-  // Build title — CMS override > page path label > "Tenant | House of Senses"
+  // CMS override > page path label > "Tenant | House of Senses".
   const rawTitle = page?.title || tenantConfig?.metaTitle || pathLabel
   const title = rawTitle
     ? `${rawTitle} | ${siteName}`
     : `${siteName} | House of Senses`
 
-  // Build description — CMS meta.description > page-specific > fallback, then append address
+  // CMS meta.description > page-specific > fallback, then append address.
   const pageDescFn = page?.path ? PAGE_DESCRIPTIONS[page.path] : undefined
   const baseDescription =
     page?.description ||
     tenantConfig?.metaDescription ||
     (pageDescFn ? pageDescFn(siteName) : null) ||
-    `Experience exceptional fine dining at ${siteName}.`
-  // Append address for location context, but only once and only from the dedicated address field
+    `${siteName} restaurant information, menus, reservations, and contact details.`
+  // Append address for location context, only once and only from the dedicated address field.
   const description = tenantConfig?.address
     ? `${baseDescription} Located at ${tenantConfig.address}.`
     : baseDescription
 
-  // Build canonical URL
+  // Build canonical URL.
   const canonicalUrl = page?.path ? `${baseUrl}/${page.path}` : baseUrl
 
-  // OG image — CMS meta.image > explicit override > tenant logo > default
+  // CMS meta.image > explicit override > tenant logo > default.
   const ogImageUrl =
     tenantConfig?.metaImageUrl ||
     page?.ogImageUrl ||
@@ -177,7 +177,7 @@ export async function generateTenantMetadata(
 
   const keywords = [
     siteName,
-    'fine dining Vietnam',
+    'restaurant Vietnam',
     'restaurant',
     'bistro',
     'Vietnamese cuisine',
@@ -199,7 +199,7 @@ export async function generateTenantMetadata(
     'brunch Ho Chi Minh City',
     'dinner Ho Chi Minh City',
     'Saigon restaurant',
-    'Saigon fine dining',
+    'Saigon restaurant',
     'HCMC restaurant',
     'best restaurant Vietnam',
     'intimate dining',
@@ -298,8 +298,8 @@ export function buildTenantJsonLd(
       image: 'https://houseofsenses.vn/media/IMG_0050.JPG',
     }),
     description: tenantConfig?.address
-      ? `${tenantConfig?.metaDescription || `Experience exceptional fine dining at ${name}.`} Located at ${tenantConfig.address}.`
-      : (tenantConfig?.metaDescription || `Experience exceptional fine dining at ${name}.`),
+      ? `${tenantConfig?.metaDescription || `${name} restaurant information, menu, reservations, and contact details.`} Located at ${tenantConfig.address}.`
+      : (tenantConfig?.metaDescription || `${name} restaurant information, menu, reservations, and contact details.`),
     servesCuisine: ['Vietnamese', 'Contemporary', 'International'],
     priceRange: '$$$',
     currenciesAccepted: 'VND, USD',

@@ -48,7 +48,9 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - public assets (media/, menu-images/, the pdf.js worker), which must
+     *   resolve on tenant subdomains instead of being rewritten to /tenant/…
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|media/|menu-images/|pdf\\.worker\\.min\\.js).*)",
   ],
 };

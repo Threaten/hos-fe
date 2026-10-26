@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Gallery from "../../../(main)/home/_components/Gallery";
 import NewMenuModal from "../../../(main)/components/NewMenuModal";
+import type { Tenant } from "@/api/queries";
 
 interface GalleryImage {
   src: string;
@@ -24,6 +25,7 @@ interface TenantHomeInteractiveProps {
   newMenu: NewMenuImage[];
   tenantName: string;
   galleryText?: string;
+  tenant: Tenant | null;
 }
 
 export default function TenantHomeInteractive({
@@ -31,6 +33,7 @@ export default function TenantHomeInteractive({
   newMenu,
   tenantName,
   galleryText,
+  tenant,
 }: TenantHomeInteractiveProps) {
   const [showNewMenuModal, setShowNewMenuModal] = useState(
     newMenu != null && newMenu.length > 0,
@@ -42,7 +45,11 @@ export default function TenantHomeInteractive({
 
   return (
     <>
-      <Gallery images={transformedImages} galleryText={galleryText} />
+      <Gallery
+        images={transformedImages}
+        galleryText={galleryText}
+        tenant={tenant}
+      />
       <NewMenuModal
         images={newMenu}
         isOpen={showNewMenuModal}

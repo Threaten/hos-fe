@@ -532,9 +532,8 @@ const ReservationForm = ({
       });
       setErrors({});
     } catch {
-      // Show error toast
       setToast({
-        message: "Failed to submit reservation. Please try again.",
+        message: "We could not submit the reservation. Please check the details and try again.",
         type: "error",
       });
     } finally {
@@ -569,46 +568,42 @@ const ReservationForm = ({
 
   return (
     <div
-      className="min-h-screen mt-12 py-16 px-4"
+      className="hos-gutter pt-12 md:pt-[78px] pb-20 md:pb-[112px]"
       style={{ backgroundColor: "var(--background)" }}
     >
-      {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed top-6 right-6 px-6 py-4 shadow-lg z-50 transition-all ${
+          className={`fixed top-6 right-6 px-6 py-4 z-50 transition-all ${
             toast.type === "success"
-              ? "bg-green-700 text-white"
-              : "bg-red-700 text-white"
+              ? "bg-[var(--color-ink)] text-paper"
+              : "bg-red-700 text-paper"
           }`}
         >
           <p className="text-sm tracking-wide">{toast.message}</p>
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
-        {/* Left Side - Info */}
-        <div className="space-y-12 sm:pt-8">
-          {/* Title Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-[50%_1fr] gap-16 lg:gap-0">
+        <div className="space-y-12 lg:pr-16">
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-              Our Restaurant
-            </h2>
-            <p className="text-gray-600 leading-relaxed">
-              Experience fine dining at its best. Reserve your table and let us
-              create an unforgettable culinary experience for you.
+            <h1 className="hos-display mb-6" style={{ color: "var(--color-main)" }}>
+              Book a table
+            </h1>
+            <p className="text-[color:var(--color-ink)] leading-relaxed">
+              Choose a branch, date, and time. The team will confirm your table
+              shortly.
             </p>
           </div>
 
-          {/* Location Info */}
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <h3 className="hos-label mb-4">
               Hotline
             </h3>
-            <label className="text-base text-gray-600">
+            <label className="text-base text-[color:var(--color-ink)]">
               For last-minute reservations or special occasion arrangements,
               please contact us directly.
             </label>
-            <div className="space-y-2 text-gray-600 mt-4">
+            <div className="space-y-2 text-[color:var(--color-ink)] mt-4">
               {(() => {
                 const tenant =
                   currentBranchTenant ||
@@ -620,12 +615,12 @@ const ReservationForm = ({
                     </p>
                     <a
                       href={`tel:${tenant?.phone}`}
-                      className="text-gray-600 hover:text-gray-900"
+                      className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)]"
                     >
                       {tenant?.phone}
                     </a>
                     <br />
-                    <p className="hover:text-gray-900">
+                    <p className="hover:text-[color:var(--color-ink)]">
                       {tenant?.address || "No address available"}
                     </p>
                   </>
@@ -634,16 +629,16 @@ const ReservationForm = ({
             </div>
           </div>
 
-          <hr className="border-gray-200" />
+          <hr style={{ borderColor: "var(--color-line)" }} />
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <h3 className="hos-label mb-4">
               Our Contact
             </h3>
             <div className="grid grid-cols-2 gap-8">
               <div>
-                <p className="font-medium text-gray-900 mb-1">Email</p>
+                <p className="font-medium mb-1">Email</p>
                 {(() => {
                   const tenant =
                     currentBranchTenant ||
@@ -652,17 +647,17 @@ const ReservationForm = ({
                   return email ? (
                     <a
                       href={`mailto:${email}`}
-                      className="text-gray-600 hover:text-gray-900"
+                      className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)]"
                     >
                       {email}
                     </a>
                   ) : (
-                    <p className="text-gray-400">No email available</p>
+                    <p className="text-[color:var(--color-ink-muted)]">No email available</p>
                   );
                 })()}
               </div>
               <div>
-                <p className="font-medium text-gray-900 mb-1">Phone</p>
+                <p className="font-medium mb-1">Phone</p>
                 {(() => {
                   const tenant =
                     currentBranchTenant ||
@@ -671,23 +666,23 @@ const ReservationForm = ({
                   return phone ? (
                     <a
                       href={`tel:${phone}`}
-                      className="text-gray-600 hover:text-gray-900"
+                      className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)]"
                     >
                       {phone}
                     </a>
                   ) : (
-                    <p className="text-gray-400">No phone available</p>
+                    <p className="text-[color:var(--color-ink-muted)]">No phone available</p>
                   );
                 })()}
               </div>
             </div>
           </div>
 
-          <hr className="border-gray-200" />
+          <hr style={{ borderColor: "var(--color-line)" }} />
 
           {/* Social Media */}
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <h3 className="hos-label mb-4">
               Follow us
             </h3>
             <div className="flex gap-4">
@@ -702,7 +697,7 @@ const ReservationForm = ({
                         href={tenant.facebook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110"
+                        className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)] transition-all duration-300 hover:opacity-70"
                         aria-label="Facebook"
                       >
                         <svg
@@ -719,7 +714,7 @@ const ReservationForm = ({
                         href={tenant.instagram}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110"
+                        className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)] transition-all duration-300 hover:opacity-70"
                         aria-label="Instagram"
                       >
                         <svg
@@ -736,7 +731,7 @@ const ReservationForm = ({
                         href={tenant.tiktok}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110"
+                        className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)] transition-all duration-300 hover:opacity-70"
                         aria-label="TikTok"
                       >
                         <svg
@@ -753,7 +748,7 @@ const ReservationForm = ({
                         href={tenant.youtube}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110"
+                        className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)] transition-all duration-300 hover:opacity-70"
                         aria-label="YouTube"
                       >
                         <svg
@@ -774,26 +769,14 @@ const ReservationForm = ({
 
         {/* Right Side - Form */}
         <div
-          className="sm:px-8 lg:px-12 sm:pb-8 lg:pb-12 sm:pt-8 sm:border"
+          className="lg:border-l lg:pl-16"
           style={{
             borderColor:
               "color-mix(in srgb, var(--color-tan) 35%, transparent)",
           }}
         >
-          <p
-            className="text-[9px] tracking-[0.42em] uppercase mb-4"
-            style={{ color: "var(--color-sand)" }}
-          >
-            — book a table
-          </p>
-          <h2
-            className="text-2xl font-semibold mb-8 leading-tight"
-            style={{
-              color: "var(--foreground)",
-              fontFamily: "var(--font-arimo)",
-            }}
-          >
-            Reservation
+          <h2 className="hos-display mb-8" style={{ color: "var(--color-main)" }}>
+            Your reservation
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name */}
@@ -812,6 +795,35 @@ const ReservationForm = ({
                   color: "var(--foreground)",
                 }}
                 placeholder="Full Name"
+              />
+              {errors.name && (
+                <p
+                  className="mt-1 text-[11px]"
+                  style={{ color: "rgb(239 68 68)" }}
+                >
+                  {errors.name}
+                </p>
+              )}
+            </div>
+
+            {/* Phone */}
+            <div>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent text-[13px] tracking-[0.04em] placeholder:text-(--color-sand)"
+                style={{
+                  borderBottomColor: errors.phone
+                    ? "rgb(239 68 68)"
+                    : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
+                  color: "var(--foreground)",
+                }}
+                placeholder="Phone Number"
+                autoComplete="tel"
+                inputMode="tel"
               />
               {errors.phone && (
                 <p
@@ -1058,16 +1070,10 @@ const ReservationForm = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 font-medium text-[10px] tracking-[0.38em] uppercase transition-all duration-300 hover:opacity-60 disabled:opacity-30 disabled:cursor-not-allowed mt-8 focus:outline-none"
-              style={{
-                border:
-                  "1px solid color-mix(in srgb, var(--color-gold) 55%, transparent)",
-                color: "var(--foreground)",
-                backgroundColor: "transparent",
-              }}
+              className="hos-btn hos-btn-solid w-full mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Submit reservation"
             >
-              {isSubmitting ? "Submitting..." : "Reserve a Table"}
+              {isSubmitting ? "Submitting..." : "Reserve a table"}
             </button>
           </form>
         </div>
